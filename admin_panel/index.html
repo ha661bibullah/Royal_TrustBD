@@ -11,49 +11,120 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Hind Siliguri', sans-serif;
+            overflow-x: hidden;
         }
         
-        .sidebar {
-            transition: all 0.3s ease;
+        /* ডেস্কটপ লেআউট */
+        .desktop-layout {
+            display: none;
         }
         
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -250px;
-                top: 0;
-                bottom: 0;
-                z-index: 50;
-            }
-            
-            .sidebar.active {
-                left: 0;
-            }
-            
-            .overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 40;
-            }
-            
-            .overlay.active {
+        @media (min-width: 768px) {
+            .desktop-layout {
                 display: block;
             }
+            .mobile-layout {
+                display: none;
+            }
+            
+            .admin-container {
+                display: flex;
+                min-height: 100vh;
+            }
+            
+            .sidebar-desktop {
+                width: 280px;
+                background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+                color: white;
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 40;
+                overflow-y: auto;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .main-content-desktop {
+                flex: 1;
+                margin-left: 280px;
+                background: #f7fafc;
+                min-height: 100vh;
+            }
+            
+            .sidebar-desktop::-webkit-scrollbar {
+                width: 6px;
+            }
+            
+            .sidebar-desktop::-webkit-scrollbar-track {
+                background: #2d3748;
+            }
+            
+            .sidebar-desktop::-webkit-scrollbar-thumb {
+                background: #4a5568;
+                border-radius: 3px;
+            }
         }
         
+        /* মোবাইল লেআউট */
+        .mobile-layout {
+            display: block;
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-layout {
+                display: none;
+            }
+        }
+        
+        .sidebar-mobile {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            z-index: 50;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .sidebar-mobile.active {
+            left: 0;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 45;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* কম্পোনেন্ট স্টাইলস */
         .stat-card {
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #cbd5e0;
         }
         
         .order-status {
@@ -62,6 +133,7 @@
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
+            display: inline-block;
         }
         
         .status-pending { background: #fef3c7; color: #92400e; }
@@ -71,6 +143,70 @@
         .status-delivered { background: #d1fae5; color: #065f46; }
         .status-cancelled { background: #fee2e2; color: #991b1b; }
         
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        .nav-item.active {
+            background: rgba(220, 38, 38, 0.2);
+            color: #fff;
+            border-color: rgba(220, 38, 38, 0.3);
+        }
+        
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        /* টেবিল স্টাইলস */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .data-table th {
+            background: #f8fafc;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        /* মডাল স্টাইলস */
         .modal {
             display: none;
             position: fixed;
@@ -82,6 +218,13 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .modal.active {
@@ -91,43 +234,455 @@
         .modal-content {
             background: white;
             border-radius: 12px;
-            max-width: 800px;
-            width: 90%;
+            max-width: 900px;
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            animation: slideUp 0.3s ease;
         }
         
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ফর্ম স্টাইলস */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
+            font-size: 16px;
             transition: all 0.3s ease;
-            margin-bottom: 4px;
         }
         
-        .nav-item:hover {
-            background: rgba(255,255,255,0.1);
+        .form-input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
         }
         
-        .nav-item.active {
-            background: rgba(220, 38, 38, 0.2);
-            color: #fff;
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* বাটন স্টাইলস */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #2d3748;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn-outline:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+        
+        /* ইমেজ আপলোড স্টাইলস */
+        .image-upload-container {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-upload-container:hover {
+            border-color: #4299e1;
+            background: #edf2f7;
+        }
+        
+        .image-upload-container.active {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        
+        .image-upload-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .image-upload-preview.active {
+            display: block;
+        }
+        
+        .image-upload-text {
+            color: #718096;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .image-upload-icon {
+            font-size: 48px;
+            color: #a0aec0;
+            margin-bottom: 15px;
+        }
+        
+        /* লোডিং স্টেট */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #dc2626;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* স্ক্রলবার স্টাইল */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        /* ট্যাব স্টাইল */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background: white;
+            color: #dc2626;
+            border-bottom: 2px solid #dc2626;
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: #cbd5e0;
+        }
+        
+        /* কার্ড স্টাইল */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-color: #cbd5e0;
+        }
+        
+        .card-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        /* রেসপন্সিভ টেবিল */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        @media (max-width: 768px) {
+            .data-table {
+                font-size: 14px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 12px 8px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+        }
+        
+        /* টুলটিপ */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #2d3748;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* নোটিফিকেশন */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1001;
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .notification.success {
+            background: #48bb78;
+        }
+        
+        .notification.error {
+            background: #f56565;
+        }
+        
+        .notification.warning {
+            background: #ed8936;
+        }
+        
+        .notification.info {
+            background: #4299e1;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+        
+        /* কালার পিকার */
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-picker:hover {
+            transform: scale(1.1);
+            border-color: #cbd5e0;
+        }
+        
+        .color-picker.active {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+        }
+        
+        /* ড্রপডাউন */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 100;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            color: #4a5568;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #f7fafc;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f7fafc;
+            color: #2d3748;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* ব্যাজ */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .badge-danger {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .badge-warning {
+            background: #feebc8;
+            color: #744210;
+        }
+        
+        .badge-info {
+            background: #bee3f8;
+            color: #2a4365;
         }
     </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Login Page -->
+    <!-- লগইন পৃষ্ঠা -->
     <div id="login-page" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-blue-50">
         <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
             <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                    <i class="fas fa-crown"></i>
+                </div>
                 <h1 class="text-3xl font-bold text-red-700 mb-2">ROYAL TRUST BD</h1>
                 <p class="text-gray-600">এডমিন প্যানেল লগইন</p>
             </div>
             
             <form id="login-form" class="space-y-6">
                 <div>
-                    <label class="block text-gray-700 mb-2">ব্যবহারকারীর নাম</label>
+                    <label class="block text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2 text-red-600"></i>
+                        ব্যবহারকারীর নাম
+                    </label>
                     <input type="text" id="username" required 
                            class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                            placeholder="ব্যবহারকারীর নাম লিখুন"
@@ -135,134 +690,144 @@
                 </div>
                 
                 <div>
-                    <label class="block text-gray-700 mb-2">পাসওয়ার্ড</label>
+                    <label class="block text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2 text-red-600"></i>
+                        পাসওয়ার্ড
+                    </label>
                     <input type="password" id="password" required 
                            class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                            placeholder="পাসওয়ার্ড লিখুন"
                            value="admin123">
                 </div>
                 
-                <div id="login-error" class="text-red-600 text-center hidden">
-                    <i class="fas fa-exclamation-circle mr-2"></i>ভুল ব্যবহারকারীর নাম বা পাসওয়ার্ড!
+                <div id="login-error" class="text-red-600 text-center hidden bg-red-50 p-4 rounded-lg">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="login-error-text">ভুল ব্যবহারকারীর নাম বা পাসওয়ার্ড!</span>
                 </div>
                 
-                <button type="submit" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-4 rounded-lg transition duration-300">
-                    <i class="fas fa-sign-in-alt mr-2"></i>লগইন করুন
+                <button type="submit" id="login-btn" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-4 rounded-lg transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    <span>লগইন করুন</span>
                 </button>
             </form>
             
-            <div class="mt-6 text-center text-gray-600 text-sm">
-                <p><i class="fas fa-server mr-2"></i>ব্যাকএন্ড API:</p>
-                <p id="api-url" class="font-mono text-blue-600 mt-1">https://royal-trustbd.onrender.com</p>
-                <p class="mt-2"><i class="fas fa-info-circle mr-2"></i>ডিফল্ট: admin / admin123</p>
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="text-center text-gray-600 text-sm">
+                    <p class="mb-2">
+                        <i class="fas fa-server mr-2 text-blue-600"></i>
+                        ব্যাকএন্ড API:
+                    </p>
+                    <p id="api-url" class="font-mono text-blue-600 bg-blue-50 p-2 rounded text-xs truncate">https://royal-trustbd.onrender.com</p>
+                    <p class="mt-4 text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        ডিফল্ট লগইন: admin / admin123
+                    </p>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Main Admin Panel (Hidden by default) -->
-    <div id="admin-panel" class="hidden">
-        <!-- Mobile Header -->
-        <div class="md:hidden bg-white shadow p-4 flex justify-between items-center sticky top-0 z-30">
-            <button id="mobile-menu-btn" class="text-gray-700 p-2">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-            <h1 class="text-xl font-bold text-red-700">ROYAL TRUST BD</h1>
-            <div class="w-8"></div>
-        </div>
-        
-        <!-- Overlay for mobile -->
-        <div id="overlay" class="overlay"></div>
-        
-        <!-- Sidebar -->
-        <div class="sidebar md:w-64 bg-gray-900 text-white h-screen fixed md:relative z-40">
-            <div class="p-6 border-b border-gray-800">
-                <h2 class="text-2xl font-bold">ROYAL TRUST BD</h2>
-                <p class="text-gray-400 text-sm mt-1">এডমিন প্যানেল</p>
+    <!-- ডেস্কটপ লেআউট -->
+    <div id="admin-panel-desktop" class="desktop-layout admin-container hidden">
+        <!-- ডেস্কটপ সাইডবার -->
+        <div class="sidebar-desktop">
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">ROYAL TRUST BD</h2>
+                        <p class="text-gray-400 text-sm">এডমিন প্যানেল</p>
+                    </div>
+                </div>
             </div>
             
             <nav class="p-4">
-                <ul class="space-y-2">
-                    <li>
+                <div class="mb-6">
+                    <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-3 px-4">মূল মেনু</h3>
+                    <div class="space-y-1">
                         <a href="#dashboard" class="nav-item active">
-                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <i class="fas fa-tachometer-alt"></i>
                             ড্যাশবোর্ড
                         </a>
-                    </li>
-                    <li>
                         <a href="#products" class="nav-item">
-                            <i class="fas fa-tshirt mr-3"></i>
+                            <i class="fas fa-tshirt"></i>
                             পণ্য ব্যবস্থাপনা
                         </a>
-                    </li>
-                    <li>
                         <a href="#orders" class="nav-item">
-                            <i class="fas fa-shopping-cart mr-3"></i>
+                            <i class="fas fa-shopping-cart"></i>
                             অর্ডার ব্যবস্থাপনা
                         </a>
-                    </li>
-                    <li>
                         <a href="#reviews" class="nav-item">
-                            <i class="fas fa-star mr-3"></i>
+                            <i class="fas fa-star"></i>
                             রিভিউ ব্যবস্থাপনা
                         </a>
-                    </li>
-                    <li>
                         <a href="#sliders" class="nav-item">
-                            <i class="fas fa-images mr-3"></i>
+                            <i class="fas fa-images"></i>
                             স্লাইডার ব্যবস্থাপনা
                         </a>
-                    </li>
-                    <li>
                         <a href="#settings" class="nav-item">
-                            <i class="fas fa-cog mr-3"></i>
+                            <i class="fas fa-cog"></i>
                             ওয়েবসাইট সেটিংস
                         </a>
-                    </li>
-                    <li>
-                        <button id="logout-btn" class="nav-item w-full text-left">
-                            <i class="fas fa-sign-out-alt mr-3"></i>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-3 px-4">অন্যান্য</h3>
+                    <div class="space-y-1">
+                        <button id="logout-btn-desktop" class="nav-item w-full text-left">
+                            <i class="fas fa-sign-out-alt"></i>
                             লগআউট
                         </button>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </nav>
             
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800 bg-gray-900">
-                <div class="text-center text-gray-400 text-sm">
-                    <p><i class="fas fa-user mr-1"></i>লগইন করেছেন:</p>
-                    <p id="logged-in-user" class="font-bold text-white mt-1">-</p>
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700 bg-gray-800">
+                <div class="text-center">
+                    <p class="text-gray-400 text-sm mb-1">লগইন করেছেন:</p>
+                    <p id="logged-in-user-desktop" class="font-bold text-white">-</p>
+                    <p class="text-gray-400 text-xs mt-2" id="current-time-desktop">-</p>
                 </div>
             </div>
         </div>
         
-        <!-- Main Content -->
-        <div class="md:ml-64">
-            <!-- Header -->
-            <header class="bg-white shadow p-4 hidden md:block sticky top-0 z-20">
-                <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold text-gray-800" id="page-title">ড্যাশবোর্ড</h1>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <span class="text-gray-600 text-sm block" id="current-date"></span>
-                            <span class="text-gray-800 font-medium" id="current-time"></span>
+        <!-- ডেস্কটপ মূল কন্টেন্ট -->
+        <div class="main-content-desktop">
+            <!-- হেডার -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800" id="page-title-desktop">ড্যাশবোর্ড</h1>
+                            <p class="text-gray-600 text-sm mt-1" id="page-subtitle-desktop">সর্বশেষ আপডেট এবং পরিসংখ্যান</p>
                         </div>
-                        <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
-                            <i class="fas fa-user"></i>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right hidden md:block">
+                                <p class="text-gray-600 text-sm" id="current-date-desktop"></p>
+                                <p class="text-gray-800 font-medium" id="current-time-desktop-large"></p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold cursor-pointer hover:bg-red-700 transition duration-300">
+                                <i class="fas fa-user"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </header>
             
-            <!-- Content Area -->
-            <main class="p-4 md:p-6 min-h-screen">
-                <!-- Dashboard Page -->
-                <div id="dashboard-page" class="page-content">
+            <!-- কন্টেন্ট এরিয়া -->
+            <main class="p-6">
+                <!-- ড্যাশবোর্ড পৃষ্ঠা -->
+                <div id="dashboard-page-desktop" class="page-content-desktop">
+                    <!-- পরিসংখ্যান কার্ড -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="stat-card bg-white rounded-xl shadow p-6">
+                        <div class="stat-card bg-white rounded-xl p-6">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-500">মোট অর্ডার</p>
-                                    <p class="text-3xl font-bold mt-2" id="total-orders">0</p>
+                                    <p class="text-gray-500 text-sm">মোট অর্ডার</p>
+                                    <p class="text-3xl font-bold mt-2" id="total-orders-desktop">0</p>
                                 </div>
                                 <div class="text-red-600 bg-red-50 p-3 rounded-lg">
                                     <i class="fas fa-shopping-cart text-2xl"></i>
@@ -271,16 +836,16 @@
                             <div class="mt-4 pt-4 border-t border-gray-100">
                                 <p class="text-yellow-600 text-sm">
                                     <i class="fas fa-clock mr-1"></i>
-                                    <span id="pending-orders">0</span> পেন্ডিং
+                                    <span id="pending-orders-desktop">0</span> পেন্ডিং
                                 </p>
                             </div>
                         </div>
                         
-                        <div class="stat-card bg-white rounded-xl shadow p-6">
+                        <div class="stat-card bg-white rounded-xl p-6">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-500">মোট আয়</p>
-                                    <p class="text-3xl font-bold mt-2" id="total-revenue">0</p>
+                                    <p class="text-gray-500 text-sm">মোট আয়</p>
+                                    <p class="text-3xl font-bold mt-2" id="total-revenue-desktop">0</p>
                                     <p class="text-gray-500 text-sm">টাকা</p>
                                 </div>
                                 <div class="text-green-600 bg-green-50 p-3 rounded-lg">
@@ -290,16 +855,16 @@
                             <div class="mt-4 pt-4 border-t border-gray-100">
                                 <p class="text-green-600 text-sm">
                                     <i class="fas fa-check-circle mr-1"></i>
-                                    <span id="delivered-orders">0</span> ডেলিভার্ড
+                                    <span id="delivered-orders-desktop">0</span> ডেলিভার্ড
                                 </p>
                             </div>
                         </div>
                         
-                        <div class="stat-card bg-white rounded-xl shadow p-6">
+                        <div class="stat-card bg-white rounded-xl p-6">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-500">মোট পণ্য</p>
-                                    <p class="text-3xl font-bold mt-2" id="total-products">0</p>
+                                    <p class="text-gray-500 text-sm">মোট পণ্য</p>
+                                    <p class="text-3xl font-bold mt-2" id="total-products-desktop">0</p>
                                 </div>
                                 <div class="text-blue-600 bg-blue-50 p-3 rounded-lg">
                                     <i class="fas fa-tshirt text-2xl"></i>
@@ -313,11 +878,11 @@
                             </div>
                         </div>
                         
-                        <div class="stat-card bg-white rounded-xl shadow p-6">
+                        <div class="stat-card bg-white rounded-xl p-6">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-500">মোট রিভিউ</p>
-                                    <p class="text-3xl font-bold mt-2" id="total-reviews">0</p>
+                                    <p class="text-gray-500 text-sm">মোট রিভিউ</p>
+                                    <p class="text-3xl font-bold mt-2" id="total-reviews-desktop">0</p>
                                 </div>
                                 <div class="text-yellow-600 bg-yellow-50 p-3 rounded-lg">
                                     <i class="fas fa-star text-2xl"></i>
@@ -326,38 +891,44 @@
                             <div class="mt-4 pt-4 border-t border-gray-100">
                                 <p class="text-red-600 text-sm">
                                     <i class="fas fa-hourglass-half mr-1"></i>
-                                    <span id="pending-reviews">0</span> পেন্ডিং
+                                    <span id="pending-reviews-desktop">0</span> পেন্ডিং
                                 </p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Recent Orders -->
-                    <div class="bg-white rounded-xl shadow mb-8">
-                        <div class="p-6 border-b border-gray-100">
-                            <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-clock mr-3 text-yellow-500"></i>
-                                সাম্প্রতিক অর্ডারসমূহ
-                            </h2>
+                    <!-- সাম্প্রতিক অর্ডার -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-clock mr-3 text-yellow-500"></i>
+                                    সাম্প্রতিক অর্ডারসমূহ
+                                </h2>
+                                <a href="#orders" class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center">
+                                    <span>সব অর্ডার দেখুন</span>
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
                         </div>
                         <div class="p-6">
-                            <div class="overflow-x-auto">
-                                <table class="w-full min-w-full">
+                            <div class="table-responsive">
+                                <table class="data-table">
                                     <thead>
-                                        <tr class="bg-gray-50">
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">অর্ডার আইডি</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">গ্রাহকের নাম</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">পণ্য</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">মোট</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">স্ট্যাটাস</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">তারিখ</th>
+                                        <tr>
+                                            <th>অর্ডার আইডি</th>
+                                            <th>গ্রাহকের নাম</th>
+                                            <th>পণ্য</th>
+                                            <th>মোট</th>
+                                            <th>স্ট্যাটাস</th>
+                                            <th>তারিখ</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="recent-orders-table">
+                                    <tbody id="recent-orders-table-desktop">
                                         <tr>
                                             <td colspan="6" class="p-8 text-center text-gray-500">
                                                 <div class="flex justify-center items-center space-x-2">
-                                                    <i class="fas fa-spinner fa-spin text-xl"></i>
+                                                    <div class="loading"></div>
                                                     <span>ডেটা লোড হচ্ছে...</span>
                                                 </div>
                                             </td>
@@ -367,40 +938,131 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Products Management Page -->
-                <div id="products-page" class="page-content hidden">
-                    <div class="bg-white rounded-xl shadow mb-8">
-                        <div class="p-6 border-b border-gray-100">
-                            <div class="flex justify-between items-center">
-                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                    <i class="fas fa-tshirt mr-3 text-blue-500"></i>
-                                    পণ্য ব্যবস্থাপনা
-                                </h2>
-                                <button id="add-product-btn" class="bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-5 rounded-lg flex items-center transition duration-300">
-                                    <i class="fas fa-plus mr-2"></i>নতুন পণ্য
+                    
+                    <!-- দ্রুত কাজ -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-bolt mr-2 text-green-500"></i>
+                                দ্রুত কাজ
+                            </h3>
+                            <div class="space-y-3">
+                                <button onclick="showAddProductModal()" class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-300 flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mr-3">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">নতুন পণ্য যোগ করুন</p>
+                                            <p class="text-gray-500 text-sm">পণ্য তালিকায় নতুন আইটেম যোগ করুন</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </button>
+                                
+                                <button onclick="loadOrders(); switchPage('orders')" class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-300 flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600 mr-3">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">নতুন অর্ডার চেক করুন</p>
+                                            <p class="text-gray-500 text-sm">পেন্ডিং অর্ডারগুলো দেখুন</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </button>
+                                
+                                <button onclick="loadReviews(); switchPage('reviews')" class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-300 flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mr-3">
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">নতুন রিভিউ চেক করুন</p>
+                                            <p class="text-gray-500 text-sm">পেন্ডিং রিভিউগুলো এপ্রুভ করুন</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
                                 </button>
                             </div>
                         </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-chart-line mr-2 text-red-500"></i>
+                                সংক্ষিপ্ত তথ্য
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-gray-500 text-sm mb-1">সর্বোচ্চ বিক্রিত পণ্য</p>
+                                    <p class="font-medium" id="top-product-desktop">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm mb-1">গড় অর্ডার মূল্য</p>
+                                    <p class="font-medium" id="avg-order-value-desktop">0 টাকা</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm mb-1">মাসিক আয়</p>
+                                    <p class="font-medium" id="monthly-revenue-desktop">0 টাকা</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm mb-1">অর্ডার রূপান্তর হার</p>
+                                    <div class="flex items-center">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-green-600 h-2 rounded-full" id="conversion-rate-bar-desktop" style="width: 0%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium" id="conversion-rate-desktop">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- পণ্য ব্যবস্থাপনা পৃষ্ঠা -->
+                <div id="products-page-desktop" class="page-content-desktop hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <i class="fas fa-tshirt mr-3 text-blue-500"></i>
+                                        পণ্য ব্যবস্থাপনা
+                                    </h2>
+                                    <p class="text-gray-600 text-sm mt-1">আপনার পণ্য তালিকা পরিচালনা করুন</p>
+                                </div>
+                                <div class="flex space-x-3">
+                                    <button onclick="loadProducts()" class="btn btn-outline flex items-center">
+                                        <i class="fas fa-sync mr-2"></i>
+                                        রিফ্রেশ
+                                    </button>
+                                    <button onclick="showAddProductModal()" class="btn btn-primary flex items-center">
+                                        <i class="fas fa-plus mr-2"></i>
+                                        নতুন পণ্য
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="p-6">
-                            <div class="overflow-x-auto">
-                                <table class="w-full min-w-full">
+                            <div class="table-responsive">
+                                <table class="data-table">
                                     <thead>
-                                        <tr class="bg-gray-50">
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">পণ্যের নাম</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">দাম</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">ছাড়</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">সাইজ</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">স্ট্যাটাস</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">ক্রিয়া</th>
+                                        <tr>
+                                            <th>পণ্যের নাম</th>
+                                            <th>ছবি</th>
+                                            <th>দাম</th>
+                                            <th>ছাড়</th>
+                                            <th>সাইজ</th>
+                                            <th>স্ট্যাটাস</th>
+                                            <th>ক্রিয়া</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="products-table">
+                                    <tbody id="products-table-desktop">
                                         <tr>
-                                            <td colspan="6" class="p-8 text-center text-gray-500">
+                                            <td colspan="7" class="p-8 text-center text-gray-500">
                                                 <div class="flex justify-center items-center space-x-2">
-                                                    <i class="fas fa-spinner fa-spin text-xl"></i>
+                                                    <div class="loading"></div>
                                                     <span>ডেটা লোড হচ্ছে...</span>
                                                 </div>
                                             </td>
@@ -412,17 +1074,20 @@
                     </div>
                 </div>
                 
-                <!-- Orders Management Page -->
-                <div id="orders-page" class="page-content hidden">
-                    <div class="bg-white rounded-xl shadow mb-8">
-                        <div class="p-6 border-b border-gray-100">
+                <!-- অর্ডার ব্যবস্থাপনা পৃষ্ঠা -->
+                <div id="orders-page-desktop" class="page-content-desktop hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <div class="p-6 border-b border-gray-200">
                             <div class="flex justify-between items-center">
-                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                    <i class="fas fa-shopping-cart mr-3 text-green-500"></i>
-                                    অর্ডার ব্যবস্থাপনা
-                                </h2>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <i class="fas fa-shopping-cart mr-3 text-green-500"></i>
+                                        অর্ডার ব্যবস্থাপনা
+                                    </h2>
+                                    <p class="text-gray-600 text-sm mt-1">গ্রাহকদের অর্ডার তালিকা এবং স্ট্যাটাস</p>
+                                </div>
                                 <div class="flex space-x-3">
-                                    <select id="order-filter" class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                    <select id="order-filter-desktop" class="form-input w-48">
                                         <option value="">সব অর্ডার</option>
                                         <option value="pending">পেন্ডিং</option>
                                         <option value="confirmed">কনফার্মড</option>
@@ -431,32 +1096,33 @@
                                         <option value="delivered">ডেলিভার্ড</option>
                                         <option value="cancelled">ক্যান্সেলড</option>
                                     </select>
-                                    <button onclick="loadOrders()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 rounded-lg border border-gray-300">
-                                        <i class="fas fa-sync"></i>
+                                    <button onclick="loadOrders()" class="btn btn-outline flex items-center">
+                                        <i class="fas fa-sync mr-2"></i>
+                                        রিফ্রেশ
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div class="p-6">
-                            <div class="overflow-x-auto">
-                                <table class="w-full min-w-full">
+                            <div class="table-responsive">
+                                <table class="data-table">
                                     <thead>
-                                        <tr class="bg-gray-50">
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">অর্ডার আইডি</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">গ্রাহক</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">পণ্য</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">পরিমাণ</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">মোট</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">স্ট্যাটাস</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">তারিখ</th>
-                                            <th class="p-3 text-left text-sm font-medium text-gray-700">ক্রিয়া</th>
+                                        <tr>
+                                            <th>অর্ডার আইডি</th>
+                                            <th>গ্রাহক</th>
+                                            <th>পণ্য</th>
+                                            <th>পরিমাণ</th>
+                                            <th>মোট</th>
+                                            <th>স্ট্যাটাস</th>
+                                            <th>তারিখ</th>
+                                            <th>ক্রিয়া</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="orders-table">
+                                    <tbody id="orders-table-desktop">
                                         <tr>
                                             <td colspan="8" class="p-8 text-center text-gray-500">
                                                 <div class="flex justify-center items-center space-x-2">
-                                                    <i class="fas fa-spinner fa-spin text-xl"></i>
+                                                    <div class="loading"></div>
                                                     <span>ডেটা লোড হচ্ছে...</span>
                                                 </div>
                                             </td>
@@ -468,32 +1134,36 @@
                     </div>
                 </div>
                 
-                <!-- Reviews Management Page -->
-                <div id="reviews-page" class="page-content hidden">
-                    <div class="bg-white rounded-xl shadow mb-8">
-                        <div class="p-6 border-b border-gray-100">
+                <!-- রিভিউ ব্যবস্থাপনা পৃষ্ঠা -->
+                <div id="reviews-page-desktop" class="page-content-desktop hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <div class="p-6 border-b border-gray-200">
                             <div class="flex justify-between items-center">
-                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                    <i class="fas fa-star mr-3 text-yellow-500"></i>
-                                    রিভিউ ব্যবস্থাপনা
-                                </h2>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <i class="fas fa-star mr-3 text-yellow-500"></i>
+                                        রিভিউ ব্যবস্থাপনা
+                                    </h2>
+                                    <p class="text-gray-600 text-sm mt-1">গ্রাহকদের রিভিউ এবং রেটিং</p>
+                                </div>
                                 <div class="flex space-x-3">
-                                    <select id="review-filter" class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                    <select id="review-filter-desktop" class="form-input w-48">
                                         <option value="">সব রিভিউ</option>
                                         <option value="approved">এপ্রুভড</option>
                                         <option value="pending">পেন্ডিং</option>
                                     </select>
-                                    <button onclick="loadReviews()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 rounded-lg border border-gray-300">
-                                        <i class="fas fa-sync"></i>
+                                    <button onclick="loadReviews()" class="btn btn-outline flex items-center">
+                                        <i class="fas fa-sync mr-2"></i>
+                                        রিফ্রেশ
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div class="p-6">
-                            <div id="reviews-list">
+                            <div id="reviews-list-desktop">
                                 <div class="text-center p-8 text-gray-500">
                                     <div class="flex justify-center items-center space-x-2">
-                                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                                        <div class="loading"></div>
                                         <span>ডেটা লোড হচ্ছে...</span>
                                     </div>
                                 </div>
@@ -502,25 +1172,35 @@
                     </div>
                 </div>
                 
-                <!-- Sliders Management Page -->
-                <div id="sliders-page" class="page-content hidden">
-                    <div class="bg-white rounded-xl shadow mb-8">
-                        <div class="p-6 border-b border-gray-100">
+                <!-- স্লাইডার ব্যবস্থাপনা পৃষ্ঠা -->
+                <div id="sliders-page-desktop" class="page-content-desktop hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <div class="p-6 border-b border-gray-200">
                             <div class="flex justify-between items-center">
-                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                    <i class="fas fa-images mr-3 text-purple-500"></i>
-                                    স্লাইডার ব্যবস্থাপনা
-                                </h2>
-                                <button onclick="loadSliders()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 rounded-lg border border-gray-300">
-                                    <i class="fas fa-sync"></i>
-                                </button>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <i class="fas fa-images mr-3 text-purple-500"></i>
+                                        স্লাইডার ব্যবস্থাপনা
+                                    </h2>
+                                    <p class="text-gray-600 text-sm mt-1">হোমপেজ স্লাইডার ইমেজ এবং কন্টেন্ট</p>
+                                </div>
+                                <div class="flex space-x-3">
+                                    <button onclick="loadSliders()" class="btn btn-outline flex items-center">
+                                        <i class="fas fa-sync mr-2"></i>
+                                        রিফ্রেশ
+                                    </button>
+                                    <button onclick="showAddSliderModal()" class="btn btn-primary flex items-center">
+                                        <i class="fas fa-plus mr-2"></i>
+                                        নতুন স্লাইডার
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="p-6">
-                            <div id="sliders-container" class="space-y-6">
+                            <div id="sliders-container-desktop" class="space-y-6">
                                 <div class="text-center p-8 text-gray-500">
                                     <div class="flex justify-center items-center space-x-2">
-                                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                                        <div class="loading"></div>
                                         <span>ডেটা লোড হচ্ছে...</span>
                                     </div>
                                 </div>
@@ -529,82 +1209,88 @@
                     </div>
                 </div>
                 
-                <!-- Settings Page -->
-                <div id="settings-page" class="page-content hidden">
-                    <div class="bg-white rounded-xl shadow mb-8">
-                        <div class="p-6 border-b border-gray-100">
-                            <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-cog mr-3 text-gray-500"></i>
-                                ওয়েবসাইট সেটিংস
-                            </h2>
+                <!-- সেটিংস পৃষ্ঠা -->
+                <div id="settings-page-desktop" class="page-content-desktop hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <i class="fas fa-cog mr-3 text-gray-500"></i>
+                                        ওয়েবসাইট সেটিংস
+                                    </h2>
+                                    <p class="text-gray-600 text-sm mt-1">ওয়েবসাইটের সাধারণ সেটিংস কনফিগারেশন</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="p-6">
-                            <form id="settings-form" class="space-y-6">
+                            <form id="settings-form-desktop" class="space-y-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-gray-700 mb-2">
+                                    <div class="form-group">
+                                        <label class="form-label">
                                             <i class="fas fa-whatsapp mr-2 text-green-500"></i>
                                             ওয়াটসঅ্যাপ নাম্বার
                                         </label>
-                                        <input type="text" id="whatsapp-number" 
-                                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        <input type="text" id="whatsapp-number-desktop" 
+                                               class="form-input"
                                                placeholder="019XXXXXXXX">
                                     </div>
-                                    <div>
-                                        <label class="block text-gray-700 mb-2">
+                                    <div class="form-group">
+                                        <label class="form-label">
                                             <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
                                             ফোন নাম্বার
                                         </label>
-                                        <input type="text" id="phone-number" 
-                                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        <input type="text" id="phone-number-desktop" 
+                                               class="form-input"
                                                placeholder="019XXXXXXXX">
                                     </div>
                                 </div>
                                 
-                                <div>
-                                    <label class="block text-gray-700 mb-2">
+                                <div class="form-group">
+                                    <label class="form-label">
                                         <i class="fas fa-file-alt mr-2 text-gray-500"></i>
                                         ফুটার টেক্সট
                                     </label>
-                                    <textarea id="footer-text" rows="3"
-                                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                    <textarea id="footer-text-desktop" rows="3"
+                                              class="form-textarea"
                                               placeholder="প্রিমিয়াম পাঞ্জাবির নির্ভরযোগ্য ঠিকানা"></textarea>
                                 </div>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-gray-700 mb-2">
+                                    <div class="form-group">
+                                        <label class="form-label">
                                             <i class="fas fa-truck mr-2 text-green-500"></i>
                                             ঢাকার ভিতরে ডেলিভারি চার্জ
                                         </label>
-                                        <input type="number" id="delivery-inside" 
-                                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        <input type="number" id="delivery-inside-desktop" 
+                                               class="form-input"
                                                placeholder="60">
                                     </div>
-                                    <div>
-                                        <label class="block text-gray-700 mb-2">
+                                    <div class="form-group">
+                                        <label class="form-label">
                                             <i class="fas fa-truck-moving mr-2 text-red-500"></i>
                                             ঢাকার বাইরে ডেলিভারি চার্জ
                                         </label>
-                                        <input type="number" id="delivery-outside" 
-                                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        <input type="number" id="delivery-outside-desktop" 
+                                               class="form-input"
                                                placeholder="160">
                                     </div>
                                 </div>
                                 
-                                <div>
-                                    <label class="block text-gray-700 mb-2">
+                                <div class="form-group">
+                                    <label class="form-label">
                                         <i class="fas fa-clock mr-2 text-yellow-500"></i>
                                         সার্ভিস সময়
                                     </label>
-                                    <input type="text" id="service-hours" 
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                    <input type="text" id="service-hours-desktop" 
+                                           class="form-input"
                                            placeholder="সকাল ৯টা - রাত ১০টা">
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="submit" class="bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-6 rounded-lg flex items-center">
-                                        <i class="fas fa-save mr-2"></i>সেটিংস সেভ করুন
+                                    <button type="submit" class="btn btn-primary flex items-center">
+                                        <i class="fas fa-save mr-2"></i>
+                                        সেটিংস সেভ করুন
                                     </button>
                                     <p class="text-gray-500 text-sm mt-3">
                                         <i class="fas fa-info-circle mr-1"></i>
@@ -619,7 +1305,85 @@
         </div>
     </div>
     
-    <!-- Product Modal -->
+    <!-- মোবাইল লেআউট -->
+    <div id="admin-panel-mobile" class="mobile-layout hidden">
+        <!-- মোবাইল হেডার -->
+        <div class="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-30">
+            <button id="mobile-menu-btn" class="text-gray-700 p-2">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h1 class="text-xl font-bold text-red-700">ROYAL TRUST BD</h1>
+            <div class="w-8"></div>
+        </div>
+        
+        <!-- মোবাইল সাইডবার -->
+        <div class="sidebar-mobile" id="mobile-sidebar">
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">ROYAL TRUST BD</h2>
+                        <p class="text-gray-400 text-sm">এডমিন প্যানেল</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="p-4">
+                <div class="space-y-1">
+                    <a href="#dashboard" class="nav-item active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        ড্যাশবোর্ড
+                    </a>
+                    <a href="#products" class="nav-item">
+                        <i class="fas fa-tshirt"></i>
+                        পণ্য ব্যবস্থাপনা
+                    </a>
+                    <a href="#orders" class="nav-item">
+                        <i class="fas fa-shopping-cart"></i>
+                        অর্ডার ব্যবস্থাপনা
+                    </a>
+                    <a href="#reviews" class="nav-item">
+                        <i class="fas fa-star"></i>
+                        রিভিউ ব্যবস্থাপনা
+                    </a>
+                    <a href="#sliders" class="nav-item">
+                        <i class="fas fa-images"></i>
+                        স্লাইডার ব্যবস্থাপনা
+                    </a>
+                    <a href="#settings" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        ওয়েবসাইট সেটিংস
+                    </a>
+                    <button id="logout-btn-mobile" class="nav-item w-full text-left">
+                        <i class="fas fa-sign-out-alt"></i>
+                        লগআউট
+                    </button>
+                </div>
+            </nav>
+            
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
+                <div class="text-center text-gray-400 text-sm">
+                    <p>লগইন করেছেন:</p>
+                    <p id="logged-in-user-mobile" class="font-bold text-white mt-1">-</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- মোবাইল ওভারলে -->
+        <div id="mobile-overlay" class="overlay"></div>
+        
+        <!-- মোবাইল মূল কন্টেন্ট -->
+        <main class="p-4">
+            <!-- মোবাইল পেজ কন্টেন্ট গুলো এখানে যোগ করতে হবে -->
+            <div id="mobile-page-content">
+                <!-- ডাইনামিক কন্টেন্ট লোড হবে -->
+            </div>
+        </main>
+    </div>
+    
+    <!-- পণ্য মডাল -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
             <div class="p-6 border-b border-gray-200">
@@ -629,59 +1393,51 @@
                 <input type="hidden" id="product-id">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-gray-700 mb-2">পণ্যের নাম *</label>
-                        <input type="text" id="product-name" required 
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <div class="form-group">
+                        <label class="form-label">পণ্যের নাম *</label>
+                        <input type="text" id="product-name" required class="form-input">
                     </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">বর্ণনা *</label>
-                        <textarea id="product-description" required rows="3"
-                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
+                    <div class="form-group">
+                        <label class="form-label">বর্ণনা *</label>
+                        <textarea id="product-description" required rows="3" class="form-textarea"></textarea>
                     </div>
                 </div>
                 
-                <div>
-                    <label class="block text-gray-700 mb-2">রংসমূহ (প্রতিটি রং এর জন্য নাম, কোড এবং ইমেজ URL)</label>
-                    <div id="colors-container" class="space-y-4">
-                        <!-- Colors will be added here -->
+                <!-- কালার ম্যানেজমেন্ট -->
+                <div class="form-group">
+                    <label class="form-label mb-4">রংসমূহ</label>
+                    <div id="colors-container" class="space-y-6">
+                        <!-- কালার ফিল্ডস এখানে যোগ হবে -->
                     </div>
-                    <button type="button" id="add-color-btn" class="mt-3 text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="fas fa-plus-circle mr-2"></i>নতুন রং যোগ করুন
+                    <button type="button" id="add-color-btn" class="mt-4 btn btn-outline w-full flex items-center justify-center">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        নতুন রং যোগ করুন
                     </button>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-gray-700 mb-2">সাইজ *</label>
-                        <input type="text" id="product-size" required 
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               placeholder="S, M, L, XL, XXL">
+                    <div class="form-group">
+                        <label class="form-label">সাইজ *</label>
+                        <input type="text" id="product-size" required class="form-input" placeholder="S, M, L, XL, XXL">
                     </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">নিয়মিত দাম *</label>
-                        <input type="number" id="regular-price" required 
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               min="0">
+                    <div class="form-group">
+                        <label class="form-label">নিয়মিত দাম *</label>
+                        <input type="number" id="regular-price" required class="form-input" min="0" step="1">
                     </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">অফার দাম *</label>
-                        <input type="number" id="offer-price" required 
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               min="0">
+                    <div class="form-group">
+                        <label class="form-label">অফার দাম *</label>
+                        <input type="number" id="offer-price" required class="form-input" min="0" step="1">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-gray-700 mb-2">ছাড়ের শতাংশ</label>
-                        <input type="number" id="offer-percentage" 
-                               class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"
-                               readonly>
+                    <div class="form-group">
+                        <label class="form-label">ছাড়ের শতাংশ</label>
+                        <input type="number" id="offer-percentage" class="form-input bg-gray-50" readonly>
                     </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">স্ট্যাটাস</label>
-                        <select id="product-status" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <div class="form-group">
+                        <label class="form-label">স্ট্যাটাস</label>
+                        <select id="product-status" class="form-input">
                             <option value="true">সক্রিয়</option>
                             <option value="false">নিষ্ক্রিয়</option>
                         </select>
@@ -689,20 +1445,112 @@
                 </div>
                 
                 <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                    <button type="button" id="cancel-product-btn" 
-                            class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300">
+                    <button type="button" id="cancel-product-btn" class="btn btn-outline">
                         বাতিল করুন
                     </button>
-                    <button type="submit" id="save-product-btn"
-                            class="bg-red-700 hover:bg-red-800 text-white font-bold px-6 py-3 rounded-lg transition duration-300">
-                        <i class="fas fa-save mr-2"></i>সেভ করুন
+                    <button type="submit" id="save-product-btn" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i>
+                        সেভ করুন
                     </button>
                 </div>
             </form>
         </div>
     </div>
     
-    <!-- Order Details Modal -->
+    <!-- স্লাইডার মডাল -->
+    <div id="slider-modal" class="modal">
+        <div class="modal-content max-w-3xl">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold" id="slider-modal-title">নতুন স্লাইডার যোগ করুন</h3>
+            </div>
+            <form id="slider-form" class="p-6 space-y-6">
+                <input type="hidden" id="slider-id">
+                
+                <div class="form-group">
+                    <label class="form-label">স্লাইডার নম্বর *</label>
+                    <input type="number" id="slider-number" required class="form-input" min="1">
+                </div>
+                
+                <!-- ইমেজ আপলোড -->
+                <div class="form-group">
+                    <label class="form-label mb-3">স্লাইডার ইমেজ *</label>
+                    <div class="image-upload-container" id="slider-image-upload">
+                        <div class="image-upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="font-medium">ছবি আপলোড করুন</p>
+                        <p class="image-upload-text">ফাইল নির্বাচন করতে ক্লিক করুন অথবা ছবি ড্র্যাগ করুন</p>
+                        <input type="file" id="slider-image-file" accept="image/*" class="hidden" multiple>
+                        <input type="hidden" id="slider-image-base64">
+                        <img id="slider-image-preview" class="image-upload-preview">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">শিরোনাম *</label>
+                        <input type="text" id="slider-title" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">সাবটাইটেল *</label>
+                        <input type="text" id="slider-subtitle" required class="form-input">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">বর্ণনা *</label>
+                    <textarea id="slider-description" required rows="3" class="form-textarea"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">ব্যাজ টেক্সট</label>
+                        <input type="text" id="slider-badge-text" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ব্যাজ কালার</label>
+                        <select id="slider-badge-color" class="form-input">
+                            <option value="red">লাল</option>
+                            <option value="blue">নীল</option>
+                            <option value="green">সবুজ</option>
+                            <option value="yellow">হলুদ</option>
+                            <option value="purple">বেগুনী</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">স্ট্যাটাস</label>
+                        <select id="slider-status" class="form-input">
+                            <option value="true">সক্রিয়</option>
+                            <option value="false">নিষ্ক্রিয়</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">দাম</label>
+                        <input type="number" id="slider-price" class="form-input" min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">আসল দাম</label>
+                        <input type="number" id="slider-original-price" class="form-input" min="0" step="1">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancel-slider-btn" class="btn btn-outline">
+                        বাতিল করুন
+                    </button>
+                    <button type="submit" id="save-slider-btn" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i>
+                        সেভ করুন
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- অর্ডার ডিটেইলস মডাল -->
     <div id="order-modal" class="modal">
         <div class="modal-content max-w-2xl">
             <div class="p-6 border-b border-gray-200">
@@ -710,12 +1558,12 @@
             </div>
             <div class="p-6 space-y-6">
                 <div id="order-details">
-                    <!-- Order details will be loaded here -->
+                    <!-- অর্ডার ডিটেইলস এখানে লোড হবে -->
                 </div>
                 
-                <div>
-                    <label class="block text-gray-700 mb-2">স্ট্যাটাস পরিবর্তন করুন</label>
-                    <select id="order-status-select" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                <div class="form-group">
+                    <label class="form-label">স্ট্যাটাস পরিবর্তন করুন</label>
+                    <select id="order-status-select" class="form-input">
                         <option value="pending">পেন্ডিং</option>
                         <option value="confirmed">কনফার্মড</option>
                         <option value="processing">প্রসেসিং</option>
@@ -725,43 +1573,297 @@
                     </select>
                 </div>
                 
-                <div>
-                    <label class="block text-gray-700 mb-2">নোটস</label>
-                    <textarea id="order-notes" rows="3"
-                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
+                <div class="form-group">
+                    <label class="form-label">নোটস</label>
+                    <textarea id="order-notes" rows="3" class="form-textarea"></textarea>
                 </div>
                 
                 <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                    <button type="button" id="cancel-order-btn" 
-                            class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300">
+                    <button type="button" id="cancel-order-btn" class="btn btn-outline">
                         বন্ধ করুন
                     </button>
-                    <button type="button" id="update-order-btn" 
-                            class="bg-red-700 hover:bg-red-800 text-white font-bold px-6 py-3 rounded-lg transition duration-300">
-                        <i class="fas fa-sync mr-2"></i>স্ট্যাটাস আপডেট
+                    <button type="button" id="update-order-btn" class="btn btn-primary">
+                        <i class="fas fa-sync mr-2"></i>
+                        স্ট্যাটাস আপডেট
                     </button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- ইমেজ গ্যালারি মডাল -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content max-w-4xl">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold">ইমেজ গ্যালারি</h3>
+                <p class="text-gray-600 text-sm mt-1">ছবি নির্বাচন করুন অথবা নতুন ছবি আপলোড করুন</p>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <div class="image-upload-container" id="gallery-upload-area">
+                        <div class="image-upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="font-medium">ছবি আপলোড করুন</p>
+                        <p class="image-upload-text">এক বা একাধিক ছবি নির্বাচন করুন</p>
+                        <input type="file" id="gallery-file-input" accept="image/*" class="hidden" multiple>
+                    </div>
+                    <div id="gallery-upload-preview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
+                        <!-- আপলোড প্রিভিউ এখানে দেখাবে -->
+                    </div>
+                </div>
+                
+                <div id="gallery-images" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- গ্যালারি ইমেজগুলো এখানে লোড হবে -->
+                    <div class="text-center p-8 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-4"></i>
+                        <p>গ্যালারি লোড হচ্ছে...</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6">
+                    <button type="button" id="cancel-gallery-btn" class="btn btn-outline">
+                        বন্ধ করুন
+                    </button>
+                    <button type="button" id="select-gallery-image-btn" class="btn btn-primary hidden">
+                        <i class="fas fa-check mr-2"></i>
+                        নির্বাচন করুন
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- নোটিফিকেশন কন্টেইনার -->
+    <div id="notification-container"></div>
 
-    <!-- JavaScript -->
+    <!-- জাভাস্ক্রিপ্ট -->
     <script>
-        // Configuration
-        const API_BASE_URL = 'https://royal-trustbd.onrender.com'; // Change this to your Render backend URL
+        // কনফিগারেশন
+        const API_BASE_URL = 'https://royal-trustbd.onrender.com';
         let currentUser = null;
         let selectedOrderId = null;
+        let selectedImageFor = null;
+        let selectedGalleryImage = null;
+        let currentPage = 'dashboard';
         
-        // DOM Elements
+        // DOM এলিমেন্টস
         const loginPage = document.getElementById('login-page');
-        const adminPanel = document.getElementById('admin-panel');
+        const adminPanelDesktop = document.getElementById('admin-panel-desktop');
+        const adminPanelMobile = document.getElementById('admin-panel-mobile');
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
-        const loggedInUser = document.getElementById('logged-in-user');
         
-        // Initialize
+        // ইমেজ আপলোড ফাংশনালিটি
+        class ImageUploader {
+            constructor() {
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                // পণ্যের জন্য কালার ইমেজ আপলোড
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('color-image-upload')) {
+                        selectedImageFor = e.target.dataset.target;
+                        this.openGallery();
+                    }
+                });
+                
+                // স্লাইডার ইমেজ আপলোড
+                document.getElementById('slider-image-upload').addEventListener('click', () => {
+                    selectedImageFor = 'slider';
+                    this.openFilePicker();
+                });
+                
+                // গ্যালারি আপলোড এরিয়া
+                document.getElementById('gallery-upload-area').addEventListener('click', () => {
+                    document.getElementById('gallery-file-input').click();
+                });
+                
+                // গ্যালারি ফাইল নির্বাচন
+                document.getElementById('gallery-file-input').addEventListener('change', (e) => {
+                    this.handleMultipleFiles(e.target.files);
+                });
+            }
+            
+            openGallery() {
+                document.getElementById('gallery-modal').classList.add('active');
+                this.loadGalleryImages();
+            }
+            
+            openFilePicker() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => this.handleFileSelect(e, 'slider');
+                input.click();
+            }
+            
+            async handleFileSelect(event, type) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // ফাইল ভ্যালিডেশন
+                if (!file.type.startsWith('image/')) {
+                    this.showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    this.showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
+                    return;
+                }
+                
+                // ফাইলকে বেস৬৪ এ কনভার্ট
+                const base64 = await this.fileToBase64(file);
+                
+                if (type === 'slider') {
+                    this.previewSliderImage(base64);
+                }
+            }
+            
+            async handleMultipleFiles(files) {
+                const previewContainer = document.getElementById('gallery-upload-preview');
+                previewContainer.innerHTML = '';
+                previewContainer.classList.remove('hidden');
+                
+                for (let file of files) {
+                    if (!file.type.startsWith('image/')) continue;
+                    if (file.size > 5 * 1024 * 1024) continue;
+                    
+                    const base64 = await this.fileToBase64(file);
+                    
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'relative group';
+                    imgContainer.innerHTML = `
+                        <img src="${base64}" class="w-full h-32 object-cover rounded-lg">
+                        <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-gray-800 px-3 py-1 rounded text-sm" onclick="imageUploader.selectGalleryImage('${base64}')">
+                                নির্বাচন করুন
+                            </button>
+                        </div>
+                    `;
+                    
+                    previewContainer.appendChild(imgContainer);
+                }
+            }
+            
+            previewSliderImage(base64) {
+                const container = document.getElementById('slider-image-upload');
+                const preview = document.getElementById('slider-image-preview');
+                
+                container.classList.add('active');
+                preview.src = base64;
+                preview.classList.add('active');
+                document.getElementById('slider-image-base64').value = base64;
+            }
+            
+            selectGalleryImage(base64) {
+                selectedGalleryImage = base64;
+                document.getElementById('select-gallery-image-btn').classList.remove('hidden');
+            }
+            
+            async loadGalleryImages() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/admin/products`);
+                    const products = await response.json();
+                    
+                    const gallery = document.getElementById('gallery-images');
+                    gallery.innerHTML = '';
+                    
+                    // সমস্ত পণ্য থেকে ইমেজ সংগ্রহ
+                    const allImages = [];
+                    products.forEach(product => {
+                        if (product.colors && product.colors.length > 0) {
+                            product.colors.forEach(color => {
+                                if (color.image) {
+                                    allImages.push({
+                                        url: color.image,
+                                        product: product.name,
+                                        color: color.name
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (allImages.length === 0) {
+                        gallery.innerHTML = `
+                            <div class="col-span-4 text-center p-8 text-gray-500">
+                                <i class="fas fa-images text-2xl mb-4"></i>
+                                <p>কোনো ছবি পাওয়া যায়নি</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // ইমেজ ডিসপ্লে
+                    allImages.forEach((img, index) => {
+                        const imgElement = document.createElement('div');
+                        imgElement.className = 'relative group cursor-pointer';
+                        imgElement.innerHTML = `
+                            <img src="${img.url}" class="w-full h-32 object-cover rounded-lg">
+                            <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2">
+                                <p class="text-white text-xs text-center mb-2">${img.product}</p>
+                                <button class="bg-white text-gray-800 px-3 py-1 rounded text-sm" onclick="imageUploader.selectExistingImage('${img.url}')">
+                                    নির্বাচন করুন
+                                </button>
+                            </div>
+                        `;
+                        gallery.appendChild(imgElement);
+                    });
+                    
+                } catch (error) {
+                    console.error('Error loading gallery:', error);
+                    document.getElementById('gallery-images').innerHTML = `
+                        <div class="col-span-4 text-center p-8 text-gray-500">
+                            <i class="fas fa-exclamation-triangle text-2xl mb-4 text-red-500"></i>
+                            <p>গ্যালারি লোড করতে সমস্যা হয়েছে</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            selectExistingImage(url) {
+                selectedGalleryImage = url;
+                document.getElementById('select-gallery-image-btn').classList.remove('hidden');
+            }
+            
+            async fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
+            
+            showNotification(message, type = 'info') {
+                const container = document.getElementById('notification-container');
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-3"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                container.appendChild(notification);
+                
+                // ৩ সেকেন্ড পর অটো রিমুভ
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+        
+        // ইমেজ আপলোডার ইনিশিয়ালাইজ
+        const imageUploader = new ImageUploader();
+        
+        // ইনিশিয়ালাইজ
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already logged in
+            // ইউজার লগইন চেক
             const savedUser = localStorage.getItem('admin_user');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
@@ -769,110 +1871,146 @@
                 loadDashboard();
             }
             
-            // Setup event listeners
+            // ইভেন্ট লিসেনার সেটআপ
             setupEventListeners();
             
-            // Update current time and date
+            // টাইম আপডেট
             updateDateTime();
             setInterval(updateDateTime, 1000);
+            
+            // রেস্পন্সিভ ডিটেকশন
+            detectResponsive();
+            window.addEventListener('resize', detectResponsive);
         });
         
-        // Setup event listeners
+        // ইভেন্ট লিসেনার সেটআপ
         function setupEventListeners() {
-            // Login form
+            // লগইন ফর্ম
             loginForm.addEventListener('submit', handleLogin);
             
-            // Mobile menu
+            // মোবাইল মেনু
             document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
-            document.getElementById('overlay').addEventListener('click', toggleMobileMenu);
+            document.getElementById('mobile-overlay').addEventListener('click', toggleMobileMenu);
             
-            // Navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                if (item.id !== 'logout-btn') {
-                    item.addEventListener('click', handleNavigation);
+            // নেভিগেশন (ডেস্কটপ)
+            document.querySelectorAll('.sidebar-desktop .nav-item').forEach(item => {
+                if (!item.id.includes('logout')) {
+                    item.addEventListener('click', handleDesktopNavigation);
                 }
             });
             
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            // নেভিগেশন (মোবাইল)
+            document.querySelectorAll('.sidebar-mobile .nav-item').forEach(item => {
+                if (!item.id.includes('logout')) {
+                    item.addEventListener('click', handleMobileNavigation);
+                }
+            });
             
-            // Add product button
-            document.getElementById('add-product-btn').addEventListener('click', showAddProductModal);
+            // লগআউট
+            document.getElementById('logout-btn-desktop').addEventListener('click', handleLogout);
+            document.getElementById('logout-btn-mobile').addEventListener('click', handleLogout);
             
-            // Product modal
+            // পণ্য মডাল
+            document.getElementById('add-color-btn').addEventListener('click', addColorField);
             document.getElementById('cancel-product-btn').addEventListener('click', hideProductModal);
             document.getElementById('product-form').addEventListener('submit', handleProductSubmit);
-            document.getElementById('add-color-btn').addEventListener('click', addColorField);
             
-            // Order filter
-            document.getElementById('order-filter').addEventListener('change', loadOrders);
+            // স্লাইডার মডাল
+            document.getElementById('cancel-slider-btn').addEventListener('click', hideSliderModal);
+            document.getElementById('slider-form').addEventListener('submit', handleSliderSubmit);
             
-            // Review filter
-            document.getElementById('review-filter').addEventListener('change', loadReviews);
+            // অর্ডার ফিল্টার
+            document.getElementById('order-filter-desktop').addEventListener('change', loadOrders);
             
-            // Settings form
-            document.getElementById('settings-form').addEventListener('submit', handleSettingsSubmit);
+            // রিভিউ ফিল্টার
+            document.getElementById('review-filter-desktop').addEventListener('change', loadReviews);
             
-            // Price calculation
+            // সেটিংস ফর্ম
+            document.getElementById('settings-form-desktop').addEventListener('submit', handleSettingsSubmit);
+            
+            // দাম ক্যালকুলেশন
             document.getElementById('regular-price').addEventListener('input', calculateDiscount);
             document.getElementById('offer-price').addEventListener('input', calculateDiscount);
             
-            // Order modal buttons
+            // অর্ডার মডাল
             document.getElementById('cancel-order-btn').addEventListener('click', hideOrderModal);
             document.getElementById('update-order-btn').addEventListener('click', updateOrderStatus);
             
-            // Close modals on escape key
-            document.addEventListener('keydown', function(e) {
+            // গ্যালারি মডাল
+            document.getElementById('cancel-gallery-btn').addEventListener('click', hideGalleryModal);
+            document.getElementById('select-gallery-image-btn').addEventListener('click', useSelectedImage);
+            
+            // Escape কি প্রেসে মডাল বন্ধ
+            document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    hideProductModal();
-                    hideOrderModal();
+                    hideAllModals();
                 }
             });
         }
         
-        // Update current time and date
+        // টাইম আপডেট
         function updateDateTime() {
             const now = new Date();
-            
-            // Date in Bengali format
             const dateOptions = { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric'
             };
-            document.getElementById('current-date').textContent = 
-                now.toLocaleDateString('bn-BD', dateOptions);
-            
-            // Time
             const timeOptions = {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: true
             };
-            document.getElementById('current-time').textContent = 
+            
+            // ডেস্কটপ
+            document.getElementById('current-date-desktop').textContent = 
+                now.toLocaleDateString('bn-BD', dateOptions);
+            document.getElementById('current-time-desktop-large').textContent = 
                 now.toLocaleTimeString('bn-BD', timeOptions);
+            
+            // সাইডবার
+            document.querySelectorAll('#current-time-desktop').forEach(el => {
+                el.textContent = now.toLocaleTimeString('bn-BD', {hour: '2-digit', minute: '2-digit'});
+            });
         }
         
-        // Toggle mobile menu
+        // রেস্পন্সিভ ডিটেকশন
+        function detectResponsive() {
+            if (window.innerWidth >= 768) {
+                // ডেস্কটপ ভিউ
+                adminPanelMobile.classList.add('hidden');
+                if (currentUser) {
+                    adminPanelDesktop.classList.remove('hidden');
+                }
+            } else {
+                // মোবাইল ভিউ
+                adminPanelDesktop.classList.add('hidden');
+                if (currentUser) {
+                    adminPanelMobile.classList.remove('hidden');
+                }
+            }
+        }
+        
+        // মোবাইল মেনু টগল
         function toggleMobileMenu() {
-            document.querySelector('.sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+            document.getElementById('mobile-sidebar').classList.toggle('active');
+            document.getElementById('mobile-overlay').classList.toggle('active');
         }
         
-        // Handle login
+        // লগইন হ্যান্ডলার
         async function handleLogin(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
             
-            // Show loading state
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>লগইন হচ্ছে...';
-            submitBtn.disabled = true;
+            // লোডিং স্টেট
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<div class="loading mr-2"></div> লগইন হচ্ছে...';
+            loginBtn.disabled = true;
             
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
@@ -890,59 +2028,119 @@
                     showAdminPanel();
                     loadDashboard();
                     loginError.classList.add('hidden');
+                    imageUploader.showNotification('লগইন সফল!', 'success');
                 } else {
-                    throw new Error('Login failed');
+                    const error = await response.json();
+                    throw new Error(error.error || 'Login failed');
                 }
             } catch (error) {
                 loginError.classList.remove('hidden');
+                document.getElementById('login-error-text').textContent = error.message;
                 console.error('Login error:', error);
             } finally {
-                // Restore button state
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                // বাটন রিস্টোর
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         }
         
-        // Handle logout
+        // লগআউট হ্যান্ডলার
         function handleLogout() {
             if (confirm('আপনি কি নিশ্চিত যে লগআউট করতে চান?')) {
                 localStorage.removeItem('admin_user');
                 currentUser = null;
-                adminPanel.classList.add('hidden');
+                adminPanelDesktop.classList.add('hidden');
+                adminPanelMobile.classList.add('hidden');
                 loginPage.classList.remove('hidden');
                 loginForm.reset();
+                imageUploader.showNotification('সফলভাবে লগআউট করা হয়েছে', 'info');
             }
         }
         
-        // Show admin panel
+        // এডমিন প্যানেল দেখান
         function showAdminPanel() {
             loginPage.classList.add('hidden');
-            adminPanel.classList.remove('hidden');
-            loggedInUser.textContent = currentUser.username;
+            
+            // রেস্পন্সিভ ডিটেকশন অনুযায়ী সঠিক প্যানেল দেখান
+            if (window.innerWidth >= 768) {
+                adminPanelDesktop.classList.remove('hidden');
+                adminPanelMobile.classList.add('hidden');
+                
+                // ইউজার ইনফো আপডেট
+                document.querySelectorAll('#logged-in-user-desktop').forEach(el => {
+                    el.textContent = currentUser.username;
+                });
+            } else {
+                adminPanelMobile.classList.remove('hidden');
+                adminPanelDesktop.classList.add('hidden');
+                
+                // ইউজার ইনফো আপডেট
+                document.getElementById('logged-in-user-mobile').textContent = currentUser.username;
+            }
         }
         
-        // Handle navigation
-        function handleNavigation(e) {
+        // ডেস্কটপ নেভিগেশন
+        function handleDesktopNavigation(e) {
             e.preventDefault();
+            const target = this.getAttribute('href').substring(1);
+            switchPage(target);
+        }
+        
+        // মোবাইল নেভিগেশন
+        function handleMobileNavigation(e) {
+            e.preventDefault();
+            const target = this.getAttribute('href').substring(1);
+            switchPage(target);
+            toggleMobileMenu();
             
-            // Update active nav item
+            // মোবাইল কন্টেন্ট লোড
+            loadMobilePage(target);
+        }
+        
+        // পেজ পরিবর্তন
+        function switchPage(page) {
+            currentPage = page;
+            
+            // সক্রিয় নেভ আইটেম আপডেট
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
-            });
-            this.classList.add('active');
-            
-            // Hide all pages
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.add('hidden');
+                if (item.getAttribute('href') === `#${page}`) {
+                    item.classList.add('active');
+                }
             });
             
-            // Show selected page
-            const target = this.getAttribute('href').substring(1);
-            document.getElementById(`${target}-page`).classList.remove('hidden');
-            document.getElementById('page-title').textContent = this.textContent.trim();
+            // সব পেজ লুকান
+            document.querySelectorAll('.page-content-desktop').forEach(pageEl => {
+                pageEl.classList.add('hidden');
+            });
             
-            // Load page data
-            switch(target) {
+            // নির্বাচিত পেজ দেখান
+            document.getElementById(`${page}-page-desktop`).classList.remove('hidden');
+            
+            // পেজ টাইটেল আপডেট
+            const pageTitles = {
+                'dashboard': 'ড্যাশবোর্ড',
+                'products': 'পণ্য ব্যবস্থাপনা',
+                'orders': 'অর্ডার ব্যবস্থাপনা',
+                'reviews': 'রিভিউ ব্যবস্থাপনা',
+                'sliders': 'স্লাইডার ব্যবস্থাপনা',
+                'settings': 'ওয়েবসাইট সেটিংস'
+            };
+            
+            const pageSubtitles = {
+                'dashboard': 'সর্বশেষ আপডেট এবং পরিসংখ্যান',
+                'products': 'আপনার পণ্য তালিকা পরিচালনা করুন',
+                'orders': 'গ্রাহকদের অর্ডার তালিকা এবং স্ট্যাটাস',
+                'reviews': 'গ্রাহকদের রিভিউ এবং রেটিং',
+                'sliders': 'হোমপেজ স্লাইডার ইমেজ এবং কন্টেন্ট',
+                'settings': 'ওয়েবসাইটের সাধারণ সেটিংস কনফিগারেশন'
+            };
+            
+            document.getElementById('page-title-desktop').textContent = pageTitles[page];
+            document.getElementById('page-subtitle-desktop').textContent = pageSubtitles[page];
+            
+            // পেজ ডেটা লোড
+            switch(page) {
                 case 'dashboard':
                     loadDashboard();
                     break;
@@ -962,57 +2160,84 @@
                     loadSettings();
                     break;
             }
+        }
+        
+        // মোবাইল পেজ লোড
+        async function loadMobilePage(page) {
+            const container = document.getElementById('mobile-page-content');
+            container.innerHTML = '<div class="text-center p-8"><div class="loading mx-auto"></div><p class="mt-2">লোড হচ্ছে...</p></div>';
             
-            // Close mobile menu on mobile
-            if (window.innerWidth < 768) {
-                toggleMobileMenu();
+            try {
+                let html = '';
+                
+                switch(page) {
+                    case 'dashboard':
+                        html = await loadMobileDashboard();
+                        break;
+                    case 'products':
+                        html = await loadMobileProducts();
+                        break;
+                    case 'orders':
+                        html = await loadMobileOrders();
+                        break;
+                    case 'reviews':
+                        html = await loadMobileReviews();
+                        break;
+                    case 'sliders':
+                        html = await loadMobileSliders();
+                        break;
+                    case 'settings':
+                        html = await loadMobileSettings();
+                        break;
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading mobile page:', error);
+                container.innerHTML = `
+                    <div class="text-center p-8 text-red-500">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-4"></i>
+                        <p>পৃষ্ঠা লোড করতে সমস্যা হয়েছে</p>
+                        <button onclick="loadMobilePage('${page}')" class="mt-4 text-blue-600">
+                            আবার চেষ্টা করুন
+                        </button>
+                    </div>
+                `;
             }
         }
         
-        // Load dashboard data
+        // ড্যাশবোর্ড লোড
         async function loadDashboard() {
             try {
-                // Show loading state
-                document.getElementById('recent-orders-table').innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-8 text-center text-gray-500">
-                            <div class="flex justify-center items-center space-x-2">
-                                <i class="fas fa-spinner fa-spin text-xl"></i>
-                                <span>ডেটা লোড হচ্ছে...</span>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                
                 const response = await fetch(`${API_BASE_URL}/api/admin/dashboard/stats`);
                 
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // Update statistics
-                    document.getElementById('total-orders').textContent = data.totalOrders;
-                    document.getElementById('pending-orders').textContent = data.pendingOrders;
-                    document.getElementById('total-revenue').textContent = data.totalRevenue.toLocaleString('bn-BD');
-                    document.getElementById('delivered-orders').textContent = data.deliveredOrders;
-                    document.getElementById('total-products').textContent = data.totalProducts;
-                    document.getElementById('total-reviews').textContent = data.totalReviews;
-                    document.getElementById('pending-reviews').textContent = data.pendingReviews;
+                    // পরিসংখ্যান আপডেট
+                    document.getElementById('total-orders-desktop').textContent = data.totalOrders;
+                    document.getElementById('pending-orders-desktop').textContent = data.pendingOrders;
+                    document.getElementById('total-revenue-desktop').textContent = data.totalRevenue.toLocaleString('bn-BD');
+                    document.getElementById('delivered-orders-desktop').textContent = data.deliveredOrders;
+                    document.getElementById('total-products-desktop').textContent = data.totalProducts;
+                    document.getElementById('total-reviews-desktop').textContent = data.totalReviews;
+                    document.getElementById('pending-reviews-desktop').textContent = data.pendingReviews;
                     
-                    // Update recent orders table
-                    const ordersTable = document.getElementById('recent-orders-table');
+                    // সাম্প্রতিক অর্ডার
+                    const ordersTable = document.getElementById('recent-orders-table-desktop');
                     if (data.recentOrders && data.recentOrders.length > 0) {
                         ordersTable.innerHTML = data.recentOrders.map(order => `
-                            <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                <td class="p-3 font-mono text-sm">${order.orderId}</td>
-                                <td class="p-3">${order.customerName}</td>
-                                <td class="p-3 truncate max-w-xs">${order.productName}</td>
-                                <td class="p-3">${order.totalPrice} টাকা</td>
-                                <td class="p-3">
+                            <tr>
+                                <td class="font-mono text-sm">${order.orderId}</td>
+                                <td>${order.customerName}</td>
+                                <td class="truncate max-w-xs">${order.productName}</td>
+                                <td>${order.totalPrice} টাকা</td>
+                                <td>
                                     <span class="order-status status-${order.status}">
                                         ${getStatusText(order.status)}
                                     </span>
                                 </td>
-                                <td class="p-3 text-sm">${formatDate(order.createdAt)}</td>
+                                <td class="text-sm">${formatDate(order.createdAt)}</td>
                             </tr>
                         `).join('');
                     } else {
@@ -1025,69 +2250,79 @@
                             </tr>
                         `;
                     }
+                    
+                    // অতিরিক্ত তথ্য
+                    document.getElementById('avg-order-value-desktop').textContent = 
+                        data.totalOrders > 0 ? Math.round(data.totalRevenue / data.totalOrders).toLocaleString('bn-BD') + ' টাকা' : '0 টাকা';
+                    
+                    // রূপান্তর হার (এখানে আমরা একটি ডামি মান ব্যবহার করছি)
+                    const conversionRate = data.totalOrders > 0 ? Math.min(85, Math.round((data.deliveredOrders / data.totalOrders) * 100)) : 0;
+                    document.getElementById('conversion-rate-desktop').textContent = conversionRate + '%';
+                    document.getElementById('conversion-rate-bar-desktop').style.width = conversionRate + '%';
+                    
                 } else {
                     throw new Error('Failed to load dashboard data');
                 }
             } catch (error) {
                 console.error('Error loading dashboard:', error);
-                document.getElementById('recent-orders-table').innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-8 text-center text-gray-500">
-                            <i class="fas fa-exclamation-triangle text-2xl mb-4 text-red-500"></i>
-                            <p>ডেটা লোড করতে সমস্যা হয়েছে</p>
-                            <button onclick="loadDashboard()" class="mt-3 text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-redo mr-1"></i>পুনরায় চেষ্টা করুন
-                            </button>
-                        </td>
-                    </tr>
-                `;
+                imageUploader.showNotification('ড্যাশবোর্ড লোড করতে সমস্যা হয়েছে', 'error');
             }
         }
         
-        // Load products
+        // পণ্য লোড
         async function loadProducts() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/products`);
                 
                 if (response.ok) {
                     const products = await response.json();
-                    const productsTable = document.getElementById('products-table');
+                    const table = document.getElementById('products-table-desktop');
                     
                     if (products && products.length > 0) {
-                        productsTable.innerHTML = products.map(product => `
-                            <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                <td class="p-3 font-medium">${product.name}</td>
-                                <td class="p-3">
-                                    <span class="line-through text-gray-500 text-sm">${product.regularPrice} টাকা</span><br>
-                                    <span class="text-red-600 font-bold">${product.offerPrice} টাকা</span>
-                                </td>
-                                <td class="p-3">${product.offerPercentage}%</td>
-                                <td class="p-3">${product.size}</td>
-                                <td class="p-3">
-                                    <span class="px-3 py-1 rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                        ${product.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
-                                    </span>
-                                </td>
-                                <td class="p-3">
-                                    <button onclick="editProduct('${product._id}')" 
-                                            class="text-blue-600 hover:text-blue-800 mr-3" title="এডিট">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteProduct('${product._id}')" 
-                                            class="text-red-600 hover:text-red-800" title="ডিলিট">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `).join('');
+                        table.innerHTML = products.map(product => {
+                            const firstImage = product.colors && product.colors.length > 0 ? product.colors[0].image : 'https://via.placeholder.com/50';
+                            return `
+                                <tr>
+                                    <td class="font-medium">${product.name}</td>
+                                    <td>
+                                        <img src="${firstImage}" alt="${product.name}" 
+                                             class="w-12 h-12 object-cover rounded-lg">
+                                    </td>
+                                    <td>
+                                        <span class="line-through text-gray-500 text-sm">${product.regularPrice} টাকা</span><br>
+                                        <span class="text-red-600 font-bold">${product.offerPrice} টাকা</span>
+                                    </td>
+                                    <td>${product.offerPercentage}%</td>
+                                    <td>${product.size}</td>
+                                    <td>
+                                        <span class="badge ${product.isActive ? 'badge-success' : 'badge-danger'}">
+                                            ${product.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button onclick="editProduct('${product._id}')" 
+                                                    class="text-blue-600 hover:text-blue-800 p-1" title="এডিট">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="deleteProduct('${product._id}')" 
+                                                    class="text-red-600 hover:text-red-800 p-1" title="ডিলিট">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
                     } else {
-                        productsTable.innerHTML = `
+                        table.innerHTML = `
                             <tr>
-                                <td colspan="6" class="p-8 text-center text-gray-500">
+                                <td colspan="7" class="p-8 text-center text-gray-500">
                                     <i class="fas fa-tshirt text-2xl mb-4 text-gray-400"></i>
                                     <p>কোনো পণ্য পাওয়া যায়নি</p>
                                     <button onclick="showAddProductModal()" class="mt-3 text-red-600 hover:text-red-800">
-                                        <i class="fas fa-plus mr-1"></i>প্রথম পণ্য যোগ করুন
+                                        <i class="fas fa-plus mr-1"></i>
+                                        প্রথম পণ্য যোগ করুন
                                     </button>
                                 </td>
                             </tr>
@@ -1098,9 +2333,9 @@
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
-                document.getElementById('products-table').innerHTML = `
+                document.getElementById('products-table-desktop').innerHTML = `
                     <tr>
-                        <td colspan="6" class="p-8 text-center text-gray-500">
+                        <td colspan="7" class="p-8 text-center text-gray-500">
                             <i class="fas fa-exclamation-triangle text-2xl mb-4 text-red-500"></i>
                             <p>পণ্য লোড করতে সমস্যা হয়েছে</p>
                         </td>
@@ -1109,9 +2344,9 @@
             }
         }
         
-        // Load orders
+        // অর্ডার লোড
         async function loadOrders() {
-            const status = document.getElementById('order-filter').value;
+            const status = document.getElementById('order-filter-desktop').value;
             let url = `${API_BASE_URL}/api/admin/orders`;
             if (status) {
                 url += `?status=${status}`;
@@ -1122,35 +2357,35 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    const ordersTable = document.getElementById('orders-table');
+                    const table = document.getElementById('orders-table-desktop');
                     
                     if (data.orders && data.orders.length > 0) {
-                        ordersTable.innerHTML = data.orders.map(order => `
-                            <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                <td class="p-3 font-mono text-sm">${order.orderId}</td>
-                                <td class="p-3">
+                        table.innerHTML = data.orders.map(order => `
+                            <tr>
+                                <td class="font-mono text-sm">${order.orderId}</td>
+                                <td>
                                     <div class="font-medium">${order.customerName}</div>
                                     <div class="text-sm text-gray-500">${order.phone}</div>
                                 </td>
-                                <td class="p-3">${order.productName}</td>
-                                <td class="p-3">${order.quantity} পিস</td>
-                                <td class="p-3">${order.totalPrice} টাকা</td>
-                                <td class="p-3">
+                                <td>${order.productName}</td>
+                                <td>${order.quantity} পিস</td>
+                                <td>${order.totalPrice} টাকা</td>
+                                <td>
                                     <span class="order-status status-${order.status}">
                                         ${getStatusText(order.status)}
                                     </span>
                                 </td>
-                                <td class="p-3 text-sm">${formatDate(order.createdAt)}</td>
-                                <td class="p-3">
+                                <td class="text-sm">${formatDate(order.createdAt)}</td>
+                                <td>
                                     <button onclick="viewOrder('${order._id}')" 
-                                            class="text-blue-600 hover:text-blue-800" title="বিস্তারিত দেখুন">
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="বিস্তারিত">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </td>
                             </tr>
                         `).join('');
                     } else {
-                        ordersTable.innerHTML = `
+                        table.innerHTML = `
                             <tr>
                                 <td colspan="8" class="p-8 text-center text-gray-500">
                                     <i class="fas fa-inbox text-2xl mb-4 text-gray-400"></i>
@@ -1164,20 +2399,13 @@
                 }
             } catch (error) {
                 console.error('Error loading orders:', error);
-                document.getElementById('orders-table').innerHTML = `
-                    <tr>
-                        <td colspan="8" class="p-8 text-center text-gray-500">
-                            <i class="fas fa-exclamation-triangle text-2xl mb-4 text-red-500"></i>
-                            <p>অর্ডার লোড করতে সমস্যা হয়েছে</p>
-                        </td>
-                    </tr>
-                `;
+                imageUploader.showNotification('অর্ডার লোড করতে সমস্যা হয়েছে', 'error');
             }
         }
         
-        // Load reviews
+        // রিভিউ লোড
         async function loadReviews() {
-            const filter = document.getElementById('review-filter').value;
+            const filter = document.getElementById('review-filter-desktop').value;
             let url = `${API_BASE_URL}/api/admin/reviews`;
             if (filter) {
                 url += `?approved=${filter === 'approved'}`;
@@ -1188,10 +2416,10 @@
                 
                 if (response.ok) {
                     const reviews = await response.json();
-                    const reviewsList = document.getElementById('reviews-list');
+                    const container = document.getElementById('reviews-list-desktop');
                     
                     if (reviews && reviews.length > 0) {
-                        reviewsList.innerHTML = reviews.map(review => `
+                        container.innerHTML = reviews.map(review => `
                             <div class="border border-gray-200 rounded-lg p-4 mb-4 hover:bg-gray-50 transition duration-200">
                                 <div class="flex justify-between items-start mb-3">
                                     <div>
@@ -1207,27 +2435,27 @@
                                 </div>
                                 <p class="text-gray-700 mb-4 bg-gray-50 p-3 rounded">${review.text}</p>
                                 <div class="flex justify-between items-center">
-                                    <span class="px-3 py-1 rounded-full ${review.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                    <span class="badge ${review.isApproved ? 'badge-success' : 'badge-warning'}">
                                         <i class="fas ${review.isApproved ? 'fa-check-circle' : 'fa-clock'} mr-1"></i>
                                         ${review.isApproved ? 'এপ্রুভড' : 'পেন্ডিং'}
                                     </span>
                                     <div>
                                         ${!review.isApproved ? `
                                             <button onclick="approveReview('${review._id}')" 
-                                                    class="text-green-600 hover:text-green-800 mr-4 px-3 py-1 rounded hover:bg-green-50 transition duration-200">
-                                                <i class="fas fa-check mr-1"></i> এপ্রুভ করুন
+                                                    class="btn btn-outline text-sm">
+                                                <i class="fas fa-check mr-1"></i> এপ্রুভ
                                             </button>
                                         ` : ''}
                                         <button onclick="deleteReview('${review._id}')" 
-                                                class="text-red-600 hover:text-red-800 px-3 py-1 rounded hover:bg-red-50 transition duration-200">
-                                            <i class="fas fa-trash mr-1"></i> ডিলিট করুন
+                                                class="btn btn-outline text-sm ml-2">
+                                            <i class="fas fa-trash mr-1"></i> ডিলিট
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         `).join('');
                     } else {
-                        reviewsList.innerHTML = `
+                        container.innerHTML = `
                             <div class="text-center p-8 text-gray-500">
                                 <i class="fas fa-star text-2xl mb-4 text-gray-400"></i>
                                 <p>কোনো রিভিউ পাওয়া যায়নি</p>
@@ -1239,32 +2467,32 @@
                 }
             } catch (error) {
                 console.error('Error loading reviews:', error);
-                document.getElementById('reviews-list').innerHTML = `
-                    <div class="text-center p-8 text-gray-500">
-                        <i class="fas fa-exclamation-triangle text-2xl mb-4 text-red-500"></i>
-                        <p>রিভিউ লোড করতে সমস্যা হয়েছে</p>
-                    </div>
-                `;
+                imageUploader.showNotification('রিভিউ লোড করতে সমস্যা হয়েছে', 'error');
             }
         }
         
-        // Load sliders
+        // স্লাইডার লোড
         async function loadSliders() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/sliders`);
                 
                 if (response.ok) {
                     const sliders = await response.json();
-                    const container = document.getElementById('sliders-container');
+                    const container = document.getElementById('sliders-container-desktop');
                     
                     if (sliders && sliders.length > 0) {
                         container.innerHTML = sliders.map(slider => `
                             <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition duration-200">
                                 <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-lg font-bold flex items-center">
-                                        <i class="fas fa-image mr-3 text-purple-500"></i>
-                                        স্লাইড #${slider.slideNumber}
-                                    </h3>
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mr-3">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold">স্লাইড #${slider.slideNumber}</h3>
+                                            <p class="text-gray-600 text-sm">${slider.title} - ${slider.subtitle}</p>
+                                        </div>
+                                    </div>
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="checkbox" ${slider.isActive ? 'checked' : ''} 
                                                onchange="toggleSlider('${slider._id}', this.checked)"
@@ -1281,36 +2509,36 @@
                                     </div>
                                     <div class="space-y-4">
                                         <div>
-                                            <label class="block text-gray-700 mb-1">শিরোনাম</label>
+                                            <label class="form-label">শিরোনাম</label>
                                             <input type="text" value="${slider.title}" 
                                                    onchange="updateSliderField('${slider._id}', 'title', this.value)"
-                                                   class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                                   class="form-input text-sm">
                                         </div>
                                         <div>
-                                            <label class="block text-gray-700 mb-1">সাবটাইটেল</label>
+                                            <label class="form-label">সাবটাইটেল</label>
                                             <input type="text" value="${slider.subtitle}" 
                                                    onchange="updateSliderField('${slider._id}', 'subtitle', this.value)"
-                                                   class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                                        </div>
-                                        <div>
-                                            <label class="block text-gray-700 mb-1">বর্ণনা</label>
-                                            <textarea onchange="updateSliderField('${slider._id}', 'description', this.value)"
-                                                      class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                                      rows="2">${slider.description}</textarea>
+                                                   class="form-input text-sm">
                                         </div>
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
-                                                <label class="block text-gray-700 mb-1">দাম</label>
+                                                <label class="form-label">দাম</label>
                                                 <input type="number" value="${slider.price}" 
                                                        onchange="updateSliderField('${slider._id}', 'price', this.value)"
-                                                       class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                                       class="form-input text-sm">
                                             </div>
                                             <div>
-                                                <label class="block text-gray-700 mb-1">আসল দাম</label>
+                                                <label class="form-label">আসল দাম</label>
                                                 <input type="number" value="${slider.originalPrice}" 
                                                        onchange="updateSliderField('${slider._id}', 'originalPrice', this.value)"
-                                                       class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                                       class="form-input text-sm">
                                             </div>
+                                        </div>
+                                        <div>
+                                            <button onclick="editSlider('${slider._id}')" 
+                                                    class="btn btn-outline w-full text-sm">
+                                                <i class="fas fa-edit mr-1"></i> সম্পাদনা
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -1321,6 +2549,10 @@
                             <div class="text-center p-8 text-gray-500">
                                 <i class="fas fa-images text-2xl mb-4 text-gray-400"></i>
                                 <p>কোনো স্লাইডার পাওয়া যায়নি</p>
+                                <button onclick="showAddSliderModal()" class="mt-3 text-red-600 hover:text-red-800">
+                                    <i class="fas fa-plus mr-1"></i>
+                                    প্রথম স্লাইডার যোগ করুন
+                                </button>
                             </div>
                         `;
                     }
@@ -1329,16 +2561,11 @@
                 }
             } catch (error) {
                 console.error('Error loading sliders:', error);
-                document.getElementById('sliders-container').innerHTML = `
-                    <div class="text-center p-8 text-gray-500">
-                        <i class="fas fa-exclamation-triangle text-2xl mb-4 text-red-500"></i>
-                        <p>স্লাইডার লোড করতে সমস্যা হয়েছে</p>
-                    </div>
-                `;
+                imageUploader.showNotification('স্লাইডার লোড করতে সমস্যা হয়েছে', 'error');
             }
         }
         
-        // Load settings
+        // সেটিংস লোড
         async function loadSettings() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/settings`);
@@ -1346,29 +2573,29 @@
                 if (response.ok) {
                     const settings = await response.json();
                     
-                    document.getElementById('whatsapp-number').value = settings.whatsappNumber || '01911465879';
-                    document.getElementById('phone-number').value = settings.phoneNumber || '01911465879';
-                    document.getElementById('footer-text').value = settings.footerText || 'প্রিমিয়াম পাঞ্জাবির নির্ভরযোগ্য ঠিকানা';
-                    document.getElementById('delivery-inside').value = settings.deliveryChargeInsideDhaka || 60;
-                    document.getElementById('delivery-outside').value = settings.deliveryChargeOutsideDhaka || 160;
-                    document.getElementById('service-hours').value = settings.serviceHours || 'সকাল ৯টা - রাত ১০টা';
+                    document.getElementById('whatsapp-number-desktop').value = settings.whatsappNumber || '01911465879';
+                    document.getElementById('phone-number-desktop').value = settings.phoneNumber || '01911465879';
+                    document.getElementById('footer-text-desktop').value = settings.footerText || 'প্রিমিয়াম পাঞ্জাবির নির্ভরযোগ্য ঠিকানা';
+                    document.getElementById('delivery-inside-desktop').value = settings.deliveryChargeInsideDhaka || 60;
+                    document.getElementById('delivery-outside-desktop').value = settings.deliveryChargeOutsideDhaka || 160;
+                    document.getElementById('service-hours-desktop').value = settings.serviceHours || 'সকাল ৯টা - রাত ১০টা';
                 } else {
                     throw new Error('Failed to load settings');
                 }
             } catch (error) {
                 console.error('Error loading settings:', error);
-                alert('সেটিংস লোড করতে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।');
+                imageUploader.showNotification('সেটিংস লোড করতে সমস্যা হয়েছে', 'error');
             }
         }
         
-        // Product Modal Functions
+        // পণ্য মডাল ফাংশন
         function showAddProductModal() {
             document.getElementById('product-modal-title').textContent = 'নতুন পণ্য যোগ করুন';
             document.getElementById('product-id').value = '';
             document.getElementById('product-form').reset();
             document.getElementById('colors-container').innerHTML = '';
-            addColorField(); // Add one initial color field
-            calculateDiscount(); // Calculate initial discount
+            addColorField(); // প্রাথমিক কালার ফিল্ড
+            calculateDiscount();
             document.getElementById('product-modal').classList.add('active');
         }
         
@@ -1396,23 +2623,22 @@
                     ` : ''}
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-gray-700 mb-1">রং এর নাম</label>
-                        <input type="text" name="color-name" required 
-                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               placeholder="যেমন: লাল ও সোনালী">
+                    <div class="form-group">
+                        <label class="form-label">রং এর নাম</label>
+                        <input type="text" name="color-name" required class="form-input text-sm" placeholder="লাল ও সোনালী">
                     </div>
-                    <div>
-                        <label class="block text-gray-700 mb-1">রং কোড</label>
-                        <input type="text" name="color-code" required 
-                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               placeholder="#dc2626">
+                    <div class="form-group">
+                        <label class="form-label">রং কোড</label>
+                        <input type="text" name="color-code" required class="form-input text-sm" placeholder="#dc2626">
                     </div>
-                    <div>
-                        <label class="block text-gray-700 mb-1">ইমেজ URL</label>
-                        <input type="url" name="color-image" required 
-                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                               placeholder="https://example.com/image.jpg">
+                    <div class="form-group">
+                        <label class="form-label">ইমেজ</label>
+                        <div class="flex space-x-2">
+                            <input type="text" name="color-image" class="form-input text-sm" placeholder="ইমেজ URL">
+                            <button type="button" class="color-image-upload btn btn-outline text-sm" data-target="color-${index}">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1435,29 +2661,32 @@
         async function handleProductSubmit(e) {
             e.preventDefault();
             
-            // Disable submit button and show loading
             const submitBtn = document.getElementById('save-product-btn');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে...';
+            submitBtn.innerHTML = '<div class="loading mr-2"></div> সেভ হচ্ছে...';
             submitBtn.disabled = true;
             
             const productId = document.getElementById('product-id').value;
             const colors = [];
             
-            // Collect color data
+            // কালার ডেটা সংগ্রহ
             document.querySelectorAll('#colors-container > div').forEach(container => {
                 const name = container.querySelector('[name="color-name"]').value;
                 const code = container.querySelector('[name="color-code"]').value;
                 const image = container.querySelector('[name="color-image"]').value;
                 
-                if (name && code && image) {
-                    colors.push({ name, code, image });
+                if (name && code) {
+                    colors.push({ 
+                        name, 
+                        code, 
+                        image: image || 'https://via.placeholder.com/300x400/FF0000/FFFFFF?text=Panjabi'
+                    });
                 }
             });
             
-            // Validate colors
+            // ভ্যালিডেশন
             if (colors.length === 0) {
-                alert('অন্তত একটি রং যোগ করুন।');
+                imageUploader.showNotification('অন্তত একটি রং যোগ করুন', 'error');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 return;
@@ -1493,16 +2722,15 @@
                     const result = await response.json();
                     hideProductModal();
                     loadProducts();
-                    alert(result.message || 'পণ্য সফলভাবে সেভ হয়েছে!');
+                    imageUploader.showNotification(result.message || 'পণ্য সফলভাবে সেভ হয়েছে!', 'success');
                 } else {
                     const error = await response.json();
                     throw new Error(error.error || 'Failed to save product');
                 }
             } catch (error) {
                 console.error('Error saving product:', error);
-                alert('পণ্য সেভ করতে সমস্যা হয়েছে: ' + error.message);
+                imageUploader.showNotification('পণ্য সেভ করতে সমস্যা হয়েছে: ' + error.message, 'error');
             } finally {
-                // Restore button state
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
@@ -1517,7 +2745,7 @@
                     const product = products.find(p => p._id === productId);
                     
                     if (product) {
-                        document.getElementById('product-modal-title').textContent = 'পণ্য এডিট করুন';
+                        document.getElementById('product-modal-title').textContent = 'পণ্য সম্পাদনা';
                         document.getElementById('product-id').value = product._id;
                         document.getElementById('product-name').value = product.name;
                         document.getElementById('product-description').value = product.description;
@@ -1527,7 +2755,7 @@
                         document.getElementById('offer-percentage').value = product.offerPercentage;
                         document.getElementById('product-status').value = product.isActive.toString();
                         
-                        // Load colors
+                        // কালার লোড
                         document.getElementById('colors-container').innerHTML = '';
                         product.colors.forEach((color, index) => {
                             addColorField();
@@ -1542,7 +2770,7 @@
                 }
             } catch (error) {
                 console.error('Error loading product:', error);
-                alert('পণ্য লোড করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('পণ্য লোড করতে সমস্যা হয়েছে!', 'error');
             }
         }
         
@@ -1557,17 +2785,173 @@
                 if (response.ok) {
                     const result = await response.json();
                     loadProducts();
-                    alert(result.message || 'পণ্য সফলভাবে ডিলিট হয়েছে!');
+                    imageUploader.showNotification(result.message || 'পণ্য সফলভাবে ডিলিট হয়েছে!', 'success');
                 } else {
                     throw new Error('Failed to delete product');
                 }
             } catch (error) {
                 console.error('Error deleting product:', error);
-                alert('পণ্য ডিলিট করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('পণ্য ডিলিট করতে সমস্যা হয়েছে!', 'error');
             }
         }
         
-        // Order Modal Functions
+        // স্লাইডার ফাংশন
+        function showAddSliderModal() {
+            document.getElementById('slider-modal-title').textContent = 'নতুন স্লাইডার যোগ করুন';
+            document.getElementById('slider-id').value = '';
+            document.getElementById('slider-form').reset();
+            document.getElementById('slider-image-upload').classList.remove('active');
+            document.getElementById('slider-image-preview').classList.remove('active');
+            document.getElementById('slider-modal').classList.add('active');
+        }
+        
+        function hideSliderModal() {
+            document.getElementById('slider-modal').classList.remove('active');
+        }
+        
+        async function handleSliderSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('save-slider-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loading mr-2"></div> সেভ হচ্ছে...';
+            submitBtn.disabled = true;
+            
+            const sliderId = document.getElementById('slider-id').value;
+            const imageBase64 = document.getElementById('slider-image-base64').value;
+            
+            // ভ্যালিডেশন
+            if (!imageBase64 && !sliderId) {
+                imageUploader.showNotification('স্লাইডার ইমেজ প্রয়োজন', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            const sliderData = {
+                slideNumber: parseInt(document.getElementById('slider-number').value),
+                title: document.getElementById('slider-title').value,
+                subtitle: document.getElementById('slider-subtitle').value,
+                description: document.getElementById('slider-description').value,
+                imageUrl: imageBase64 || '',
+                badgeText: document.getElementById('slider-badge-text').value,
+                badgeColor: document.getElementById('slider-badge-color').value,
+                price: parseFloat(document.getElementById('slider-price').value) || 0,
+                originalPrice: parseFloat(document.getElementById('slider-original-price').value) || 0,
+                isActive: document.getElementById('slider-status').value === 'true'
+            };
+            
+            try {
+                const url = sliderId ? 
+                    `${API_BASE_URL}/api/admin/sliders/${sliderId}` : 
+                    `${API_BASE_URL}/api/admin/sliders`;
+                
+                const method = sliderId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sliderData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    hideSliderModal();
+                    loadSliders();
+                    imageUploader.showNotification(result.message || 'স্লাইডার সফলভাবে সেভ হয়েছে!', 'success');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save slider');
+                }
+            } catch (error) {
+                console.error('Error saving slider:', error);
+                imageUploader.showNotification('স্লাইডার সেভ করতে সমস্যা হয়েছে: ' + error.message, 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+        
+        async function editSlider(sliderId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/sliders`);
+                
+                if (response.ok) {
+                    const sliders = await response.json();
+                    const slider = sliders.find(s => s._id === sliderId);
+                    
+                    if (slider) {
+                        document.getElementById('slider-modal-title').textContent = 'স্লাইডার সম্পাদনা';
+                        document.getElementById('slider-id').value = slider._id;
+                        document.getElementById('slider-number').value = slider.slideNumber;
+                        document.getElementById('slider-title').value = slider.title;
+                        document.getElementById('slider-subtitle').value = slider.subtitle;
+                        document.getElementById('slider-description').value = slider.description;
+                        document.getElementById('slider-badge-text').value = slider.badgeText || '';
+                        document.getElementById('slider-badge-color').value = slider.badgeColor || 'red';
+                        document.getElementById('slider-price').value = slider.price || '';
+                        document.getElementById('slider-original-price').value = slider.originalPrice || '';
+                        document.getElementById('slider-status').value = slider.isActive.toString();
+                        
+                        // ইমেজ প্রিভিউ
+                        if (slider.imageUrl) {
+                            document.getElementById('slider-image-upload').classList.add('active');
+                            document.getElementById('slider-image-preview').src = slider.imageUrl;
+                            document.getElementById('slider-image-preview').classList.add('active');
+                            document.getElementById('slider-image-base64').value = slider.imageUrl;
+                        }
+                        
+                        document.getElementById('slider-modal').classList.add('active');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading slider:', error);
+                imageUploader.showNotification('স্লাইডার লোড করতে সমস্যা হয়েছে!', 'error');
+            }
+        }
+        
+        async function updateSliderField(sliderId, field, value) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/sliders/${sliderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ [field]: value })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to update slider');
+                }
+            } catch (error) {
+                console.error('Error updating slider:', error);
+                imageUploader.showNotification('স্লাইডার আপডেট করতে সমস্যা হয়েছে!', 'error');
+            }
+        }
+        
+        async function toggleSlider(sliderId, isActive) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/sliders/${sliderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isActive })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to toggle slider');
+                }
+                imageUploader.showNotification(`স্লাইডার ${isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'} করা হয়েছে`, 'success');
+            } catch (error) {
+                console.error('Error toggling slider:', error);
+                imageUploader.showNotification('স্লাইডার স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে!', 'error');
+            }
+        }
+        
+        // অর্ডার ফাংশন
         async function viewOrder(orderId) {
             selectedOrderId = orderId;
             
@@ -1613,7 +2997,7 @@
                 }
             } catch (error) {
                 console.error('Error loading order:', error);
-                alert('অর্ডার লোড করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('অর্ডার লোড করতে সমস্যা হয়েছে!', 'error');
             }
         }
         
@@ -1621,10 +3005,9 @@
             const status = document.getElementById('order-status-select').value;
             const notes = document.getElementById('order-notes').value;
             
-            // Disable button and show loading
             const updateBtn = document.getElementById('update-order-btn');
             const originalText = updateBtn.innerHTML;
-            updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>আপডেট হচ্ছে...';
+            updateBtn.innerHTML = '<div class="loading mr-2"></div> আপডেট হচ্ছে...';
             updateBtn.disabled = true;
             
             try {
@@ -1640,15 +3023,14 @@
                     const result = await response.json();
                     hideOrderModal();
                     loadOrders();
-                    alert(result.message || 'অর্ডার স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
+                    imageUploader.showNotification(result.message || 'অর্ডার স্ট্যাটাস সফলভাবে আপডেট হয়েছে!', 'success');
                 } else {
                     throw new Error('Failed to update order');
                 }
             } catch (error) {
                 console.error('Error updating order:', error);
-                alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে!', 'error');
             } finally {
-                // Restore button state
                 updateBtn.innerHTML = originalText;
                 updateBtn.disabled = false;
             }
@@ -1659,7 +3041,7 @@
             selectedOrderId = null;
         }
         
-        // Review Functions
+        // রিভিউ ফাংশন
         async function approveReview(reviewId) {
             if (!confirm('আপনি কি এই রিভিউ এপ্রুভ করতে চান?')) return;
             
@@ -1671,13 +3053,13 @@
                 if (response.ok) {
                     const result = await response.json();
                     loadReviews();
-                    alert(result.message || 'রিভিউ সফলভাবে এপ্রুভ হয়েছে!');
+                    imageUploader.showNotification(result.message || 'রিভিউ সফলভাবে এপ্রুভ হয়েছে!', 'success');
                 } else {
                     throw new Error('Failed to approve review');
                 }
             } catch (error) {
                 console.error('Error approving review:', error);
-                alert('রিভিউ এপ্রুভ করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('রিভিউ এপ্রুভ করতে সমস্যা হয়েছে!', 'error');
             }
         }
         
@@ -1692,72 +3074,32 @@
                 if (response.ok) {
                     const result = await response.json();
                     loadReviews();
-                    alert(result.message || 'রিভিউ সফলভাবে ডিলিট হয়েছে!');
+                    imageUploader.showNotification(result.message || 'রিভিউ সফলভাবে ডিলিট হয়েছে!', 'success');
                 } else {
                     throw new Error('Failed to delete review');
                 }
             } catch (error) {
                 console.error('Error deleting review:', error);
-                alert('রিভিউ ডিলিট করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('রিভিউ ডিলিট করতে সমস্যা হয়েছে!', 'error');
             }
         }
         
-        // Slider Functions
-        async function updateSliderField(sliderId, field, value) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/sliders/${sliderId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ [field]: value })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to update slider');
-                }
-            } catch (error) {
-                console.error('Error updating slider:', error);
-                alert('স্লাইডার আপডেট করতে সমস্যা হয়েছে!');
-            }
-        }
-        
-        async function toggleSlider(sliderId, isActive) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/sliders/${sliderId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ isActive })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to toggle slider');
-                }
-            } catch (error) {
-                console.error('Error toggling slider:', error);
-                alert('স্লাইডার স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে!');
-            }
-        }
-        
-        // Settings Functions
+        // সেটিংস ফাংশন
         async function handleSettingsSubmit(e) {
             e.preventDefault();
             
-            // Disable submit button and show loading
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে...';
+            submitBtn.innerHTML = '<div class="loading mr-2"></div> সেভ হচ্ছে...';
             submitBtn.disabled = true;
             
             const settingsData = {
-                whatsappNumber: document.getElementById('whatsapp-number').value,
-                phoneNumber: document.getElementById('phone-number').value,
-                footerText: document.getElementById('footer-text').value,
-                deliveryChargeInsideDhaka: parseFloat(document.getElementById('delivery-inside').value),
-                deliveryChargeOutsideDhaka: parseFloat(document.getElementById('delivery-outside').value),
-                serviceHours: document.getElementById('service-hours').value
+                whatsappNumber: document.getElementById('whatsapp-number-desktop').value,
+                phoneNumber: document.getElementById('phone-number-desktop').value,
+                footerText: document.getElementById('footer-text-desktop').value,
+                deliveryChargeInsideDhaka: parseFloat(document.getElementById('delivery-inside-desktop').value),
+                deliveryChargeOutsideDhaka: parseFloat(document.getElementById('delivery-outside-desktop').value),
+                serviceHours: document.getElementById('service-hours-desktop').value
             };
             
             try {
@@ -1771,21 +3113,51 @@
                 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(result.message || 'সেটিংস সফলভাবে সেভ হয়েছে!');
+                    imageUploader.showNotification(result.message || 'সেটিংস সফলভাবে সেভ হয়েছে!', 'success');
                 } else {
                     throw new Error('Failed to save settings');
                 }
             } catch (error) {
                 console.error('Error saving settings:', error);
-                alert('সেটিংস সেভ করতে সমস্যা হয়েছে!');
+                imageUploader.showNotification('সেটিংস সেভ করতে সমস্যা হয়েছে!', 'error');
             } finally {
-                // Restore button state
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
         }
         
-        // Helper Functions
+        // গ্যালারি ফাংশন
+        function hideGalleryModal() {
+            document.getElementById('gallery-modal').classList.remove('active');
+            selectedImageFor = null;
+            selectedGalleryImage = null;
+            document.getElementById('select-gallery-image-btn').classList.add('hidden');
+        }
+        
+        function useSelectedImage() {
+            if (!selectedGalleryImage || !selectedImageFor) return;
+            
+            // নির্বাচিত ইমেজ ব্যবহার করুন
+            if (selectedImageFor.startsWith('color-')) {
+                // কালার ইমেজ আপডেট
+                const colorIndex = selectedImageFor.split('-')[1];
+                const colorInputs = document.querySelectorAll('#colors-container input[name="color-image"]');
+                if (colorInputs[colorIndex]) {
+                    colorInputs[colorIndex].value = selectedGalleryImage;
+                }
+            }
+            
+            hideGalleryModal();
+            imageUploader.showNotification('ইমেজ সফলভাবে নির্বাচন করা হয়েছে', 'success');
+        }
+        
+        function hideAllModals() {
+            document.querySelectorAll('.modal.active').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+        
+        // হেল্পার ফাংশন
         function getStatusText(status) {
             const statusMap = {
                 'pending': 'পেন্ডিং',
@@ -1809,32 +3181,39 @@
         }
         
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            const options = { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            return date.toLocaleDateString('bn-BD', options);
+            try {
+                const date = new Date(dateString);
+                const options = { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                return date.toLocaleDateString('bn-BD', options);
+            } catch (e) {
+                return dateString;
+            }
         }
         
-        // Expose functions to global scope
+        // গ্লোবাল স্কোপে ফাংশন এক্সপোজ
         window.editProduct = editProduct;
         window.deleteProduct = deleteProduct;
         window.viewOrder = viewOrder;
         window.approveReview = approveReview;
         window.deleteReview = deleteReview;
+        window.editSlider = editSlider;
         window.updateSliderField = updateSliderField;
         window.toggleSlider = toggleSlider;
-        window.updateOrderStatus = updateOrderStatus;
+        window.showAddProductModal = showAddProductModal;
+        window.showAddSliderModal = showAddSliderModal;
         window.loadDashboard = loadDashboard;
         window.loadProducts = loadProducts;
         window.loadOrders = loadOrders;
         window.loadReviews = loadReviews;
         window.loadSliders = loadSliders;
         window.loadSettings = loadSettings;
+        window.switchPage = switchPage;
     </script>
 </body>
 </html>

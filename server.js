@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -11,9 +13,22 @@ app.use(cors({
   origin: ['https://superb-caramel-71d6e8.netlify.app', 'https://stupendous-griffin-263069.netlify.app', 'http://localhost:3000'],
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
+}));
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://billaharif661_db_user:2GCmDhaEOQUteXow@iwonttotast0.mza6qgz.mongodb.net/ROYAL_TRUST_BD?retryWrites=true&w=majority';
@@ -44,7 +59,8 @@ const productSchema = new mongoose.Schema({
   colors: [{
     name: String,
     code: String,
-    image: String
+    image: String, // Can be URL or base64
+    isBase64: { type: Boolean, default: false }
   }],
   size: { type: String, required: true },
   regularPrice: { type: Number, required: true },
@@ -89,6 +105,7 @@ const sliderSchema = new mongoose.Schema({
   subtitle: { type: String, required: true },
   description: { type: String, required: true },
   imageUrl: { type: String, required: true },
+  isBase64: { type: Boolean, default: false },
   badgeText: { type: String },
   badgeColor: { type: String },
   price: { type: Number },
@@ -127,6 +144,51 @@ function generateOrderId() {
   return `RT${timestamp}${random}`;
 }
 
+// Image handling utilities
+const saveBase64Image = (base64String, folder = 'products') => {
+  try {
+    // Remove data:image/png;base64, prefix if present
+    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    
+    // Generate unique filename
+    const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
+    const filepath = path.join(uploadsDir, filename);
+    
+    // Save file
+    fs.writeFileSync(filepath, buffer);
+    
+    // Return relative URL
+    return `/uploads/${filename}`;
+  } catch (error) {
+    console.error('Error saving base64 image:', error);
+    return null;
+  }
+};
+
+const saveUploadedFile = (file, folder = 'products') => {
+  try {
+    // Generate unique filename
+    const ext = path.extname(file.name);
+    const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${ext}`;
+    const filepath = path.join(uploadsDir, filename);
+    
+    // Move file to uploads directory
+    file.mv(filepath, (err) => {
+      if (err) {
+        console.error('Error moving file:', err);
+        return null;
+      }
+    });
+    
+    // Return relative URL
+    return `/uploads/${filename}`;
+  } catch (error) {
+    console.error('Error saving uploaded file:', error);
+    return null;
+  }
+};
+
 // Basic routes for testing
 app.get('/', (req, res) => {
   res.json({ 
@@ -144,6 +206,79 @@ app.get('/health', (req, res) => {
     database: dbStatus,
     uptime: process.uptime()
   });
+});
+
+// Image Upload Endpoint
+app.post('/api/upload', async (req, res) => {
+  try {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({ error: 'No files were uploaded' });
+    }
+    
+    const file = req.files.file;
+    const folder = req.body.folder || 'general';
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return res.status(400).json({ error: 'Invalid file type. Only images are allowed' });
+    }
+    
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: 'File too large. Max size is 5MB' });
+    }
+    
+    // Save file
+    const fileUrl = saveUploadedFile(file, folder);
+    
+    if (!fileUrl) {
+      return res.status(500).json({ error: 'Failed to save file' });
+    }
+    
+    res.json({
+      success: true,
+      message: 'File uploaded successfully',
+      url: fileUrl
+    });
+    
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Base64 Image Upload Endpoint
+app.post('/api/upload/base64', async (req, res) => {
+  try {
+    const { base64, folder = 'general' } = req.body;
+    
+    if (!base64) {
+      return res.status(400).json({ error: 'No base64 data provided' });
+    }
+    
+    // Validate base64 string
+    if (!base64.startsWith('data:image/')) {
+      return res.status(400).json({ error: 'Invalid base64 image data' });
+    }
+    
+    // Save base64 image
+    const fileUrl = saveBase64Image(base64, folder);
+    
+    if (!fileUrl) {
+      return res.status(500).json({ error: 'Failed to save image' });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Image uploaded successfully',
+      url: fileUrl
+    });
+    
+  } catch (error) {
+    console.error('Base64 upload error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Simple test endpoint
@@ -307,7 +442,23 @@ app.get('/api/admin/products', async (req, res) => {
 
 app.post('/api/admin/products', async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const productData = req.body;
+    
+    // Handle color images
+    if (productData.colors && Array.isArray(productData.colors)) {
+      for (let color of productData.colors) {
+        // If image is base64, save it and update URL
+        if (color.image && color.image.startsWith('data:image/')) {
+          const imageUrl = saveBase64Image(color.image, 'products');
+          if (imageUrl) {
+            color.image = imageUrl;
+            color.isBase64 = true;
+          }
+        }
+      }
+    }
+    
+    const product = new Product(productData);
     await product.save();
     res.json({ success: true, message: 'Product added successfully', product });
   } catch (error) {
@@ -317,7 +468,23 @@ app.post('/api/admin/products', async (req, res) => {
 
 app.put('/api/admin/products/:id', async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const productData = req.body;
+    
+    // Handle color images
+    if (productData.colors && Array.isArray(productData.colors)) {
+      for (let color of productData.colors) {
+        // If image is base64, save it and update URL
+        if (color.image && color.image.startsWith('data:image/')) {
+          const imageUrl = saveBase64Image(color.image, 'products');
+          if (imageUrl) {
+            color.image = imageUrl;
+            color.isBase64 = true;
+          }
+        }
+      }
+    }
+    
+    const product = await Product.findByIdAndUpdate(req.params.id, productData, { new: true });
     res.json({ success: true, message: 'Product updated successfully', product });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -409,11 +576,43 @@ app.get('/api/admin/sliders', async (req, res) => {
   }
 });
 
+app.post('/api/admin/sliders', async (req, res) => {
+  try {
+    const sliderData = req.body;
+    
+    // Handle image if it's base64
+    if (sliderData.imageUrl && sliderData.imageUrl.startsWith('data:image/')) {
+      const imageUrl = saveBase64Image(sliderData.imageUrl, 'sliders');
+      if (imageUrl) {
+        sliderData.imageUrl = imageUrl;
+        sliderData.isBase64 = true;
+      }
+    }
+    
+    const slider = new Slider(sliderData);
+    await slider.save();
+    res.json({ success: true, message: 'Slider added successfully', slider });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.put('/api/admin/sliders/:id', async (req, res) => {
   try {
+    const sliderData = req.body;
+    
+    // Handle image if it's base64
+    if (sliderData.imageUrl && sliderData.imageUrl.startsWith('data:image/')) {
+      const imageUrl = saveBase64Image(sliderData.imageUrl, 'sliders');
+      if (imageUrl) {
+        sliderData.imageUrl = imageUrl;
+        sliderData.isBase64 = true;
+      }
+    }
+    
     const slider = await Slider.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      sliderData,
       { new: true }
     );
     res.json({ success: true, message: 'Slider updated', slider });
@@ -506,6 +705,7 @@ const server = app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
   console.log(`🔌 MongoDB URI: ${process.env.MONGODB_URI ? 'Set' : 'Not set'}`);
+  console.log(`📁 Uploads directory: ${uploadsDir}`);
   
   // Initialize database after connection
   setTimeout(initializeDatabase, 2000);
