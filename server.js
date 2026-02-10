@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://superb-caramel-71d6e8.netlify.app', 'https://stupendous-griffin-263069.netlify.app', 'http://localhost:3000'],
+  origin: ['https://superb-caramel-71d6e8.netlify.app/', 'https://stupendous-griffin-263069.netlify.app', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
