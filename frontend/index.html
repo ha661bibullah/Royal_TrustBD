@@ -420,35 +420,6 @@
                 font-size: 0.9rem !important;
             }
         }
-        
-        /* লোডিং স্পিনার */
-        .loading-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #dc2626;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* ইমেজ ফেইলব্যাক স্টাইল */
-        .img-fallback {
-            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-        }
-        
-        .img-fallback i {
-            font-size: 2rem;
-        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -509,10 +480,6 @@
             <!-- Slides will be loaded dynamically -->
             <div id="slider-container">
                 <!-- Slides loaded by JavaScript -->
-                <div class="text-center py-20">
-                    <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-gray-600">স্লাইডার লোড হচ্ছে...</p>
-                </div>
             </div>
 
             <!-- অর্ডার বাটন -->
@@ -548,8 +515,8 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="panjabi-container">
                 <!-- Panjabi products will be loaded here by JavaScript -->
-                <div class="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-12">
-                    <div class="loading-spinner mx-auto mb-4"></div>
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600">পণ্য লোড হচ্ছে...</p>
                 </div>
             </div>
@@ -566,16 +533,6 @@
                     <h3 class="text-2xl font-bold text-red-700 mb-4">ডেলিভারি তথ্য:</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="delivery-info">
                         <!-- Delivery info loaded by JavaScript -->
-                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                            <h4 class="font-bold text-green-800 text-lg"><i class="fas fa-truck mr-2"></i>ডেলিভারি চার্জ</h4>
-                            <p class="text-green-700 mt-2">ঢাকার মধ্যে: <span class="font-bold" id="delivery-inside">60</span> টাকা</p>
-                            <p class="text-green-700">ঢাকার বাহিরে: <span class="font-bold" id="delivery-outside">160</span> টাকা</p>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <h4 class="font-bold text-blue-800 text-lg"><i class="fas fa-money-bill-wave mr-2"></i>পেমেন্ট সিস্টেম</h4>
-                            <p class="text-blue-700 mt-2">ক্যাশ অন ডেলিভারি (Cash on Delivery)</p>
-                            <p class="text-blue-700">ডেলিভারির সময় পেমেন্ট করুন</p>
-                        </div>
                     </div>
                 </div>
                 
@@ -593,7 +550,7 @@
                     
                     <div>
                         <label for="address" class="block text-lg font-medium text-gray-700 mb-2">সম্পূর্ণ ঠিকানা *</label>
-                        <textarea id="address" rows="3" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="বিস্তারিত ঠিকানা, এলাকা, জেলা"></textarea>
+                        <textarea id="address" rows="3" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -626,24 +583,13 @@
                         </div>
                     </div>
                     
-                    <div id="selected-product-info" class="bg-gray-50 p-4 rounded-lg border border-gray-200 hidden">
-                        <h4 class="font-bold text-gray-800 mb-2">নির্বাচিত পণ্য:</h4>
-                        <div class="flex justify-between">
-                            <span id="selected-product-name">-</span>
-                            <span id="selected-product-price" class="font-bold text-red-600">0 টাকা</span>
-                        </div>
-                        <div class="mt-2">
-                            <span id="selected-product-total" class="font-bold">মোট: 0 টাকা</span>
-                        </div>
-                    </div>
-                    
                     <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                         <h4 class="font-bold text-yellow-800 text-lg mb-2"><i class="fas fa-exclamation-circle mr-2"></i>গুরুত্বপূর্ণ তথ্য</h4>
                         <p class="text-yellow-700">অর্ডার নিশ্চিত করতে আপনাকে কল করা হবে। দয়া করে সঠিক নাম্বার দিন। একাধিক পাঞ্জাবি অর্ডার করতে পারবেন।</p>
                     </div>
                     
                     <div class="text-center">
-                        <button type="submit" id="submit-order-btn" class="bg-red-700 hover:bg-red-800 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg transition duration-300">
+                        <button type="submit" class="bg-red-700 hover:bg-red-800 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg transition duration-300">
                             <i class="fas fa-paper-plane mr-2"></i>অর্ডার কনফার্ম করুন
                         </button>
                         <p class="text-gray-600 mt-4">অর্ডার দেয়ার পর আমাদের প্রতিনিধি আপনার সাথে যোগাযোগ করবে</p>
@@ -661,7 +607,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" id="reviews-container">
                 <!-- Reviews will be loaded here by JavaScript -->
                 <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
-                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
                     <p class="text-gray-600">রিভিউ লোড হচ্ছে...</p>
                 </div>
             </div>
@@ -699,7 +645,7 @@
                     </div>
                     
                     <div class="text-center">
-                        <button type="submit" id="submit-review-btn" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-10 rounded-full text-lg shadow-lg transition duration-300">
+                        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-10 rounded-full text-lg shadow-lg transition duration-300">
                             <i class="fas fa-star mr-2"></i>রিভিউ জমা দিন
                         </button>
                         <p class="text-gray-600 mt-4">রিভিউ জমা দেয়ার পর তা এডমিন প্যানেলে যাবে এবং এপ্রুভ হলে ফ্রন্টএন্ডে দেখানো হবে</p>
@@ -742,9 +688,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-800 mb-4">অর্ডার সফলভাবে জমা হয়েছে!</h3>
-                <p class="text-gray-600 mb-4" id="order-success-message">আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।</p>
-                <p class="text-gray-700 font-bold mb-2">অর্ডার আইডি: <span id="success-order-id" class="text-red-600">RT000000</span></p>
-                <p class="text-gray-600 mb-6">আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবে।</p>
+                <p class="text-gray-600 mb-6">আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবে।</p>
                 <button id="close-modal" class="bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-8 rounded-full">
                     ঠিক আছে
                 </button>
@@ -768,31 +712,14 @@
         </div>
     </div>
 
-    <!-- Error Modal -->
-    <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-8 max-w-md mx-4">
-            <div class="text-center">
-                <div class="text-red-500 text-6xl mb-4">
-                    <i class="fas fa-exclamation-circle"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-4" id="error-title">সমস্যা হয়েছে!</h3>
-                <p class="text-gray-600 mb-6" id="error-message"></p>
-                <button id="close-error-modal" class="bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-8 rounded-full">
-                    ঠিক আছে
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // API Configuration
-        const API_BASE_URL = 'https://royal-trustbd.onrender.com';
+        const API_BASE_URL = 'https://royal-trustbd.onrender.com'; // Change this to your actual backend URL
         
         // Global Variables
         let panjabis = [];
         let reviews = [];
         let websiteSettings = {};
-        let selectedProduct = null;
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -804,30 +731,11 @@
             
             // Setup UI functionality
             setupUI();
-            
-            // Check API connection
-            checkApiConnection();
         });
-        
-        // Check API connection
-        async function checkApiConnection() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/health`);
-                if (response.ok) {
-                    console.log('✅ API connection successful');
-                } else {
-                    console.warn('⚠️ API connection issue');
-                }
-            } catch (error) {
-                console.error('❌ API connection failed:', error);
-            }
-        }
         
         // Load all data from API
         async function loadAllData() {
             try {
-                console.log('📡 Loading all data...');
-                
                 // Load website settings first
                 await loadWebsiteSettings();
                 
@@ -840,32 +748,28 @@
                 // Load sliders
                 await loadSliders();
                 
-                console.log('✅ All data loaded successfully');
             } catch (error) {
-                console.error('❌ Error loading data:', error);
-                showError('ডেটা লোড করতে সমস্যা হয়েছে', 'দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন অথবা কিছুক্ষণ পর আবার চেষ্টা করুন।');
+                console.error('Error loading data:', error);
+                showErrorMessages();
             }
         }
         
         // Load website settings
         async function loadWebsiteSettings() {
             try {
-                console.log('📋 Loading website settings...');
                 const response = await fetch(`${API_BASE_URL}/api/frontend/settings`);
                 if (response.ok) {
-                    const result = await response.json();
-                    websiteSettings = result;
+                    websiteSettings = await response.json();
                     updateWebsiteSettingsUI();
                 }
             } catch (error) {
-                console.error('❌ Error loading settings:', error);
+                console.error('Error loading settings:', error);
             }
         }
         
         // Load products
         async function loadProducts() {
             try {
-                console.log('👕 Loading products...');
                 const response = await fetch(`${API_BASE_URL}/api/frontend/products`);
                 if (response.ok) {
                     panjabis = await response.json();
@@ -874,28 +778,26 @@
                     updateDeliveryInfo();
                 }
             } catch (error) {
-                console.error('❌ Error loading products:', error);
+                console.error('Error loading products:', error);
             }
         }
         
         // Load reviews
         async function loadReviews() {
             try {
-                console.log('⭐ Loading reviews...');
                 const response = await fetch(`${API_BASE_URL}/api/frontend/reviews`);
                 if (response.ok) {
                     reviews = await response.json();
                     loadReviewsUI();
                 }
             } catch (error) {
-                console.error('❌ Error loading reviews:', error);
+                console.error('Error loading reviews:', error);
             }
         }
         
         // Load sliders
         async function loadSliders() {
             try {
-                console.log('🖼️ Loading sliders...');
                 const response = await fetch(`${API_BASE_URL}/api/frontend/sliders`);
                 if (response.ok) {
                     const sliders = await response.json();
@@ -905,7 +807,7 @@
                     }
                 }
             } catch (error) {
-                console.error('❌ Error loading sliders:', error);
+                console.error('Error loading sliders:', error);
             }
         }
         
@@ -934,25 +836,18 @@
             const deliveryInside = websiteSettings.deliveryChargeInsideDhaka || 60;
             const deliveryOutside = websiteSettings.deliveryChargeOutsideDhaka || 160;
             
-            document.getElementById('delivery-inside').textContent = deliveryInside;
-            document.getElementById('delivery-outside').textContent = deliveryOutside;
-        }
-        
-        // Function to get complete image URL
-        function getImageUrl(imagePath) {
-            if (!imagePath) {
-                return 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            }
-            
-            if (imagePath.startsWith('http')) {
-                return imagePath;
-            }
-            
-            if (imagePath.startsWith('/uploads')) {
-                return `${API_BASE_URL}${imagePath}`;
-            }
-            
-            return imagePath;
+            document.getElementById('delivery-info').innerHTML = `
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-800 text-lg"><i class="fas fa-truck mr-2"></i>ডেলিভারি চার্জ</h4>
+                    <p class="text-green-700 mt-2">ঢাকার মধ্যে: <span class="font-bold">${deliveryInside} টাকা</span></p>
+                    <p class="text-green-700">ঢাকার বাহিরে: <span class="font-bold">${deliveryOutside} টাকা</span></p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 class="font-bold text-blue-800 text-lg"><i class="fas fa-money-bill-wave mr-2"></i>পেমেন্ট সিস্টেম</h4>
+                    <p class="text-blue-700 mt-2">ক্যাশ অন ডেলিভারি (Cash on Delivery)</p>
+                    <p class="text-blue-700">ডেলিভারির সময় পেমেন্ট করুন</p>
+                </div>
+            `;
         }
         
         // Function to load panjabi products
@@ -964,7 +859,6 @@
                     <div class="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-12">
                         <i class="fas fa-tshirt text-4xl text-gray-400 mb-4"></i>
                         <p class="text-gray-600">কোনো পণ্য পাওয়া যায়নি</p>
-                        <p class="text-gray-500 text-sm mt-2">শীঘ্রই নতুন পণ্য যোগ করা হবে</p>
                     </div>
                 `;
                 return;
@@ -973,28 +867,20 @@
             container.innerHTML = panjabis.map(panjabi => {
                 if (!panjabi.isActive) return '';
                 
-                const firstColor = panjabi.colors && panjabi.colors.length > 0 ? panjabi.colors[0] : null;
-                const firstImage = firstColor ? getImageUrl(firstColor.image) : getImageUrl(null);
-                
                 return `
                     <div class="panjabi-card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
                         <div class="relative">
-                            <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden img-fallback" id="image-container-${panjabi._id}">
-                                <img src="${firstImage}" 
+                            <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                <img src="${panjabi.colors[0]?.image || 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" 
                                      alt="${panjabi.name}" 
                                      class="w-full h-full object-cover" 
-                                     id="image-${panjabi._id}"
-                                     onerror="this.style.display='none'; document.getElementById('image-fallback-${panjabi._id}').style.display='flex';">
-                                <div id="image-fallback-${panjabi._id}" class="hidden img-fallback w-full h-full flex-col">
-                                    <i class="fas fa-tshirt mb-2"></i>
-                                    <span class="text-sm">ছবি লোড হচ্ছে...</span>
-                                </div>
+                                     id="image-${panjabi._id}">
                             </div>
                             <div class="offer-badge">${panjabi.offerPercentage}% ছাড়</div>
                         </div>
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">${panjabi.name}</h3>
-                            <p class="text-gray-600 mb-4 text-sm line-clamp-2">${panjabi.description}</p>
+                            <p class="text-gray-600 mb-4 text-sm">${panjabi.description}</p>
                             
                             ${panjabi.colors && panjabi.colors.length > 0 ? `
                             <div class="mb-4">
@@ -1004,7 +890,7 @@
                                         <div class="color-option ${index === 0 ? 'active' : ''}" 
                                              style="background-color: ${color.code}"
                                              title="${color.name}"
-                                             data-image="${getImageUrl(color.image)}"
+                                             data-image="${color.image}"
                                              data-color-name="${color.name}"
                                              data-panjabi-id="${panjabi._id}">
                                         </div>
@@ -1042,13 +928,8 @@
                     
                     // Update image
                     const imageElement = document.getElementById(`image-${panjabiId}`);
-                    const fallbackElement = document.getElementById(`image-fallback-${panjabiId}`);
                     if (imageElement) {
                         imageElement.src = imageUrl;
-                        imageElement.style.display = 'block';
-                        if (fallbackElement) {
-                            fallbackElement.style.display = 'none';
-                        }
                     }
                     
                     // Update selected color text
@@ -1064,41 +945,6 @@
                     this.classList.add('active');
                 });
             });
-            
-            // Add click event to order buttons
-            document.querySelectorAll('.add-to-order').forEach(button => {
-                button.addEventListener('click', function() {
-                    const panjabiId = this.getAttribute('data-id');
-                    selectProductForOrder(panjabiId);
-                    
-                    // Scroll to order form
-                    document.getElementById('order').scrollIntoView({ 
-                        behavior: 'smooth' 
-                    });
-                });
-            });
-        }
-        
-        // Select product for order
-        function selectProductForOrder(panjabiId) {
-            selectedProduct = panjabis.find(p => p._id === panjabiId);
-            if (selectedProduct) {
-                document.getElementById('panjabi-select').value = panjabiId;
-                updateSelectedProductInfo();
-            }
-        }
-        
-        // Update selected product info in order form
-        function updateSelectedProductInfo() {
-            if (!selectedProduct) return;
-            
-            const quantity = parseInt(document.getElementById('quantity').value) || 1;
-            const totalPrice = selectedProduct.offerPrice * quantity;
-            
-            document.getElementById('selected-product-name').textContent = selectedProduct.name;
-            document.getElementById('selected-product-price').textContent = `${selectedProduct.offerPrice} টাকা`;
-            document.getElementById('selected-product-total').textContent = `মোট: ${totalPrice} টাকা`;
-            document.getElementById('selected-product-info').classList.remove('hidden');
         }
         
         // Populate product dropdown
@@ -1112,18 +958,6 @@
                     option.value = panjabi._id;
                     option.textContent = `${panjabi.name} - ${panjabi.offerPrice} টাকা`;
                     select.appendChild(option);
-                }
-            });
-            
-            // Add change event listener
-            select.addEventListener('change', function() {
-                const selectedId = this.value;
-                if (selectedId) {
-                    selectedProduct = panjabis.find(p => p._id === selectedId);
-                    updateSelectedProductInfo();
-                } else {
-                    selectedProduct = null;
-                    document.getElementById('selected-product-info').classList.add('hidden');
                 }
             });
         }
@@ -1221,7 +1055,7 @@
                 return `
                     <div class="hero-slide ${index === 0 ? 'active' : ''}" 
                          data-slide="${index + 1}" 
-                         style="background-image: url('${getImageUrl(slider.imageUrl)}')">
+                         style="background-image: url('${slider.imageUrl}')">
                         <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
                         <div class="absolute inset-0" style="background-image: linear-gradient(45deg, rgba(220, 38, 38, 0.1), rgba(185, 28, 28, 0.05))"></div>
                         
@@ -1473,21 +1307,18 @@
                 let currentValue = parseInt(quantityInput.value);
                 if (currentValue > 1) {
                     quantityInput.value = currentValue - 1;
-                    updateSelectedProductInfo();
                 }
             });
             
             increaseBtn.addEventListener('click', function() {
                 let currentValue = parseInt(quantityInput.value);
                 quantityInput.value = currentValue + 1;
-                updateSelectedProductInfo();
             });
             
             quantityInput.addEventListener('change', function() {
                 if (this.value < 1) {
                     this.value = 1;
                 }
-                updateSelectedProductInfo();
             });
         }
         
@@ -1498,40 +1329,29 @@
             orderForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const submitBtn = document.getElementById('submit-order-btn');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<div class="loading-spinner mr-2"></div> সাবমিট হচ্ছে...';
-                submitBtn.disabled = true;
-                
                 // Get form values
                 const name = document.getElementById('name').value.trim();
                 const phone = document.getElementById('phone').value.trim();
                 const address = document.getElementById('address').value.trim();
                 const panjabiId = document.getElementById('panjabi-select').value;
                 const size = document.getElementById('size').value;
-                const quantity = parseInt(document.getElementById('quantity').value) || 1;
+                const quantity = parseInt(document.getElementById('quantity').value);
                 
                 // Validation
                 if (!name || !phone || !address || !panjabiId || !size) {
-                    showError('ভুল তথ্য', 'দয়া করে সব তথ্য প্রদান করুন।');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    alert('দয়া করে সব তথ্য প্রদান করুন।');
                     return;
                 }
                 
                 if (phone.length !== 11 || !phone.startsWith('01')) {
-                    showError('ভুল মোবাইল নম্বর', 'দয়া করে সঠিক মোবাইল নম্বর দিন (11 ডিজিট, 01 দিয়ে শুরু)।');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    alert('দয়া করে সঠিক মোবাইল নম্বর দিন (11 ডিজিট, 01 দিয়ে শুরু)।');
                     return;
                 }
                 
                 // Find selected product
                 const selectedProduct = panjabis.find(p => p._id === panjabiId);
                 if (!selectedProduct) {
-                    showError('পণ্য নির্বাচন করুন', 'দয়া করে একটি পণ্য নির্বাচন করুন।');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    alert('দয়া করে একটি পণ্য নির্বাচন করুন।');
                     return;
                 }
                 
@@ -1554,8 +1374,6 @@
                     totalPrice: selectedProduct.offerPrice * quantity
                 };
                 
-                console.log('📤 Submitting order:', orderData);
-                
                 // Submit order to API
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/frontend/order`, {
@@ -1566,29 +1384,44 @@
                         body: JSON.stringify(orderData)
                     });
                     
-                    const result = await response.json();
-                    
-                    if (result.success) {
+                    if (response.ok) {
+                        const result = await response.json();
+                        
                         // Show success modal
-                        document.getElementById('success-order-id').textContent = result.orderId;
                         document.getElementById('order-success-modal').classList.remove('hidden');
                         
                         // Reset form
                         orderForm.reset();
                         document.getElementById('quantity').value = 1;
-                        document.getElementById('selected-product-info').classList.add('hidden');
-                        selectedProduct = null;
                         
-                        console.log('✅ Order submitted successfully:', result);
+                        // Log success
+                        console.log('Order submitted successfully:', result);
                     } else {
-                        throw new Error(result.error || 'Order submission failed');
+                        throw new Error('Order submission failed');
                     }
                 } catch (error) {
-                    console.error('❌ Error submitting order:', error);
-                    showError('অর্ডার জমা দিতে সমস্যা হয়েছে', error.message || 'দয়া করে পরে আবার চেষ্টা করুন।');
-                } finally {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    console.error('Error submitting order:', error);
+                    alert('অর্ডার জমা দিতে সমস্যা হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।');
+                }
+            });
+            
+            // Add to order buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('add-to-order') || 
+                    e.target.closest('.add-to-order')) {
+                    
+                    const button = e.target.classList.contains('add-to-order') ? 
+                        e.target : e.target.closest('.add-to-order');
+                    
+                    const panjabiId = button.getAttribute('data-id');
+                    
+                    // Scroll to order form
+                    document.getElementById('order').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                    
+                    // Select the product in dropdown
+                    document.getElementById('panjabi-select').value = panjabiId;
                 }
             });
         }
@@ -1600,11 +1433,6 @@
             reviewForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const submitBtn = document.getElementById('submit-review-btn');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<div class="loading-spinner mr-2"></div> সাবমিট হচ্ছে...';
-                submitBtn.disabled = true;
-                
                 // Get form values
                 const name = document.getElementById('review-name').value.trim();
                 const location = document.getElementById('review-location').value.trim();
@@ -1613,16 +1441,12 @@
                 
                 // Validation
                 if (!name || !location || !text) {
-                    showError('ভুল তথ্য', 'দয়া করে সব তথ্য প্রদান করুন।');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    alert('দয়া করে সব তথ্য প্রদান করুন।');
                     return;
                 }
                 
                 if (text.length < 10) {
-                    showError('রিভিউ খুব ছোট', 'দয়া করে অন্তত ১০টি অক্ষরের রিভিউ লিখুন।');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    alert('দয়া করে অন্তত ১০টি অক্ষরের রিভিউ লিখুন।');
                     return;
                 }
                 
@@ -1635,8 +1459,6 @@
                     isApproved: false
                 };
                 
-                console.log('📤 Submitting review:', reviewData);
-                
                 // Submit review to API
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/frontend/review`, {
@@ -1647,9 +1469,9 @@
                         body: JSON.stringify(reviewData)
                     });
                     
-                    const result = await response.json();
-                    
-                    if (result.success) {
+                    if (response.ok) {
+                        const result = await response.json();
+                        
                         // Show success modal
                         document.getElementById('review-success-modal').classList.remove('hidden');
                         
@@ -1657,16 +1479,14 @@
                         reviewForm.reset();
                         resetStarRating();
                         
-                        console.log('✅ Review submitted successfully:', result);
+                        // Log success
+                        console.log('Review submitted successfully:', result);
                     } else {
-                        throw new Error(result.error || 'Review submission failed');
+                        throw new Error('Review submission failed');
                     }
                 } catch (error) {
-                    console.error('❌ Error submitting review:', error);
-                    showError('রিভিউ জমা দিতে সমস্যা হয়েছে', error.message || 'দয়া করে পরে আবার চেষ্টা করুন।');
-                } finally {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    console.error('Error submitting review:', error);
+                    alert('রিভিউ জমা দিতে সমস্যা হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।');
                 }
             });
         }
@@ -1740,11 +1560,6 @@
                 document.getElementById('review-success-modal').classList.add('hidden');
             });
             
-            // Error modal
-            document.getElementById('close-error-modal').addEventListener('click', function() {
-                document.getElementById('error-modal').classList.add('hidden');
-            });
-            
             // Close modals when clicking outside
             document.querySelectorAll('[id$="-modal"]').forEach(modal => {
                 modal.addEventListener('click', function(e) {
@@ -1753,13 +1568,6 @@
                     }
                 });
             });
-        }
-        
-        // Show error message
-        function showError(title, message) {
-            document.getElementById('error-title').textContent = title;
-            document.getElementById('error-message').textContent = message;
-            document.getElementById('error-modal').classList.remove('hidden');
         }
         
         // Helper function to generate star rating HTML
@@ -1777,17 +1585,35 @@
         
         // Helper function to format date
         function formatDate(dateString) {
-            try {
-                const date = new Date(dateString);
-                const options = { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                };
-                return date.toLocaleDateString('bn-BD', options);
-            } catch (e) {
-                return 'তারিখ অজানা';
-            }
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('bn-BD', options);
+        }
+        
+        // Show error messages when API fails
+        function showErrorMessages() {
+            const productsContainer = document.getElementById('panjabi-container');
+            const reviewsContainer = document.getElementById('reviews-container');
+            
+            productsContainer.innerHTML = `
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                    <p class="text-gray-600">পণ্য লোড করতে সমস্যা হয়েছে</p>
+                    <p class="text-gray-500 text-sm mt-2">দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন</p>
+                </div>
+            `;
+            
+            reviewsContainer.innerHTML = `
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                    <p class="text-gray-600">রিভিউ লোড করতে সমস্যা হয়েছে</p>
+                    <p class="text-gray-500 text-sm mt-2">দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন</p>
+                </div>
+            `;
         }
         
         // WhatsApp button functionality
@@ -1796,58 +1622,6 @@
             const message = "আসসালামু আলাইকুম, ROYAL TRUST BD থেকে পাঞ্জাবি সম্পর্কে জানতে চাই।";
             this.href = `https://wa.me/88${whatsappNumber}?text=${encodeURIComponent(message)}`;
         });
-        
-        // File upload function (if needed in frontend)
-        async function uploadImage(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('folder', 'products');
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    return result.url;
-                } else {
-                    throw new Error(result.error || 'Upload failed');
-                }
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                throw error;
-            }
-        }
-        
-        // Base64 image upload function
-        async function uploadBase64Image(base64String) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/upload/base64`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        base64: base64String,
-                        folder: 'products'
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    return result.url;
-                } else {
-                    throw new Error(result.error || 'Upload failed');
-                }
-            } catch (error) {
-                console.error('Error uploading base64 image:', error);
-                throw error;
-            }
-        }
     </script>
 </body>
 </html>
