@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROYAL TRUST BD - প্রিমিয়াম পাঞ্জাবি</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Bengali -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+        .panjabi-card {
+            transition: transform 0.3s ease;
+        }
+        .panjabi-card:hover {
+            transform: translateY(-5px);
+        }
+        .review-item {
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .offer-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc2626;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .color-option.active {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+        .slide-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            display: inline-block;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .slide-indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            user-select: none;
+        }
+        /* নেব্বার স্টাইলস */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .nav-link {
+            position: relative;
+            padding: 8px 0;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #dc2626;
+        }
+        .nav-link.active {
+            color: #dc2626;
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #dc2626;
+            border-radius: 2px;
+        }
+        /* হ্যামবার্গার মেনু */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #333;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+        /* মোবাইল মেনু */
+        .mobile-menu {
+            display: none;
+            background: white;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        /* অর্ডার বাটন স্টাইল */
+        .order-now-btn {
+            position: absolute;
+            top: 50%;
+            right: 8%;
+            transform: translateY(-50%);
+            z-index: 30;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.25rem;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .order-now-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 15px 35px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+        }
+        
+        .order-now-btn i {
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* WhatsApp বাটন স্টাইল */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 4px 4px 6px #999;
+            background-color: #128C7E;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* স্লাইডার কন্টেইনার */
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            margin-top: 0;
+        }
+        
+        /* স্লাইডার স্লাইড */
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .hero-slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        /* স্লাইডার কন্টেন্ট */
+        .slide-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .desktop-menu {
+                display: none;
+            }
+            .mobile-menu .nav-link {
+                display: block;
+                padding: 15px 20px;
+                border-bottom: 1px solid #f3f4f6;
+                margin: 0;
+            }
+            .mobile-menu .nav-link:last-child {
+                border-bottom: none;
+            }
+            .mobile-menu .nav-link.active::after {
+                display: none;
+            }
+            .mobile-menu .nav-link.active {
+                background: #fef2f2;
+            }
+            
+            /* মোবাইলে স্লাইডার হাইট */
+            .hero-slider-container {
+                height: 70vh;
+            }
+            
+            /* মোবাইলে অর্ডার বাটন স্টাইল */
+            .order-now-btn {
+                position: absolute;
+                top: auto;
+                bottom: 20px;
+                right: 50%;
+                transform: translateX(50%);
+                padding: 14px 28px;
+                font-size: 1.1rem;
+                width: 90%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .order-now-btn:hover {
+                transform: translateX(50%) scale(1.05);
+            }
+            
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                bottom: 30px;
+                right: 30px;
+                font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-slider-container {
+                height: 60vh;
+            }
+            
+            .order-now-btn {
+                bottom: 15px;
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+            
+            .whatsapp-float {
+                width: 45px;
+                height: 45px;
+                bottom: 25px;
+                right: 25px;
+                font-size: 20px;
+            }
+        }
+        
+        /* স্লাইডার ইন্ডিকেটর বার */
+        .slider-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 20;
+        }
+        
+        .slider-progress {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        /* স্লাইডার নেভিগেশন বাটন */
+        .slider-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .slider-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .prev-btn {
+            left: 20px;
+        }
+        
+        .next-btn {
+            right: 20px;
+        }
+        
+        /* স্লাইডার ইন্ডিকেটর ডটস */
+        .slider-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+        
+        .slider-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .slider-indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        /* স্লাইডার কন্টেন্ট রেস্পন্সিভ স্টাইল */
+        @media (max-width: 640px) {
+            .slide-content h2 {
+                font-size: 1.8rem !important;
+            }
+            .slide-content p {
+                font-size: 0.9rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- নেব্বার -->
+    <nav class="navbar" id="navbar">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <!-- লোগো -->
+                <div class="flex items-center">
+                    <a href="#home" class="text-xl md:text-2xl font-bold text-red-700">ROYAL TRUST BD</a>
+                </div>
+                
+                <!-- ডেক্সটপ মেনু -->
+                <div class="desktop-menu hidden md:flex items-center">
+                    <a href="#home" class="nav-link active">হোম</a>
+                    <a href="#products" class="nav-link">পণ্য</a>
+                    <a href="#order" class="nav-link">অর্ডার</a>
+                    <a href="#reviews" class="nav-link">রিভিউ</a>
+                    <a href="#contact" class="nav-link">যোগাযোগ</a>
+                    <a href="tel:01911465879" class="ml-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-full transition duration-300">
+                        <i class="fas fa-phone-alt mr-2"></i>কল করুন
+                    </a>
+                </div>
+                
+                <!-- হ্যামবার্গার মেনু বাটন (মোবাইল) -->
+                <div class="hamburger md:hidden" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            
+            <!-- মোবাইল মেনু -->
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="#home" class="nav-link active">হোম</a>
+                <a href="#products" class="nav-link">পণ্য</a>
+                <a href="#order" class="nav-link">অর্ডার</a>
+                <a href="#reviews" class="nav-link">রিভিউ</a>
+                <a href="#contact" class="nav-link">যোগাযোগ</a>
+                <div class="p-4">
+                    <a href="tel:01911465879" class="block bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-full text-center transition duration-300">
+                        <i class="fas fa-phone-alt mr-2"></i>কল করুন: 01911465879
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- WhatsApp ফ্লোটিং বাটন -->
+    <a href="https://wa.me/8801911465879" target="_blank" class="whatsapp-float" id="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Hero Slider Section -->
+    <section class="relative overflow-hidden" id="home">
+        <!-- Slider Container -->
+        <div class="hero-slider-container">
+            <!-- Slides will be loaded dynamically -->
+            <div id="slider-container">
+                <!-- Slides loaded by JavaScript -->
+            </div>
+
+            <!-- অর্ডার বাটন -->
+            <a href="#order" class="order-now-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span>অর্ডার করুন এখনই</span>
+            </a>
+
+            <!-- Progress Bar -->
+            <div class="slider-progress-bar">
+                <div class="slider-progress" id="slider-progress"></div>
+            </div>
+
+            <!-- Slide Indicators -->
+            <div class="slider-indicators" id="slider-indicators">
+                <!-- Indicators loaded by JavaScript -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <button class="slider-nav-btn prev-btn" id="prev-slide">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="slider-nav-btn next-btn" id="next-slide">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Panjabi Products Section -->
+    <section class="py-16 bg-white" id="products">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">আমাদের পাঞ্জাবি কালেকশন</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="panjabi-container">
+                <!-- Panjabi products will be loaded here by JavaScript -->
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">পণ্য লোড হচ্ছে...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Form Section -->
+    <section class="py-16 bg-gradient-to-r from-gray-100 to-gray-200" id="order">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">পাঞ্জাবি অর্ডার ফর্ম</h2>
+            
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-red-700 mb-4">ডেলিভারি তথ্য:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="delivery-info">
+                        <!-- Delivery info loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <form id="order-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-lg font-medium text-gray-700 mb-2">আপনার নাম *</label>
+                            <input type="text" id="name" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-lg font-medium text-gray-700 mb-2">মোবাইল নম্বর *</label>
+                            <input type="tel" id="phone" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="01XXXXXXXXX">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="address" class="block text-lg font-medium text-gray-700 mb-2">সম্পূর্ণ ঠিকানা *</label>
+                        <textarea id="address" rows="3" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="panjabi-select" class="block text-lg font-medium text-gray-700 mb-2">পাঞ্জাবি সিলেক্ট করুন *</label>
+                            <select id="panjabi-select" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">পাঞ্জাবি নির্বাচন করুন</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="size" class="block text-lg font-medium text-gray-700 mb-2">সাইজ নির্বাচন করুন *</label>
+                            <select id="size" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">সাইজ নির্বাচন করুন</option>
+                                <option value="S">S (ছোট)</option>
+                                <option value="M">M (মাধ্যম)</option>
+                                <option value="L">L (বড়)</option>
+                                <option value="XL">XL (এক্সট্রা লার্জ)</option>
+                                <option value="XXL">XXL (ডাবল এক্সট্রা লার্জ)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-lg font-medium text-gray-700 mb-2">পরিমাণ</label>
+                            <div class="flex items-center">
+                                <div class="quantity-btn" id="decrease-qty">-</div>
+                                <input type="number" id="quantity" min="1" value="1" class="w-16 text-center mx-2 p-2 border border-gray-300 rounded-lg">
+                                <div class="quantity-btn" id="increase-qty">+</div>
+                                <span class="ml-2 text-gray-600">পিস</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 class="font-bold text-yellow-800 text-lg mb-2"><i class="fas fa-exclamation-circle mr-2"></i>গুরুত্বপূর্ণ তথ্য</h4>
+                        <p class="text-yellow-700">অর্ডার নিশ্চিত করতে আপনাকে কল করা হবে। দয়া করে সঠিক নাম্বার দিন। একাধিক পাঞ্জাবি অর্ডার করতে পারবেন।</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="bg-red-700 hover:bg-red-800 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg transition duration-300">
+                            <i class="fas fa-paper-plane mr-2"></i>অর্ডার কনফার্ম করুন
+                        </button>
+                        <p class="text-gray-600 mt-4">অর্ডার দেয়ার পর আমাদের প্রতিনিধি আপনার সাথে যোগাযোগ করবে</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="py-16 bg-white" id="reviews">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">গ্রাহকদের রিভিউ</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" id="reviews-container">
+                <!-- Reviews will be loaded here by JavaScript -->
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">রিভিউ লোড হচ্ছে...</p>
+                </div>
+            </div>
+            
+            <!-- Review Form -->
+            <div class="max-w-2xl mx-auto bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-lg p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">আপনার রিভিউ লিখুন</h3>
+                <form id="review-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="review-name" class="block text-lg font-medium text-gray-700 mb-2">আপনার নাম</label>
+                            <input type="text" id="review-name" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="review-location" class="block text-lg font-medium text-gray-700 mb-2">আপনার অবস্থান</label>
+                            <input type="text" id="review-location" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="যেমন: ঢাকা, চট্টগ্রাম">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="review-text" class="block text-lg font-medium text-gray-700 mb-2">রিভিউ *</label>
+                        <textarea id="review-text" rows="4" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="আপনার অভিজ্ঞতা শেয়ার করুন..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label for="review-rating" class="block text-lg font-medium text-gray-700 mb-2">রেটিং</label>
+                        <div class="flex space-x-1" id="rating-stars">
+                            <i class="far fa-star text-2xl text-yellow-500 cursor-pointer" data-rating="1"></i>
+                            <i class="far fa-star text-2xl text-yellow-500 cursor-pointer" data-rating="2"></i>
+                            <i class="far fa-star text-2xl text-yellow-500 cursor-pointer" data-rating="3"></i>
+                            <i class="far fa-star text-2xl text-yellow-500 cursor-pointer" data-rating="4"></i>
+                            <i class="far fa-star text-2xl text-yellow-500 cursor-pointer" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" id="review-rating" value="5">
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-10 rounded-full text-lg shadow-lg transition duration-300">
+                            <i class="fas fa-star mr-2"></i>রিভিউ জমা দিন
+                        </button>
+                        <p class="text-gray-600 mt-4">রিভিউ জমা দেয়ার পর তা এডমিন প্যানেলে যাবে এবং এপ্রুভ হলে ফ্রন্টএন্ডে দেখানো হবে</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-900 to-black text-white py-12" id="contact">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-8 md:mb-0">
+                    <h3 class="text-3xl font-bold mb-4">ROYAL TRUST BD</h3>
+                    <p class="text-gray-300" id="footer-text">প্রিমিয়াম পাঞ্জাবির নির্ভরযোগ্য ঠিকানা</p>
+                    <p class="text-gray-300 mt-2">সর্বোচ্চ মানের কাপড় ও সেলাই</p>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <h4 class="text-2xl font-bold mb-4">যোগাযোগ</h4>
+                    <p class="text-xl mb-2"><i class="fas fa-phone-alt mr-2"></i><span id="phone-number">01911465879</span></p>
+                    <p class="text-xl mb-4"><i class="fab fa-whatsapp mr-2"></i>হোয়াটসঅ্যাপ: <span id="whatsapp-number">01911465879</span></p>
+                    <p class="text-gray-300" id="service-hours">সার্বক্ষণিক সেবা: সকাল ৯টা - রাত ১০টা</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; <span id="current-year">2023</span> ROYAL TRUST BD. সকল স্বত্ব সংরক্ষিত।</p>
+                <p class="mt-2">ওয়েবসাইট ডিজাইন: HTML, Tailwind CSS & JavaScript</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="text-green-500 text-6xl mb-4">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">অর্ডার সফলভাবে জমা হয়েছে!</h3>
+                <p class="text-gray-600 mb-6">আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবে।</p>
+                <button id="close-modal" class="bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-8 rounded-full">
+                    ঠিক আছে
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Success Modal -->
+    <div id="review-success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="text-blue-500 text-6xl mb-4">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">রিভিউ জমা দেওয়া হয়েছে!</h3>
+                <p class="text-gray-600 mb-6">আপনার রিভিউটি এডমিন প্যানেলে পাঠানো হয়েছে। এপ্রুভ হলে এটি ওয়েবসাইটে দেখানো হবে।</p>
+                <button id="close-review-modal" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-full">
+                    ধন্যবাদ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://your-backend.onrender.com'; // Change this to your actual backend URL
+        
+        // Global Variables
+        let panjabis = [];
+        let reviews = [];
+        let websiteSettings = {};
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Load all data from API
+            loadAllData();
+            
+            // Setup UI functionality
+            setupUI();
+        });
+        
+        // Load all data from API
+        async function loadAllData() {
+            try {
+                // Load website settings first
+                await loadWebsiteSettings();
+                
+                // Load products
+                await loadProducts();
+                
+                // Load reviews
+                await loadReviews();
+                
+                // Load sliders
+                await loadSliders();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showErrorMessages();
+            }
+        }
+        
+        // Load website settings
+        async function loadWebsiteSettings() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/frontend/settings`);
+                if (response.ok) {
+                    websiteSettings = await response.json();
+                    updateWebsiteSettingsUI();
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+        
+        // Load products
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/frontend/products`);
+                if (response.ok) {
+                    panjabis = await response.json();
+                    loadPanjabiProducts();
+                    populateProductDropdown();
+                    updateDeliveryInfo();
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+        
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/frontend/reviews`);
+                if (response.ok) {
+                    reviews = await response.json();
+                    loadReviewsUI();
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+        
+        // Load sliders
+        async function loadSliders() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/frontend/sliders`);
+                if (response.ok) {
+                    const sliders = await response.json();
+                    loadSlidersUI(sliders);
+                    if (sliders.length > 0) {
+                        initializeSlider(sliders);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading sliders:', error);
+            }
+        }
+        
+        // Update website settings UI
+        function updateWebsiteSettingsUI() {
+            // Update WhatsApp number
+            const whatsappNumber = websiteSettings.whatsappNumber || '01911465879';
+            document.getElementById('whatsapp-number').textContent = whatsappNumber;
+            
+            // Update WhatsApp button
+            const whatsappBtn = document.getElementById('whatsapp-btn');
+            whatsappBtn.href = `https://wa.me/88${whatsappNumber}`;
+            
+            // Update phone number
+            document.getElementById('phone-number').textContent = websiteSettings.phoneNumber || '01911465879';
+            
+            // Update footer text
+            document.getElementById('footer-text').textContent = websiteSettings.footerText || 'প্রিমিয়াম পাঞ্জাবির নির্ভরযোগ্য ঠিকানা';
+            
+            // Update service hours
+            document.getElementById('service-hours').textContent = websiteSettings.serviceHours || 'সার্বক্ষণিক সেবা: সকাল ৯টা - রাত ১০টা';
+        }
+        
+        // Update delivery info
+        function updateDeliveryInfo() {
+            const deliveryInside = websiteSettings.deliveryChargeInsideDhaka || 60;
+            const deliveryOutside = websiteSettings.deliveryChargeOutsideDhaka || 160;
+            
+            document.getElementById('delivery-info').innerHTML = `
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-800 text-lg"><i class="fas fa-truck mr-2"></i>ডেলিভারি চার্জ</h4>
+                    <p class="text-green-700 mt-2">ঢাকার মধ্যে: <span class="font-bold">${deliveryInside} টাকা</span></p>
+                    <p class="text-green-700">ঢাকার বাহিরে: <span class="font-bold">${deliveryOutside} টাকা</span></p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 class="font-bold text-blue-800 text-lg"><i class="fas fa-money-bill-wave mr-2"></i>পেমেন্ট সিস্টেম</h4>
+                    <p class="text-blue-700 mt-2">ক্যাশ অন ডেলিভারি (Cash on Delivery)</p>
+                    <p class="text-blue-700">ডেলিভারির সময় পেমেন্ট করুন</p>
+                </div>
+            `;
+        }
+        
+        // Function to load panjabi products
+        function loadPanjabiProducts() {
+            const container = document.getElementById('panjabi-container');
+            
+            if (!panjabis || panjabis.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-12">
+                        <i class="fas fa-tshirt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">কোনো পণ্য পাওয়া যায়নি</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = panjabis.map(panjabi => {
+                if (!panjabi.isActive) return '';
+                
+                return `
+                    <div class="panjabi-card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                        <div class="relative">
+                            <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                <img src="${panjabi.colors[0]?.image || 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" 
+                                     alt="${panjabi.name}" 
+                                     class="w-full h-full object-cover" 
+                                     id="image-${panjabi._id}">
+                            </div>
+                            <div class="offer-badge">${panjabi.offerPercentage}% ছাড়</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${panjabi.name}</h3>
+                            <p class="text-gray-600 mb-4 text-sm">${panjabi.description}</p>
+                            
+                            ${panjabi.colors && panjabi.colors.length > 0 ? `
+                            <div class="mb-4">
+                                <p class="font-medium text-gray-700 mb-2">রং নির্বাচন করুন:</p>
+                                <div class="flex items-center mb-2" id="color-selector-${panjabi._id}">
+                                    ${panjabi.colors.map((color, index) => `
+                                        <div class="color-option ${index === 0 ? 'active' : ''}" 
+                                             style="background-color: ${color.code}"
+                                             title="${color.name}"
+                                             data-image="${color.image}"
+                                             data-color-name="${color.name}"
+                                             data-panjabi-id="${panjabi._id}">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <p class="text-sm text-gray-600" id="selected-color-${panjabi._id}">সিলেক্টেড: ${panjabi.colors[0].name}</p>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="mb-4">
+                                <p class="font-medium text-gray-700">সাইজ: <span class="font-normal">${panjabi.size}</span></p>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-lg line-through text-gray-500">${panjabi.regularPrice} টাকা</p>
+                                    <p class="text-2xl font-bold text-red-700">${panjabi.offerPrice} টাকা</p>
+                                </div>
+                                <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 add-to-order" 
+                                        data-id="${panjabi._id}">
+                                    অর্ডার করুন
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add color selector functionality
+            document.querySelectorAll('.color-option').forEach(colorOption => {
+                colorOption.addEventListener('click', function() {
+                    const panjabiId = this.getAttribute('data-panjabi-id');
+                    const imageUrl = this.getAttribute('data-image');
+                    const colorName = this.getAttribute('data-color-name');
+                    
+                    // Update image
+                    const imageElement = document.getElementById(`image-${panjabiId}`);
+                    if (imageElement) {
+                        imageElement.src = imageUrl;
+                    }
+                    
+                    // Update selected color text
+                    const selectedColorElement = document.getElementById(`selected-color-${panjabiId}`);
+                    if (selectedColorElement) {
+                        selectedColorElement.textContent = `সিলেক্টেড: ${colorName}`;
+                    }
+                    
+                    // Update active color
+                    document.querySelectorAll(`#color-selector-${panjabiId} .color-option`).forEach(option => {
+                        option.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        }
+        
+        // Populate product dropdown
+        function populateProductDropdown() {
+            const select = document.getElementById('panjabi-select');
+            select.innerHTML = '<option value="">পাঞ্জাবি নির্বাচন করুন</option>';
+            
+            panjabis.forEach(panjabi => {
+                if (panjabi.isActive) {
+                    const option = document.createElement('option');
+                    option.value = panjabi._id;
+                    option.textContent = `${panjabi.name} - ${panjabi.offerPrice} টাকা`;
+                    select.appendChild(option);
+                }
+            });
+        }
+        
+        // Load reviews UI
+        function loadReviewsUI() {
+            const container = document.getElementById('reviews-container');
+            
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+                        <i class="fas fa-star text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">কোনো রিভিউ পাওয়া যায়নি</p>
+                        <p class="text-gray-500 text-sm mt-2">প্রথম রিভিউ লিখে দিন!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = reviews.map(review => {
+                return `
+                    <div class="review-item bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-600 to-red-400 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
+                                ${review.name.charAt(0)}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">${review.name}</h4>
+                                <p class="text-gray-600">${review.location} • ${formatDate(review.createdAt)}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            ${getStarRating(review.rating)}
+                        </div>
+                        <p class="text-gray-700">${review.text}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Load sliders UI
+        function loadSlidersUI(sliders) {
+            const container = document.getElementById('slider-container');
+            const indicators = document.getElementById('slider-indicators');
+            
+            if (!sliders || sliders.length === 0) {
+                container.innerHTML = `
+                    <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                        <div class="container mx-auto px-4 md:px-8 h-full">
+                            <div class="slide-content">
+                                <div class="max-w-2xl ml-0 md:ml-8 lg:ml-16">
+                                    <h2 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 leading-tight">
+                                        <span class="block">রয়েল ট্রাস্ট BD</span>
+                                        <span class="block text-red-300">প্রিমিয়াম পাঞ্জাবি</span>
+                                    </h2>
+                                    <p class="text-lg md:text-xl lg:text-2xl text-white/90 mb-8 max-w-lg">
+                                        উচ্চমানের পাঞ্জাবির জন্য নির্ভরযোগ্য ঠিকানা
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                indicators.innerHTML = '<div class="slider-indicator active"></div>';
+                return;
+            }
+            
+            // Filter active sliders and sort by slideNumber
+            const activeSliders = sliders
+                .filter(slider => slider.isActive)
+                .sort((a, b) => a.slideNumber - b.slideNumber);
+            
+            container.innerHTML = activeSliders.map((slider, index) => {
+                const badgeColors = {
+                    'red': 'bg-red-600/90',
+                    'blue': 'bg-blue-600/90',
+                    'purple': 'bg-purple-600/90',
+                    'amber': 'bg-amber-600/90',
+                    'green': 'bg-green-600/90'
+                };
+                
+                const textColors = {
+                    'red': 'text-red-300',
+                    'blue': 'text-blue-300',
+                    'purple': 'text-purple-300',
+                    'amber': 'text-amber-300',
+                    'green': 'text-green-300'
+                };
+                
+                const badgeClass = badgeColors[slider.badgeColor] || 'bg-red-600/90';
+                const textClass = textColors[slider.badgeColor] || 'text-red-300';
+                
+                return `
+                    <div class="hero-slide ${index === 0 ? 'active' : ''}" 
+                         data-slide="${index + 1}" 
+                         style="background-image: url('${slider.imageUrl}')">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                        <div class="absolute inset-0" style="background-image: linear-gradient(45deg, rgba(220, 38, 38, 0.1), rgba(185, 28, 28, 0.05))"></div>
+                        
+                        <div class="container mx-auto px-4 md:px-8 h-full">
+                            <div class="slide-content">
+                                <div class="max-w-2xl ml-0 md:ml-8 lg:ml-16">
+                                    ${slider.badgeText ? `
+                                    <div class="inline-block mb-4 px-4 py-2 ${badgeClass} backdrop-blur-sm rounded-full text-white text-sm font-semibold">
+                                        <i class="fas fa-crown mr-2"></i>${slider.badgeText}
+                                    </div>
+                                    ` : ''}
+                                    <h2 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 leading-tight">
+                                        <span class="block">${slider.title}</span>
+                                        <span class="block ${textClass}">${slider.subtitle}</span>
+                                    </h2>
+                                    <p class="text-lg md:text-xl lg:text-2xl text-white/90 mb-8 max-w-lg">
+                                        ${slider.description}
+                                    </p>
+                                    ${slider.price ? `
+                                    <div class="flex flex-wrap gap-4">
+                                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                                            <p class="text-white font-bold text-2xl">${slider.price} <span class="text-lg">টাকা</span></p>
+                                            ${slider.originalPrice ? `<p class="text-white/80 text-sm line-through">${slider.originalPrice} টাকা</p>` : ''}
+                                        </div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            indicators.innerHTML = activeSliders.map((_, index) => `
+                <div class="slider-indicator ${index === 0 ? 'active' : ''}" data-slide="${index + 1}"></div>
+            `).join('');
+        }
+        
+        // Initialize slider functionality
+        function initializeSlider(sliders) {
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.hero-slide');
+            const indicators = document.querySelectorAll('.slider-indicator');
+            const progressBar = document.getElementById('slider-progress');
+            const totalSlides = slides.length;
+            let slideInterval;
+            const slideTime = 5000;
+            
+            if (totalSlides === 0) return;
+            
+            // Function to update slide
+            function updateSlide() {
+                slides.forEach(slide => slide.classList.remove('active'));
+                indicators.forEach(indicator => indicator.classList.remove('active'));
+                
+                slides[currentSlide].classList.add('active');
+                if (indicators[currentSlide]) {
+                    indicators[currentSlide].classList.add('active');
+                }
+            }
+            
+            // Function to go to next slide
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlide();
+                resetProgressBar();
+            }
+            
+            // Function to go to previous slide
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateSlide();
+                resetProgressBar();
+            }
+            
+            // Function to go to specific slide
+            function goToSlide(index) {
+                currentSlide = index;
+                updateSlide();
+                resetProgressBar();
+            }
+            
+            // Function to start auto slide
+            function startAutoSlide() {
+                clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, slideTime);
+                startProgressBar();
+            }
+            
+            // Function to start progress bar
+            function startProgressBar() {
+                progressBar.style.width = '0%';
+                progressBar.style.transition = 'width ' + slideTime + 'ms linear';
+                
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+                }, 10);
+                
+                setTimeout(() => {
+                    nextSlide();
+                }, slideTime);
+            }
+            
+            // Function to reset progress bar
+            function resetProgressBar() {
+                progressBar.style.width = '0%';
+                progressBar.style.transition = 'none';
+                
+                setTimeout(() => {
+                    progressBar.style.transition = 'width ' + slideTime + 'ms linear';
+                    setTimeout(() => {
+                        progressBar.style.width = '100%';
+                    }, 10);
+                }, 10);
+            }
+            
+            // Event listeners for navigation
+            document.getElementById('prev-slide').addEventListener('click', () => {
+                clearInterval(slideInterval);
+                prevSlide();
+                startAutoSlide();
+            });
+            
+            document.getElementById('next-slide').addEventListener('click', () => {
+                clearInterval(slideInterval);
+                nextSlide();
+                startAutoSlide();
+            });
+            
+            // Event listeners for indicators
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    clearInterval(slideInterval);
+                    goToSlide(index);
+                    startAutoSlide();
+                });
+            });
+            
+            // Pause on hover
+            const sliderContainer = document.querySelector('.hero-slider-container');
+            sliderContainer.addEventListener('mouseenter', () => {
+                clearInterval(slideInterval);
+            });
+            
+            sliderContainer.addEventListener('mouseleave', () => {
+                startAutoSlide();
+            });
+            
+            // Start the slider
+            startAutoSlide();
+        }
+        
+        // Setup UI functionality
+        function setupUI() {
+            // Setup navbar
+            setupNavbar();
+            
+            // Setup quantity buttons
+            setupQuantityButtons();
+            
+            // Setup order form
+            setupOrderForm();
+            
+            // Setup review form
+            setupReviewForm();
+            
+            // Setup modals
+            setupModals();
+            
+            // Setup star rating
+            setupStarRating();
+        }
+        
+        // Setup navbar functionality
+        function setupNavbar() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            // Hamburger menu toggle
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+            
+            // Nav link clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Close mobile menu
+                    hamburger.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    
+                    // Update active link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Smooth scroll to section
+                    const targetId = this.getAttribute('href');
+                    if (targetId.startsWith('#')) {
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 60,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+            
+            // Update active nav on scroll
+            window.addEventListener('scroll', updateActiveNavLink);
+        }
+        
+        // Update active nav link on scroll
+        function updateActiveNavLink() {
+            const sections = document.querySelectorAll('section, footer');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let currentSection = '';
+            const scrollPosition = window.scrollY + 100;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    currentSection = '#' + section.id;
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Setup quantity buttons
+        function setupQuantityButtons() {
+            const quantityInput = document.getElementById('quantity');
+            const decreaseBtn = document.getElementById('decrease-qty');
+            const increaseBtn = document.getElementById('increase-qty');
+            
+            decreaseBtn.addEventListener('click', function() {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            increaseBtn.addEventListener('click', function() {
+                let currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+            
+            quantityInput.addEventListener('change', function() {
+                if (this.value < 1) {
+                    this.value = 1;
+                }
+            });
+        }
+        
+        // Setup order form
+        function setupOrderForm() {
+            const orderForm = document.getElementById('order-form');
+            
+            orderForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const name = document.getElementById('name').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const address = document.getElementById('address').value.trim();
+                const panjabiId = document.getElementById('panjabi-select').value;
+                const size = document.getElementById('size').value;
+                const quantity = parseInt(document.getElementById('quantity').value);
+                
+                // Validation
+                if (!name || !phone || !address || !panjabiId || !size) {
+                    alert('দয়া করে সব তথ্য প্রদান করুন।');
+                    return;
+                }
+                
+                if (phone.length !== 11 || !phone.startsWith('01')) {
+                    alert('দয়া করে সঠিক মোবাইল নম্বর দিন (11 ডিজিট, 01 দিয়ে শুরু)।');
+                    return;
+                }
+                
+                // Find selected product
+                const selectedProduct = panjabis.find(p => p._id === panjabiId);
+                if (!selectedProduct) {
+                    alert('দয়া করে একটি পণ্য নির্বাচন করুন।');
+                    return;
+                }
+                
+                // Get selected color
+                const selectedColorElement = document.querySelector(`#color-selector-${panjabiId} .color-option.active`);
+                const selectedColor = selectedColorElement ? 
+                    selectedColorElement.getAttribute('data-color-name') : 
+                    (selectedProduct.colors[0]?.name || 'ডিফল্ট');
+                
+                // Prepare order data
+                const orderData = {
+                    customerName: name,
+                    phone: phone,
+                    address: address,
+                    productId: panjabiId,
+                    productName: selectedProduct.name,
+                    color: selectedColor,
+                    size: size,
+                    quantity: quantity,
+                    totalPrice: selectedProduct.offerPrice * quantity
+                };
+                
+                // Submit order to API
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/frontend/order`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        
+                        // Show success modal
+                        document.getElementById('order-success-modal').classList.remove('hidden');
+                        
+                        // Reset form
+                        orderForm.reset();
+                        document.getElementById('quantity').value = 1;
+                        
+                        // Log success
+                        console.log('Order submitted successfully:', result);
+                    } else {
+                        throw new Error('Order submission failed');
+                    }
+                } catch (error) {
+                    console.error('Error submitting order:', error);
+                    alert('অর্ডার জমা দিতে সমস্যা হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।');
+                }
+            });
+            
+            // Add to order buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('add-to-order') || 
+                    e.target.closest('.add-to-order')) {
+                    
+                    const button = e.target.classList.contains('add-to-order') ? 
+                        e.target : e.target.closest('.add-to-order');
+                    
+                    const panjabiId = button.getAttribute('data-id');
+                    
+                    // Scroll to order form
+                    document.getElementById('order').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                    
+                    // Select the product in dropdown
+                    document.getElementById('panjabi-select').value = panjabiId;
+                }
+            });
+        }
+        
+        // Setup review form
+        function setupReviewForm() {
+            const reviewForm = document.getElementById('review-form');
+            
+            reviewForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const name = document.getElementById('review-name').value.trim();
+                const location = document.getElementById('review-location').value.trim();
+                const text = document.getElementById('review-text').value.trim();
+                const rating = parseInt(document.getElementById('review-rating').value);
+                
+                // Validation
+                if (!name || !location || !text) {
+                    alert('দয়া করে সব তথ্য প্রদান করুন।');
+                    return;
+                }
+                
+                if (text.length < 10) {
+                    alert('দয়া করে অন্তত ১০টি অক্ষরের রিভিউ লিখুন।');
+                    return;
+                }
+                
+                // Prepare review data
+                const reviewData = {
+                    name: name,
+                    location: location,
+                    text: text,
+                    rating: rating,
+                    isApproved: false
+                };
+                
+                // Submit review to API
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/frontend/review`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(reviewData)
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        
+                        // Show success modal
+                        document.getElementById('review-success-modal').classList.remove('hidden');
+                        
+                        // Reset form
+                        reviewForm.reset();
+                        resetStarRating();
+                        
+                        // Log success
+                        console.log('Review submitted successfully:', result);
+                    } else {
+                        throw new Error('Review submission failed');
+                    }
+                } catch (error) {
+                    console.error('Error submitting review:', error);
+                    alert('রিভিউ জমা দিতে সমস্যা হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।');
+                }
+            });
+        }
+        
+        // Setup star rating
+        function setupStarRating() {
+            const stars = document.querySelectorAll('#rating-stars i');
+            const ratingInput = document.getElementById('review-rating');
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = this.getAttribute('data-rating');
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    ratingInput.value = rating;
+                    highlightStars(rating);
+                });
+            });
+            
+            // Reset stars on mouse leave
+            document.getElementById('rating-stars').addEventListener('mouseleave', function() {
+                const currentRating = ratingInput.value;
+                highlightStars(currentRating);
+            });
+        }
+        
+        // Highlight stars based on rating
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('#rating-stars i');
+            stars.forEach(star => {
+                const starRating = star.getAttribute('data-rating');
+                if (starRating <= rating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas');
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                }
+            });
+        }
+        
+        // Reset star rating to default
+        function resetStarRating() {
+            const stars = document.querySelectorAll('#rating-stars i');
+            stars.forEach(star => {
+                star.classList.remove('fas');
+                star.classList.add('far');
+            });
+            
+            // Set first 5 stars to filled
+            for (let i = 0; i < 5; i++) {
+                stars[i].classList.remove('far');
+                stars[i].classList.add('fas');
+            }
+            
+            document.getElementById('review-rating').value = 5;
+        }
+        
+        // Setup modals
+        function setupModals() {
+            // Order success modal
+            document.getElementById('close-modal').addEventListener('click', function() {
+                document.getElementById('order-success-modal').classList.add('hidden');
+            });
+            
+            // Review success modal
+            document.getElementById('close-review-modal').addEventListener('click', function() {
+                document.getElementById('review-success-modal').classList.add('hidden');
+            });
+            
+            // Close modals when clicking outside
+            document.querySelectorAll('[id$="-modal"]').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.add('hidden');
+                    }
+                });
+            });
+        }
+        
+        // Helper function to generate star rating HTML
+        function getStarRating(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<i class="fas fa-star text-yellow-500"></i>';
+                } else {
+                    stars += '<i class="far fa-star text-yellow-500"></i>';
+                }
+            }
+            return stars;
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('bn-BD', options);
+        }
+        
+        // Show error messages when API fails
+        function showErrorMessages() {
+            const productsContainer = document.getElementById('panjabi-container');
+            const reviewsContainer = document.getElementById('reviews-container');
+            
+            productsContainer.innerHTML = `
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                    <p class="text-gray-600">পণ্য লোড করতে সমস্যা হয়েছে</p>
+                    <p class="text-gray-500 text-sm mt-2">দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন</p>
+                </div>
+            `;
+            
+            reviewsContainer.innerHTML = `
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                    <p class="text-gray-600">রিভিউ লোড করতে সমস্যা হয়েছে</p>
+                    <p class="text-gray-500 text-sm mt-2">দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন</p>
+                </div>
+            `;
+        }
+        
+        // WhatsApp button functionality
+        document.getElementById('whatsapp-btn').addEventListener('click', function(e) {
+            const whatsappNumber = websiteSettings.whatsappNumber || '01911465879';
+            const message = "আসসালামু আলাইকুম, ROYAL TRUST BD থেকে পাঞ্জাবি সম্পর্কে জানতে চাই।";
+            this.href = `https://wa.me/88${whatsappNumber}?text=${encodeURIComponent(message)}`;
+        });
+    </script>
+</body>
+</html>
