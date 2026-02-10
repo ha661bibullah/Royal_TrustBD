@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 const fileUpload = require('express-fileupload');
 require('dotenv').config();
 
@@ -24,8 +23,8 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('MongoDB Connected Successfully!'))
-.catch(err => console.error('MongoDB Connection Error:', err));
+.then(() => console.log('✅ MongoDB Connected Successfully!'))
+.catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Database Schemas
 const productSchema = new mongoose.Schema({
@@ -136,6 +135,23 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
+// Health Check Route
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    message: 'Royal Trust BD API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API Routes
 
 // 1. Admin Authentication
@@ -143,7 +159,6 @@ app.post('/api/admin/login', async (req, res) => {
   const { username, password } = req.body;
   
   if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
-    // Check if admin exists in DB, if not create
     let admin = await Admin.findOne({ username });
     if (!admin) {
       admin = new Admin({ username, password });
@@ -445,11 +460,6 @@ app.get('/api/frontend/settings', async (req, res) => {
   }
 });
 
-// Health Check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
-});
-
 // Initialize default data
 async function initializeDefaultData() {
   try {
@@ -468,23 +478,11 @@ async function initializeDefaultData() {
           price: 2499,
           originalPrice: 3200,
           isActive: true
-        },
-        {
-          slideNumber: 2,
-          title: "সুমিষ্ট লিনেন",
-          subtitle: "পাঞ্জাবি",
-          description: "শীতাতপ নিয়ন্ত্রিত সুতি লিনেন, হালকা ও আরামদায়ক, অফিসিয়াল লুক",
-          imageUrl: "https://images.unsplash.com/photo-1523380744952-b7e00e6e2ffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-          badgeText: "কটন লিনেন",
-          badgeColor: "blue",
-          price: 1799,
-          originalPrice: 2200,
-          isActive: true
         }
       ];
       
       await Slider.insertMany(defaultSliders);
-      console.log('Default sliders created');
+      console.log('✅ Default sliders created');
     }
     
     // Check if products exist
@@ -495,8 +493,7 @@ async function initializeDefaultData() {
           name: "রয়েল সিল্ক পাঞ্জাবি",
           description: "উচ্চমানের সিল্ক কাপড়ে তৈরি, হাতে তৈরি এমব্রয়ডারি, ফিটিং ডিজাইন",
           colors: [
-            { name: "লাল ও সোনালী", code: "#dc2626", image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-            { name: "নীল ও সোনালী", code: "#1e40af", image: "https://images.unsplash.com/photo-1523380744952-b7e00e6e2ffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
+            { name: "লাল ও সোনালী", code: "#dc2626", image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
           ],
           size: "S, M, L, XL, XXL",
           regularPrice: 3200,
@@ -507,7 +504,7 @@ async function initializeDefaultData() {
       ];
       
       await Product.insertMany(defaultProducts);
-      console.log('Default products created');
+      console.log('✅ Default products created');
     }
     
     // Check if settings exist
@@ -515,7 +512,7 @@ async function initializeDefaultData() {
     if (settingsCount === 0) {
       const defaultSettings = new WebsiteSettings();
       await defaultSettings.save();
-      console.log('Default settings created');
+      console.log('✅ Default settings created');
     }
     
     // Check if admin exists
@@ -526,18 +523,20 @@ async function initializeDefaultData() {
         password: process.env.ADMIN_PASSWORD
       });
       await admin.save();
-      console.log('Default admin created');
+      console.log('✅ Default admin created');
     }
     
-    console.log('Database initialization complete');
+    console.log('✅ Database initialization complete');
   } catch (error) {
-    console.error('Database initialization error:', error);
+    console.error('❌ Database initialization error:', error);
   }
 }
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 API URL: http://localhost:${PORT}`);
+  console.log(`🔄 Initializing database...`);
   initializeDefaultData();
 });
