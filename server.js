@@ -151,7 +151,7 @@ app.get('/api/test', (req, res) => {
   res.json({ 
     message: 'API is working!',
     data: {
-      products: 'GET /api/frontend/products',
+      products: 'GET /api/products',
       orders: 'POST /api/frontend/order',
       reviews: 'POST /api/frontend/review'
     }
@@ -262,25 +262,191 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-// Admin routes (protected - simple version for now)
-app.get('/api/admin/dashboard', async (req, res) => {
+// Dashboard Statistics
+app.get('/api/admin/dashboard/stats', async (req, res) => {
   try {
     const totalOrders = await Order.countDocuments();
     const pendingOrders = await Order.countDocuments({ status: 'pending' });
+    
+    const deliveredOrders = await Order.find({ status: 'delivered' });
+    const totalRevenue = deliveredOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+    
     const totalProducts = await Product.countDocuments();
     const totalReviews = await Review.countDocuments();
+    const pendingReviews = await Review.countDocuments({ isApproved: false });
     
     const recentOrders = await Order.find()
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(5)
+      .lean();
     
     res.json({
       totalOrders,
       pendingOrders,
+      deliveredOrders: deliveredOrders.length,
+      totalRevenue,
       totalProducts,
       totalReviews,
+      pendingReviews,
       recentOrders
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Admin Products API
+app.get('/api/admin/products', async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/products', async (req, res) => {
+  try {
+    const product = new Product(req.body);
+    await product.save();
+    res.json({ success: true, message: 'Product added successfully', product });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, message: 'Product updated successfully', product });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/admin/products/:id', async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Product deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Admin Orders API
+app.get('/api/admin/orders', async (req, res) => {
+  try {
+    const { status } = req.query;
+    let query = {};
+    if (status) {
+      query.status = status;
+    }
+    const orders = await Order.find(query).sort({ createdAt: -1 });
+    res.json({ orders });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/orders/:id/status', async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status, notes },
+      { new: true }
+    );
+    res.json({ success: true, message: 'Order status updated', order });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Admin Reviews API
+app.get('/api/admin/reviews', async (req, res) => {
+  try {
+    const { approved } = req.query;
+    let query = {};
+    if (approved !== undefined) {
+      query.isApproved = approved === 'true';
+    }
+    const reviews = await Review.find(query).sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/reviews/:id/approve', async (req, res) => {
+  try {
+    const review = await Review.findByIdAndUpdate(
+      req.params.id,
+      { isApproved: true },
+      { new: true }
+    );
+    res.json({ success: true, message: 'Review approved', review });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/admin/reviews/:id', async (req, res) => {
+  try {
+    await Review.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Review deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Admin Sliders API
+app.get('/api/admin/sliders', async (req, res) => {
+  try {
+    const sliders = await Slider.find().sort({ slideNumber: 1 });
+    res.json(sliders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/sliders/:id', async (req, res) => {
+  try {
+    const slider = await Slider.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json({ success: true, message: 'Slider updated', slider });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Admin Settings API
+app.get('/api/admin/settings', async (req, res) => {
+  try {
+    let settings = await WebsiteSettings.findOne();
+    if (!settings) {
+      settings = new WebsiteSettings();
+      await settings.save();
+    }
+    res.json(settings);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/settings', async (req, res) => {
+  try {
+    let settings = await WebsiteSettings.findOne();
+    if (!settings) {
+      settings = new WebsiteSettings(req.body);
+    } else {
+      Object.assign(settings, req.body);
+    }
+    settings.updatedAt = new Date();
+    await settings.save();
+    res.json({ success: true, message: 'Settings updated', settings });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
