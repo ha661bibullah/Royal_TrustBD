@@ -511,7 +511,7 @@
     <!-- Panjabi Products Section -->
     <section class="py-16 bg-white" id="products">
         <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">আমাদের পাঞ্জাবি কালেকশন</h2>
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12" id="home-page-title">আমাদের পাঞ্জাবি কালেকশন</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="panjabi-container">
                 <!-- Panjabi products will be loaded here by JavaScript -->
@@ -526,7 +526,7 @@
     <!-- Order Form Section -->
     <section class="py-16 bg-gradient-to-r from-gray-100 to-gray-200" id="order">
         <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">পাঞ্জাবি অর্ডার ফর্ম</h2>
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12" id="order-form-title">পাঞ্জাবি অর্ডার ফর্ম</h2>
             
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
                 <div class="mb-8">
@@ -829,6 +829,14 @@
             
             // Update service hours
             document.getElementById('service-hours').textContent = websiteSettings.serviceHours || 'সার্বক্ষণিক সেবা: সকাল ৯টা - রাত ১০টা';
+            
+            // FIXED: Update home page title
+            const homePageTitle = websiteSettings.homePageTitle || 'আমাদের পাঞ্জাবি কালেকশন';
+            document.getElementById('home-page-title').textContent = homePageTitle;
+            
+            // FIXED: Update order form title
+            const orderFormTitle = websiteSettings.orderFormTitle || 'পাঞ্জাবি অর্ডার ফর্ম';
+            document.getElementById('order-form-title').textContent = orderFormTitle;
         }
         
         // Update delivery info
@@ -1376,6 +1384,12 @@
                 
                 // Submit order to API
                 try {
+                    // Show loading state
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>অপেক্ষা করুন...';
+                    submitBtn.disabled = true;
+                    
                     const response = await fetch(`${API_BASE_URL}/api/frontend/order`, {
                         method: 'POST',
                         headers: {
@@ -1387,7 +1401,7 @@
                     if (response.ok) {
                         const result = await response.json();
                         
-                        // Show success modal
+                        // Show success modal immediately
                         document.getElementById('order-success-modal').classList.remove('hidden');
                         
                         // Reset form
@@ -1397,11 +1411,17 @@
                         // Log success
                         console.log('Order submitted successfully:', result);
                     } else {
-                        throw new Error('Order submission failed');
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Order submission failed');
                     }
                 } catch (error) {
                     console.error('Error submitting order:', error);
                     alert('অর্ডার জমা দিতে সমস্যা হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।');
+                } finally {
+                    // Restore button state
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>অর্ডার কনফার্ম করুন';
+                    submitBtn.disabled = false;
                 }
             });
             
@@ -1461,6 +1481,12 @@
                 
                 // Submit review to API
                 try {
+                    // Show loading state
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>অপেক্ষা করুন...';
+                    submitBtn.disabled = true;
+                    
                     const response = await fetch(`${API_BASE_URL}/api/frontend/review`, {
                         method: 'POST',
                         headers: {
@@ -1472,7 +1498,7 @@
                     if (response.ok) {
                         const result = await response.json();
                         
-                        // Show success modal
+                        // Show success modal immediately
                         document.getElementById('review-success-modal').classList.remove('hidden');
                         
                         // Reset form
@@ -1482,11 +1508,17 @@
                         // Log success
                         console.log('Review submitted successfully:', result);
                     } else {
-                        throw new Error('Review submission failed');
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Review submission failed');
                     }
                 } catch (error) {
                     console.error('Error submitting review:', error);
                     alert('রিভিউ জমা দিতে সমস্যা হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।');
+                } finally {
+                    // Restore button state
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-star mr-2"></i>রিভিউ জমা দিন';
+                    submitBtn.disabled = false;
                 }
             });
         }

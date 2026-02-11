@@ -157,7 +157,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Function to send email notification
+// Function to send email notification (async but don't wait for it)
 async function sendEmailNotification(subject, message) {
   try {
     const mailOptions = {
@@ -167,10 +167,16 @@ async function sendEmailNotification(subject, message) {
       html: message
     };
 
-    await transporter.sendMail(mailOptions);
-    console.log('✅ Email notification sent');
+    // Send email in background, don't wait for response
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('❌ Email sending failed:', error);
+      } else {
+        console.log('✅ Email notification sent:', info.messageId);
+      }
+    });
   } catch (error) {
-    console.error('❌ Email sending failed:', error);
+    console.error('❌ Email setup error:', error);
   }
 }
 
@@ -311,7 +317,7 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Public API Routes
+// Public API Routes - IMPORTANT: Fixed response delay issues
 app.post('/api/frontend/order', async (req, res) => {
   try {
     const orderData = req.body;
@@ -320,7 +326,7 @@ app.post('/api/frontend/order', async (req, res) => {
     const order = new Order(orderData);
     await order.save();
     
-    // Send email notification
+    // Send email notification IN BACKGROUND (don't wait)
     const emailSubject = `🆕 New Order Received - ${order.orderId}`;
     const emailMessage = `
       <h2>New Order Received</h2>
@@ -338,14 +344,19 @@ app.post('/api/frontend/order', async (req, res) => {
       <p>Login to admin panel to manage this order.</p>
     `;
     
-    await sendEmailNotification(emailSubject, emailMessage);
+    // Send email without waiting
+    sendEmailNotification(emailSubject, emailMessage).catch(err => {
+      console.error('Email sending error (non-blocking):', err);
+    });
     
+    // Immediate response
     res.json({ 
       success: true, 
       message: 'Order placed successfully',
       orderId: order.orderId 
     });
   } catch (error) {
+    console.error('Order submission error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -355,7 +366,7 @@ app.post('/api/frontend/review', async (req, res) => {
     const review = new Review(req.body);
     await review.save();
     
-    // Send email notification
+    // Send email notification IN BACKGROUND (don't wait)
     const emailSubject = `⭐ New Review Submitted by ${review.name}`;
     const emailMessage = `
       <h2>New Review Submitted</h2>
@@ -368,14 +379,19 @@ app.post('/api/frontend/review', async (req, res) => {
       <p>Login to admin panel to approve this review.</p>
     `;
     
-    await sendEmailNotification(emailSubject, emailMessage);
+    // Send email without waiting
+    sendEmailNotification(emailSubject, emailMessage).catch(err => {
+      console.error('Email sending error (non-blocking):', err);
+    });
     
+    // Immediate response
     res.json({ 
       success: true, 
       message: 'Review submitted successfully',
       review 
     });
   } catch (error) {
+    console.error('Review submission error:', error);
     res.status(500).json({ error: error.message });
   }
 });
