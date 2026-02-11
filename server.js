@@ -5,17 +5,9 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
-const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
 
 const app = express();
-
-// Cloudinary Configuration
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
 
 // Middleware
 app.use(cors({
@@ -26,8 +18,18 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
-  useTempFiles: false
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
 }));
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://billaharif661_db_user:2GCmDhaEOQUteXow@iwonttotast0.mza6qgz.mongodb.net/ROYAL_TRUST_BD?retryWrites=true&w=majority';
@@ -58,7 +60,6 @@ const productSchema = new mongoose.Schema({
     name: String,
     code: String,
     image: String,
-    cloudinaryId: String,
     isBase64: { type: Boolean, default: false }
   }],
   size: { type: String, required: true },
@@ -106,7 +107,6 @@ const sliderSchema = new mongoose.Schema({
   subtitle: { type: String, required: true },
   description: { type: String, required: true },
   imageUrl: { type: String, required: true },
-  cloudinaryId: String,
   isBase64: { type: Boolean, default: false },
   badgeText: { type: String },
   badgeColor: { type: String },
@@ -157,7 +157,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Function to send email notification (non-blocking)
+// Function to send email notification
 async function sendEmailNotification(subject, message) {
   try {
     const mailOptions = {
@@ -167,97 +167,45 @@ async function sendEmailNotification(subject, message) {
       html: message
     };
 
-    // Send email without waiting for response
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('❌ Email sending failed:', error);
-      } else {
-        console.log('✅ Email notification sent:', info.response);
-      }
-    });
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email notification sent');
   } catch (error) {
-    console.error('❌ Email function error:', error);
+    console.error('❌ Email sending failed:', error);
   }
 }
 
-// Cloudinary upload functions
-const uploadToCloudinary = async (file, folder = 'products') => {
+// Image handling utilities
+const saveBase64Image = (base64String, folder = 'products') => {
   try {
-    let uploadResult;
+    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
     
-    if (typeof file === 'string' && file.startsWith('data:image/')) {
-      // Base64 image
-      uploadResult = await cloudinary.uploader.upload(file, {
-        folder: `royal_trust/${folder}`,
-        resource_type: 'image'
-      });
-    } else if (file && file.data) {
-      // File upload object
-      uploadResult = await cloudinary.uploader.upload_stream({
-        folder: `royal_trust/${folder}`,
-        resource_type: 'image'
-      }, (error, result) => {
-        if (error) throw error;
-        return result;
-      }).end(file.data);
-    } else if (file && file.tempFilePath) {
-      // Temporary file
-      uploadResult = await cloudinary.uploader.upload(file.tempFilePath, {
-        folder: `royal_trust/${folder}`,
-        resource_type: 'image'
-      });
-    } else {
-      throw new Error('Invalid file type');
-    }
+    const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
+    const filepath = path.join(uploadsDir, filename);
     
-    return {
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id
-    };
-  } catch (error) {
-    console.error('❌ Cloudinary upload error:', error);
-    return null;
-  }
-};
-
-// Delete from Cloudinary
-const deleteFromCloudinary = async (publicId) => {
-  try {
-    if (!publicId) return;
-    await cloudinary.uploader.destroy(publicId);
-    console.log('✅ Cloudinary image deleted:', publicId);
-  } catch (error) {
-    console.error('❌ Cloudinary delete error:', error);
-  }
-};
-
-// Image handling utilities with Cloudinary
-const saveBase64Image = async (base64String, folder = 'products') => {
-  try {
-    const result = await uploadToCloudinary(base64String, folder);
-    if (result) {
-      return {
-        url: result.url,
-        cloudinaryId: result.publicId
-      };
-    }
-    return null;
+    fs.writeFileSync(filepath, buffer);
+    
+    return `/uploads/${filename}`;
   } catch (error) {
     console.error('Error saving base64 image:', error);
     return null;
   }
 };
 
-const saveUploadedFile = async (file, folder = 'products') => {
+const saveUploadedFile = (file, folder = 'products') => {
   try {
-    const result = await uploadToCloudinary(file, folder);
-    if (result) {
-      return {
-        url: result.url,
-        cloudinaryId: result.publicId
-      };
-    }
-    return null;
+    const ext = path.extname(file.name);
+    const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${ext}`;
+    const filepath = path.join(uploadsDir, filename);
+    
+    file.mv(filepath, (err) => {
+      if (err) {
+        console.error('Error moving file:', err);
+        return null;
+      }
+    });
+    
+    return `/uploads/${filename}`;
   } catch (error) {
     console.error('Error saving uploaded file:', error);
     return null;
@@ -302,17 +250,16 @@ app.post('/api/upload', async (req, res) => {
       return res.status(400).json({ error: 'File too large. Max size is 5MB' });
     }
     
-    const uploadResult = await saveUploadedFile(file, folder);
+    const fileUrl = saveUploadedFile(file, folder);
     
-    if (!uploadResult) {
-      return res.status(500).json({ error: 'Failed to upload file to Cloudinary' });
+    if (!fileUrl) {
+      return res.status(500).json({ error: 'Failed to save file' });
     }
     
     res.json({
       success: true,
       message: 'File uploaded successfully',
-      url: uploadResult.url,
-      cloudinaryId: uploadResult.cloudinaryId
+      url: fileUrl
     });
     
   } catch (error) {
@@ -334,17 +281,16 @@ app.post('/api/upload/base64', async (req, res) => {
       return res.status(400).json({ error: 'Invalid base64 image data' });
     }
     
-    const uploadResult = await saveBase64Image(base64, folder);
+    const fileUrl = saveBase64Image(base64, folder);
     
-    if (!uploadResult) {
-      return res.status(500).json({ error: 'Failed to upload image to Cloudinary' });
+    if (!fileUrl) {
+      return res.status(500).json({ error: 'Failed to save image' });
     }
     
     res.json({
       success: true,
       message: 'Image uploaded successfully',
-      url: uploadResult.url,
-      cloudinaryId: uploadResult.cloudinaryId
+      url: fileUrl
     });
     
   } catch (error) {
@@ -374,7 +320,7 @@ app.post('/api/frontend/order', async (req, res) => {
     const order = new Order(orderData);
     await order.save();
     
-    // Send email notification in background
+    // Send email notification
     const emailSubject = `🆕 New Order Received - ${order.orderId}`;
     const emailMessage = `
       <h2>New Order Received</h2>
@@ -392,8 +338,7 @@ app.post('/api/frontend/order', async (req, res) => {
       <p>Login to admin panel to manage this order.</p>
     `;
     
-    // Don't wait for email
-    sendEmailNotification(emailSubject, emailMessage);
+    await sendEmailNotification(emailSubject, emailMessage);
     
     res.json({ 
       success: true, 
@@ -410,7 +355,7 @@ app.post('/api/frontend/review', async (req, res) => {
     const review = new Review(req.body);
     await review.save();
     
-    // Send email notification in background
+    // Send email notification
     const emailSubject = `⭐ New Review Submitted by ${review.name}`;
     const emailMessage = `
       <h2>New Review Submitted</h2>
@@ -423,8 +368,7 @@ app.post('/api/frontend/review', async (req, res) => {
       <p>Login to admin panel to approve this review.</p>
     `;
     
-    // Don't wait for email
-    sendEmailNotification(emailSubject, emailMessage);
+    await sendEmailNotification(emailSubject, emailMessage);
     
     res.json({ 
       success: true, 
@@ -597,10 +541,9 @@ app.post('/api/admin/products', async (req, res) => {
       for (let color of productData.colors) {
         // Handle file upload
         if (color.imageFile && color.imageFile.startsWith('data:image/')) {
-          const uploadResult = await saveBase64Image(color.imageFile, 'products');
-          if (uploadResult) {
-            color.image = uploadResult.url;
-            color.cloudinaryId = uploadResult.cloudinaryId;
+          const imageUrl = saveBase64Image(color.imageFile, 'products');
+          if (imageUrl) {
+            color.image = imageUrl;
             color.isBase64 = true;
           }
           delete color.imageFile;
@@ -618,27 +561,16 @@ app.post('/api/admin/products', async (req, res) => {
 
 app.put('/api/admin/products/:id', async (req, res) => {
   try {
-    const productId = req.params.id;
     const productData = req.body;
-    
-    // Get existing product to delete old images
-    const existingProduct = await Product.findById(productId);
     
     // Handle color images
     if (productData.colors && Array.isArray(productData.colors)) {
       for (let color of productData.colors) {
         // Handle file upload
         if (color.imageFile && color.imageFile.startsWith('data:image/')) {
-          // Delete old image from Cloudinary if exists
-          const oldColor = existingProduct.colors.find(c => c.name === color.name);
-          if (oldColor && oldColor.cloudinaryId) {
-            await deleteFromCloudinary(oldColor.cloudinaryId);
-          }
-          
-          const uploadResult = await saveBase64Image(color.imageFile, 'products');
-          if (uploadResult) {
-            color.image = uploadResult.url;
-            color.cloudinaryId = uploadResult.cloudinaryId;
+          const imageUrl = saveBase64Image(color.imageFile, 'products');
+          if (imageUrl) {
+            color.image = imageUrl;
             color.isBase64 = true;
           }
           delete color.imageFile;
@@ -646,7 +578,7 @@ app.put('/api/admin/products/:id', async (req, res) => {
       }
     }
     
-    const product = await Product.findByIdAndUpdate(productId, productData, { new: true });
+    const product = await Product.findByIdAndUpdate(req.params.id, productData, { new: true });
     res.json({ success: true, message: 'Product updated successfully', product });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -655,17 +587,6 @@ app.put('/api/admin/products/:id', async (req, res) => {
 
 app.delete('/api/admin/products/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    
-    // Delete images from Cloudinary
-    if (product && product.colors) {
-      for (let color of product.colors) {
-        if (color.cloudinaryId) {
-          await deleteFromCloudinary(color.cloudinaryId);
-        }
-      }
-    }
-    
     await Product.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Product deleted successfully' });
   } catch (error) {
@@ -755,10 +676,9 @@ app.post('/api/admin/sliders', async (req, res) => {
     
     // Handle image if it's base64
     if (sliderData.imageFile && sliderData.imageFile.startsWith('data:image/')) {
-      const uploadResult = await saveBase64Image(sliderData.imageFile, 'sliders');
-      if (uploadResult) {
-        sliderData.imageUrl = uploadResult.url;
-        sliderData.cloudinaryId = uploadResult.cloudinaryId;
+      const imageUrl = saveBase64Image(sliderData.imageFile, 'sliders');
+      if (imageUrl) {
+        sliderData.imageUrl = imageUrl;
         sliderData.isBase64 = true;
       }
       delete sliderData.imageFile;
@@ -774,50 +694,24 @@ app.post('/api/admin/sliders', async (req, res) => {
 
 app.put('/api/admin/sliders/:id', async (req, res) => {
   try {
-    const sliderId = req.params.id;
     const sliderData = req.body;
-    
-    // Get existing slider to delete old image
-    const existingSlider = await Slider.findById(sliderId);
     
     // Handle image if it's base64
     if (sliderData.imageFile && sliderData.imageFile.startsWith('data:image/')) {
-      // Delete old image from Cloudinary
-      if (existingSlider && existingSlider.cloudinaryId) {
-        await deleteFromCloudinary(existingSlider.cloudinaryId);
-      }
-      
-      const uploadResult = await saveBase64Image(sliderData.imageFile, 'sliders');
-      if (uploadResult) {
-        sliderData.imageUrl = uploadResult.url;
-        sliderData.cloudinaryId = uploadResult.cloudinaryId;
+      const imageUrl = saveBase64Image(sliderData.imageFile, 'sliders');
+      if (imageUrl) {
+        sliderData.imageUrl = imageUrl;
         sliderData.isBase64 = true;
       }
       delete sliderData.imageFile;
     }
     
     const slider = await Slider.findByIdAndUpdate(
-      sliderId,
+      req.params.id,
       sliderData,
       { new: true }
     );
     res.json({ success: true, message: 'Slider updated', slider });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.delete('/api/admin/sliders/:id', async (req, res) => {
-  try {
-    const slider = await Slider.findById(req.params.id);
-    
-    // Delete image from Cloudinary
-    if (slider && slider.cloudinaryId) {
-      await deleteFromCloudinary(slider.cloudinaryId);
-    }
-    
-    await Slider.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'Slider deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -858,22 +752,7 @@ async function initializeDatabase() {
   try {
     console.log('🔄 Initializing database...');
     
-    // Check and create default settings
-    const settingsCount = await WebsiteSettings.countDocuments();
-    if (settingsCount === 0) {
-      await WebsiteSettings.create({
-        homePageTitle: 'আমাদের পাঞ্জাবি কালেকশন',
-        orderFormTitle: 'পাঞ্জাবি অর্ডার ফর্ম',
-        footerText: 'প্রিমিয়াম পাঞ্জাবির নির্ভরযোগ্য ঠিকানা',
-        serviceHours: 'সকাল ৯টা - রাত ১০টা',
-        whatsappNumber: '01911465879',
-        phoneNumber: '01911465879',
-        deliveryChargeInsideDhaka: 60,
-        deliveryChargeOutsideDhaka: 160
-      });
-      console.log('✅ Default settings created');
-    }
-    
+    // Check and create default data
     const productCount = await Product.countDocuments();
     if (productCount === 0) {
       await Product.create({
@@ -882,7 +761,7 @@ async function initializeDatabase() {
         colors: [{
           name: "লাল ও সোনালী",
           code: "#dc2626",
-          image: "https://res.cloudinary.com/ddtfpqimk/image/upload/v1700000000/royal_trust/products/sample_panjabi_1.jpg"
+          image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
         }],
         size: "S, M, L, XL, XXL",
         regularPrice: 3200,
@@ -900,7 +779,7 @@ async function initializeDatabase() {
         title: "রয়েল সিল্ক",
         subtitle: "পাঞ্জাবি",
         description: "হাতে তৈরি এমব্রয়ডারি, উচ্চমানের সিল্ক কাপড়, রাজকীয় অভিজ্ঞতা",
-        imageUrl: "https://res.cloudinary.com/ddtfpqimk/image/upload/v1700000000/royal_trust/sliders/sample_slider_1.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
         badgeText: "প্রিমিয়াম কালেকশন",
         badgeColor: "red",
         price: 2499,
@@ -922,7 +801,7 @@ const server = app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
   console.log(`📧 Email notifications: ${process.env.EMAIL_USER ? 'Enabled' : 'Disabled (set EMAIL_USER & EMAIL_PASS in .env)'}`);
-  console.log(`☁️ Cloudinary: ${process.env.CLOUDINARY_CLOUD_NAME ? 'Enabled' : 'Disabled (set CLOUDINARY credentials in .env)'}`);
+  console.log(`📁 Uploads directory: ${uploadsDir}`);
   
   // Initialize database after connection
   setTimeout(initializeDatabase, 2000);

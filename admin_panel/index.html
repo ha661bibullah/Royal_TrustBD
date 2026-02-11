@@ -728,6 +728,17 @@
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+        
+        /* Mobile Image Upload Tips */
+        .mobile-image-tips {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-image-tips {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -928,6 +939,14 @@
             
             <!-- Content Area -->
             <main class="p-4 md:p-6" id="content-area">
+                <!-- Mobile Image Upload Tips -->
+                <div class="mobile-image-tips">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>ছবি আপলোড টিপস:</strong> মোবাইল থেকে ছবি আপলোড করলে, 5MB-এর কম সাইজের ছবি নির্বাচন করুন।
+                    </div>
+                </div>
+                
                 <!-- Dashboard Page -->
                 <div id="dashboard-page" class="page-content">
                     <!-- Statistics Cards -->
@@ -1221,6 +1240,77 @@
             unreadOrders: [],
             unreadReviews: []
         };
+        
+        // Helper Functions
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function validateImageFile(file) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+            
+            if (!allowedTypes.includes(file.type.toLowerCase())) {
+                throw new Error('শুধুমাত্র JPG, PNG, WEBP ইমেজ ফাইল অনুমোদিত');
+            }
+            
+            if (file.size > maxSize) {
+                throw new Error('ইমেজ সাইজ 5MB এর বেশি হতে পারবে না');
+            }
+            
+            return true;
+        }
+        
+        async function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                
+                img.onload = () => {
+                    URL.revokeObjectURL(img.src);
+                    
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Calculate new dimensions
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob(
+                        (blob) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        },
+                        'image/jpeg',
+                        quality
+                    );
+                };
+                
+                img.onerror = reject;
+            });
+        }
         
         // DOM Elements
         const loginPage = document.getElementById('login-page');
@@ -2516,27 +2606,22 @@
                     const file = e.target.files[0];
                     if (!file) return;
                     
-                    // Validate file type
-                    if (!file.type.startsWith('image/')) {
-                        showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
-                        return;
+                    try {
+                        validateImageFile(file);
+                        
+                        // Preview image
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const preview = newColorField.querySelector('[name="color-upload-preview"]');
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                            uploadContainer.classList.add('has-image');
+                        };
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        showNotification(error.message, 'error');
+                        this.value = '';
                     }
-                    
-                    // Validate file size (5MB max)
-                    if (file.size > 5 * 1024 * 1024) {
-                        showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
-                        return;
-                    }
-                    
-                    // Preview image
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const preview = newColorField.querySelector('[name="color-upload-preview"]');
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                        uploadContainer.classList.add('has-image');
-                    };
-                    reader.readAsDataURL(file);
                 });
             }
         }
@@ -2561,65 +2646,69 @@
             submitBtn.innerHTML = '<div class="loading mr-2"></div> সেভ হচ্ছে...';
             submitBtn.disabled = true;
             
-            const productId = document.getElementById('product-id').value;
-            const colors = [];
-            
-            // Collect color data
-            document.querySelectorAll('#colors-container > div').forEach(container => {
-                const name = container.querySelector('[name="color-name"]').value;
-                const code = container.querySelector('[name="color-code"]').value;
-                const imageUrl = container.querySelector('[name="color-image-url"]').value;
-                const imageFile = container.querySelector('[name="color-image-file"]').files[0];
+            try {
+                const productId = document.getElementById('product-id').value;
+                const colors = [];
                 
-                if (!name || !code) {
-                    showNotification('রং এর নাম এবং কোড অবশ্যই দিতে হবে', 'error');
+                // Collect color data and file reading promises
+                const colorContainers = document.querySelectorAll('#colors-container > div');
+                const filePromises = [];
+                
+                for (const container of colorContainers) {
+                    const name = container.querySelector('[name="color-name"]').value;
+                    const code = container.querySelector('[name="color-code"]').value;
+                    const imageUrl = container.querySelector('[name="color-image-url"]').value;
+                    const imageFile = container.querySelector('[name="color-image-file"]').files[0];
+                    
+                    if (!name || !code) {
+                        showNotification('রং এর নাম এবং কোড অবশ্যই দিতে হবে', 'error');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                    
+                    const colorData = { name, code };
+                    
+                    if (imageFile) {
+                        // Add file reading promise
+                        filePromises.push(
+                            readFileAsBase64(imageFile)
+                                .then(base64 => {
+                                    colorData.imageFile = base64;
+                                    return colorData;
+                                })
+                        );
+                    } else if (imageUrl) {
+                        colorData.image = imageUrl;
+                        filePromises.push(Promise.resolve(colorData));
+                    } else {
+                        colorData.image = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                        filePromises.push(Promise.resolve(colorData));
+                    }
+                }
+                
+                if (colorContainers.length === 0) {
+                    showNotification('অন্তত একটি রং যোগ করুন', 'error');
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                     return;
                 }
                 
-                // Prepare color data
-                const colorData = { 
-                    name, 
-                    code
+                // Wait for all files to be read
+                const resolvedColors = await Promise.all(filePromises);
+                colors.push(...resolvedColors);
+                
+                const productData = {
+                    name: document.getElementById('product-name').value,
+                    description: document.getElementById('product-description').value,
+                    colors: colors,
+                    size: document.getElementById('product-size').value,
+                    regularPrice: parseFloat(document.getElementById('regular-price').value),
+                    offerPrice: parseFloat(document.getElementById('offer-price').value),
+                    offerPercentage: parseFloat(document.getElementById('offer-percentage').value),
+                    isActive: document.getElementById('product-status').checked
                 };
                 
-                // Handle image - file has priority over URL
-                if (imageFile) {
-                    // Convert file to base64
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        colorData.imageFile = e.target.result; // Base64 string
-                    };
-                    reader.readAsDataURL(imageFile);
-                } else if (imageUrl) {
-                    colorData.image = imageUrl;
-                } else {
-                    colorData.image = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-                }
-                
-                colors.push(colorData);
-            });
-            
-            if (colors.length === 0) {
-                showNotification('অন্তত একটি রং যোগ করুন', 'error');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            const productData = {
-                name: document.getElementById('product-name').value,
-                description: document.getElementById('product-description').value,
-                colors: colors,
-                size: document.getElementById('product-size').value,
-                regularPrice: parseFloat(document.getElementById('regular-price').value),
-                offerPrice: parseFloat(document.getElementById('offer-price').value),
-                offerPercentage: parseFloat(document.getElementById('offer-percentage').value),
-                isActive: document.getElementById('product-status').checked
-            };
-            
-            try {
                 const url = productId ? 
                     `${API_BASE_URL}/api/admin/products/${productId}` : 
                     `${API_BASE_URL}/api/admin/products`;
@@ -2748,27 +2837,19 @@
             const file = e.target.files[0];
             if (!file) return;
             
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
-                return;
-            }
-            
-            // Validate file size (5MB max)
-            if (file.size > 5 * 1024 * 1024) {
-                showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
-                return;
-            }
-            
-            // Convert to base64
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            try {
+                validateImageFile(file);
+                
+                // Convert to base64
+                const base64 = await readFileAsBase64(file);
                 const preview = document.getElementById('slider-upload-preview');
-                preview.src = e.target.result;
+                preview.src = base64;
                 preview.classList.add('show');
                 document.getElementById('slider-image-upload').classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
+            } catch (error) {
+                showNotification(error.message, 'error');
+                e.target.value = '';
+            }
         }
         
         async function handleSliderSubmit(e) {
@@ -2779,56 +2860,49 @@
             submitBtn.innerHTML = '<div class="loading mr-2"></div> সেভ হচ্ছে...';
             submitBtn.disabled = true;
             
-            const sliderId = document.getElementById('slider-id').value;
-            
-            // Get image from active tab
-            let imageData = {};
-            const activeTab = document.querySelector('.tab-content.active');
-            
-            if (activeTab.id === 'url-tab') {
-                const imageUrl = document.getElementById('slider-image-url').value;
-                if (!imageUrl) {
-                    showNotification('স্লাইডার ইমেজ URL দিন', 'error');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-                imageData.imageUrl = imageUrl;
-            } else if (activeTab.id === 'upload-tab') {
-                const fileInput = document.getElementById('slider-image-file');
-                if (!fileInput.files[0]) {
-                    showNotification('স্লাইডার ইমেজ ফাইল নির্বাচন করুন', 'error');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                // Convert file to base64
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imageData.imageFile = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                // Wait for file to be read
-                await new Promise(resolve => reader.onloadend = resolve);
-            }
-            
-            const sliderData = {
-                slideNumber: parseInt(document.getElementById('slider-number').value),
-                title: document.getElementById('slider-title').value,
-                subtitle: document.getElementById('slider-subtitle').value,
-                description: document.getElementById('slider-description').value,
-                badgeText: document.getElementById('slider-badge-text').value,
-                badgeColor: document.getElementById('slider-badge-color').value,
-                price: parseFloat(document.getElementById('slider-price').value) || 0,
-                originalPrice: parseFloat(document.getElementById('slider-original-price').value) || 0,
-                isActive: document.getElementById('slider-status').checked,
-                ...imageData
-            };
-            
             try {
+                const sliderId = document.getElementById('slider-id').value;
+                
+                // Get image from active tab
+                let imageData = {};
+                const activeTab = document.querySelector('.tab-content.active');
+                
+                if (activeTab.id === 'url-tab') {
+                    const imageUrl = document.getElementById('slider-image-url').value;
+                    if (!imageUrl) {
+                        showNotification('স্লাইডার ইমেজ URL দিন', 'error');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                    imageData.imageUrl = imageUrl;
+                } else if (activeTab.id === 'upload-tab') {
+                    const fileInput = document.getElementById('slider-image-file');
+                    if (!fileInput.files[0]) {
+                        showNotification('স্লাইডার ইমেজ ফাইল নির্বাচন করুন', 'error');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                    
+                    const file = fileInput.files[0];
+                    validateImageFile(file);
+                    imageData.imageFile = await readFileAsBase64(file);
+                }
+                
+                const sliderData = {
+                    slideNumber: parseInt(document.getElementById('slider-number').value),
+                    title: document.getElementById('slider-title').value,
+                    subtitle: document.getElementById('slider-subtitle').value,
+                    description: document.getElementById('slider-description').value,
+                    badgeText: document.getElementById('slider-badge-text').value,
+                    badgeColor: document.getElementById('slider-badge-color').value,
+                    price: parseFloat(document.getElementById('slider-price').value) || 0,
+                    originalPrice: parseFloat(document.getElementById('slider-original-price').value) || 0,
+                    isActive: document.getElementById('slider-status').checked,
+                    ...imageData
+                };
+                
                 const url = sliderId ? 
                     `${API_BASE_URL}/api/admin/sliders/${sliderId}` : 
                     `${API_BASE_URL}/api/admin/sliders`;
