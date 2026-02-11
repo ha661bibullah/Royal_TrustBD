@@ -475,6 +475,259 @@
                 padding-top: 60px;
             }
         }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .notification-dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .notification-item:hover {
+            background: #f9fafb;
+        }
+        
+        .notification-item.unread {
+            background: #f0f9ff;
+        }
+        
+        .notification-item .time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Tab Styles for Image Upload */
+        .tab-container {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #4a5568;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            color: #dc2626;
+        }
+        
+        .tab-btn.active {
+            color: #dc2626;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #dc2626;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Color Image Preview */
+        .color-image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        /* Color Image Upload Container */
+        .color-image-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            margin-top: 10px;
+        }
+        
+        .color-image-upload:hover {
+            border-color: #4299e1;
+            background: #edf2f7;
+        }
+        
+        .color-image-upload.has-image {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        
+        /* File Input Custom */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+        }
+        
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #dc2626;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Alert Styles */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -547,8 +800,11 @@
                 <i class="fas fa-bars text-xl"></i>
             </button>
             <h1 class="text-xl font-bold text-red-700">ROYAL TRUST BD</h1>
-            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
-                <i class="fas fa-user"></i>
+            <div class="relative">
+                <button id="mobile-notification-btn" class="text-gray-700 p-2 relative">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span id="mobile-notification-count" class="notification-badge hidden">0</span>
+                </button>
             </div>
         </div>
         
@@ -631,6 +887,33 @@
                             <p class="text-gray-600 text-sm mt-1" id="page-subtitle">সর্বশেষ আপডেট এবং পরিসংখ্যান</p>
                         </div>
                         <div class="flex items-center space-x-4">
+                            <!-- Notification Bell -->
+                            <div class="relative">
+                                <button id="notification-btn" class="text-gray-700 p-2 relative">
+                                    <i class="fas fa-bell text-xl"></i>
+                                    <span id="notification-count" class="notification-badge hidden">0</span>
+                                </button>
+                                <!-- Notification Dropdown -->
+                                <div class="notification-dropdown" id="notification-dropdown">
+                                    <div class="p-4 border-b border-gray-200">
+                                        <div class="flex justify-between items-center">
+                                            <h3 class="font-bold text-gray-800">নোটিফিকেশন</h3>
+                                            <button id="mark-all-read" class="text-sm text-blue-600 hover:text-blue-800">
+                                                সব পড়া হয়েছে
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="notification-list">
+                                        <!-- Notifications will be loaded here -->
+                                    </div>
+                                    <div class="p-4 text-center border-t border-gray-200">
+                                        <a href="#" onclick="switchPage('orders')" class="text-sm text-blue-600 hover:text-blue-800">
+                                            সব অর্ডার দেখুন
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="text-right">
                                 <p class="text-gray-600 text-sm" id="current-date"></p>
                                 <p class="text-gray-800 font-medium" id="current-time-large"></p>
@@ -660,7 +943,7 @@
                                     <i class="fas fa-clock mr-3 text-yellow-500"></i>
                                     সাম্প্রতিক অর্ডারসমূহ
                                 </h2>
-                                <a href="#orders" class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center">
+                                <a href="#orders" onclick="switchPage('orders')" class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center">
                                     <span>সব অর্ডার দেখুন</span>
                                     <i class="fas fa-arrow-right ml-2"></i>
                                 </a>
@@ -747,10 +1030,13 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">স্ট্যাটাস</label>
-                        <select id="product-status" class="form-input">
-                            <option value="true">সক্রিয়</option>
-                            <option value="false">নিষ্ক্রিয়</option>
-                        </select>
+                        <div class="flex items-center space-x-4">
+                            <label class="switch">
+                                <input type="checkbox" id="product-status" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span id="product-status-text">সক্রিয়</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -781,17 +1067,35 @@
                     <input type="number" id="slider-number" required class="form-input" min="1">
                 </div>
                 
-                <!-- Image Upload -->
+                <!-- Image Upload Tabs -->
                 <div class="form-group">
                     <label class="form-label mb-3">স্লাইডার ইমেজ *</label>
-                    <div class="image-upload-container" id="slider-image-upload">
-                        <div class="text-center">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
-                            <p class="font-medium">ছবি আপলোড করুন</p>
-                            <p class="text-gray-500 text-sm mt-1">ফাইল নির্বাচন করতে ক্লিক করুন</p>
-                            <input type="file" id="slider-image-file" accept="image/*" class="hidden">
+                    <div class="tab-container">
+                        <button type="button" class="tab-btn active" data-tab="url-tab">URL লিংক</button>
+                        <button type="button" class="tab-btn" data-tab="upload-tab">ফাইল আপলোড</button>
+                    </div>
+                    
+                    <!-- URL Tab -->
+                    <div id="url-tab" class="tab-content active">
+                        <div class="form-group">
+                            <input type="text" id="slider-image-url" class="form-input" placeholder="https://example.com/image.jpg">
                         </div>
-                        <img id="slider-image-preview" class="image-preview">
+                        <div class="mt-4">
+                            <img id="slider-url-preview" class="image-preview w-full max-h-64 object-cover rounded-lg">
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Tab -->
+                    <div id="upload-tab" class="tab-content">
+                        <div class="image-upload-container" id="slider-image-upload">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                                <p class="font-medium">ছবি আপলোড করুন</p>
+                                <p class="text-gray-500 text-sm mt-1">ফাইল নির্বাচন করতে ক্লিক করুন (PNG, JPG, JPEG, WEBP)</p>
+                                <input type="file" id="slider-image-file" accept="image/*" class="hidden">
+                            </div>
+                            <img id="slider-upload-preview" class="image-preview">
+                        </div>
                     </div>
                 </div>
                 
@@ -828,10 +1132,13 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">স্ট্যাটাস</label>
-                        <select id="slider-status" class="form-input">
-                            <option value="true">সক্রিয়</option>
-                            <option value="false">নিষ্ক্রিয়</option>
-                        </select>
+                        <div class="flex items-center space-x-4">
+                            <label class="switch">
+                                <input type="checkbox" id="slider-status" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span id="slider-status-text">সক্রিয়</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -909,6 +1216,11 @@
         let currentUser = null;
         let selectedOrderId = null;
         let currentPage = 'dashboard';
+        let notificationInterval = null;
+        let notifications = {
+            unreadOrders: [],
+            unreadReviews: []
+        };
         
         // DOM Elements
         const loginPage = document.getElementById('login-page');
@@ -928,6 +1240,8 @@
                 currentUser = JSON.parse(savedUser);
                 showAdminPanel();
                 loadDashboard();
+                startNotificationPolling();
+                requestNotificationPermission();
             }
             
             // Setup event listeners
@@ -964,25 +1278,93 @@
             document.getElementById('regular-price').addEventListener('input', calculateDiscount);
             document.getElementById('offer-price').addEventListener('input', calculateDiscount);
             
+            // Product status toggle
+            const productStatus = document.getElementById('product-status');
+            if (productStatus) {
+                productStatus.addEventListener('change', function() {
+                    document.getElementById('product-status-text').textContent = this.checked ? 'সক্রিয়' : 'নিষ্ক্রিয়';
+                });
+            }
+            
             // Slider modal
             document.getElementById('cancel-slider-btn').addEventListener('click', hideSliderModal);
             document.getElementById('slider-form').addEventListener('submit', handleSliderSubmit);
             
-            // Image upload
-            document.getElementById('slider-image-upload').addEventListener('click', () => {
-                document.getElementById('slider-image-file').click();
+            // Slider image tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    // Hide all tabs
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.querySelectorAll('.tab-btn').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    // Show selected tab
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
             });
             
-            document.getElementById('slider-image-file').addEventListener('change', handleImageUpload);
+            // Slider URL preview
+            const sliderUrlInput = document.getElementById('slider-image-url');
+            if (sliderUrlInput) {
+                sliderUrlInput.addEventListener('input', function() {
+                    const preview = document.getElementById('slider-url-preview');
+                    if (this.value) {
+                        preview.src = this.value;
+                        preview.classList.add('show');
+                    } else {
+                        preview.classList.remove('show');
+                    }
+                });
+            }
+            
+            // Slider file upload
+            const sliderImageUpload = document.getElementById('slider-image-upload');
+            if (sliderImageUpload) {
+                sliderImageUpload.addEventListener('click', () => {
+                    document.getElementById('slider-image-file').click();
+                });
+                
+                document.getElementById('slider-image-file').addEventListener('change', handleSliderImageUpload);
+            }
+            
+            // Slider status toggle
+            const sliderStatus = document.getElementById('slider-status');
+            if (sliderStatus) {
+                sliderStatus.addEventListener('change', function() {
+                    document.getElementById('slider-status-text').textContent = this.checked ? 'সক্রিয়' : 'নিষ্ক্রিয়';
+                });
+            }
             
             // Order modal
             document.getElementById('cancel-order-btn').addEventListener('click', hideOrderModal);
             document.getElementById('update-order-btn').addEventListener('click', updateOrderStatus);
             
+            // Notification events
+            document.getElementById('notification-btn')?.addEventListener('click', toggleNotifications);
+            document.getElementById('mobile-notification-btn')?.addEventListener('click', toggleNotifications);
+            document.getElementById('mark-all-read')?.addEventListener('click', markAllAsRead);
+            
+            // Close notification dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('notification-dropdown');
+                const btn = document.getElementById('notification-btn');
+                const mobileBtn = document.getElementById('mobile-notification-btn');
+                
+                if (dropdown && !dropdown.contains(e.target) && 
+                    !btn?.contains(e.target) && !mobileBtn?.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
             // Escape key to close modals
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     hideAllModals();
+                    hideNotifications();
                 }
             });
         }
@@ -1010,14 +1392,21 @@
             };
             
             // Update date
-            document.getElementById('current-date').textContent = 
-                now.toLocaleDateString('bn-BD', dateOptions);
-            document.getElementById('current-time-large').textContent = 
-                now.toLocaleTimeString('bn-BD', timeOptions);
+            const currentDate = document.getElementById('current-date');
+            const currentTimeLarge = document.getElementById('current-time-large');
+            
+            if (currentDate) {
+                currentDate.textContent = now.toLocaleDateString('bn-BD', dateOptions);
+            }
+            if (currentTimeLarge) {
+                currentTimeLarge.textContent = now.toLocaleTimeString('bn-BD', timeOptions);
+            }
             
             // Update sidebar time
-            document.getElementById('current-time').textContent = 
-                now.toLocaleTimeString('bn-BD', {hour: '2-digit', minute: '2-digit'});
+            const currentTime = document.getElementById('current-time');
+            if (currentTime) {
+                currentTime.textContent = now.toLocaleTimeString('bn-BD', {hour: '2-digit', minute: '2-digit'});
+            }
         }
         
         // Handle login
@@ -1050,6 +1439,8 @@
                     loadDashboard();
                     loginError.classList.add('hidden');
                     showNotification('লগইন সফল!', 'success');
+                    startNotificationPolling();
+                    requestNotificationPermission();
                 } else {
                     const error = await response.json();
                     throw new Error(error.error || 'Login failed');
@@ -1072,6 +1463,13 @@
                 adminPanel.classList.add('hidden');
                 loginPage.classList.remove('hidden');
                 loginForm.reset();
+                
+                // Stop notification polling
+                if (notificationInterval) {
+                    clearInterval(notificationInterval);
+                    notificationInterval = null;
+                }
+                
                 showNotification('সফলভাবে লগআউট করা হয়েছে', 'info');
             }
         }
@@ -1082,7 +1480,10 @@
             adminPanel.classList.remove('hidden');
             
             // Update user info
-            document.getElementById('logged-in-user').textContent = currentUser.username;
+            const loggedInUser = document.getElementById('logged-in-user');
+            if (loggedInUser) {
+                loggedInUser.textContent = currentUser.username;
+            }
         }
         
         // Handle navigation
@@ -1128,8 +1529,11 @@
                 'settings': 'ওয়েবসাইটের সাধারণ সেটিংস কনফিগারেশন'
             };
             
-            document.getElementById('page-title').textContent = pageTitles[page];
-            document.getElementById('page-subtitle').textContent = pageSubtitles[page];
+            const pageTitle = document.getElementById('page-title');
+            const pageSubtitle = document.getElementById('page-subtitle');
+            
+            if (pageTitle) pageTitle.textContent = pageTitles[page];
+            if (pageSubtitle) pageSubtitle.textContent = pageSubtitles[page];
             
             // Load page content
             loadPageContent(page);
@@ -1458,7 +1862,7 @@
                                         <tbody>
                                             ${products && products.length > 0 ? 
                                                 products.map(product => {
-                                                    const firstImage = product.colors && product.colors.length > 0 ? product.colors[0].image : 'https://via.placeholder.com/50';
+                                                    const firstImage = product.colors && product.colors.length > 0 ? product.colors[0].image : 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
                                                     return `
                                                         <tr>
                                                             <td class="font-medium">${product.name}</td>
@@ -1904,6 +2308,29 @@
                                         </div>
                                     </div>
                                     
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-tshirt mr-2 text-purple-500"></i>
+                                                হোমপেজ শিরোনাম
+                                            </label>
+                                            <input type="text" id="home-page-title" 
+                                                   class="form-input"
+                                                   placeholder="আমাদের পাঞ্জাবি কালেকশন"
+                                                   value="${settings.homePageTitle || 'আমাদের পাঞ্জাবি কালেকশন'}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-shopping-cart mr-2 text-red-500"></i>
+                                                অর্ডার ফর্ম শিরোনাম
+                                            </label>
+                                            <input type="text" id="order-form-title" 
+                                                   class="form-input"
+                                                   placeholder="পাঞ্জাবি অর্ডার ফর্ম"
+                                                   value="${settings.orderFormTitle || 'পাঞ্জাবি অর্ডার ফর্ম'}">
+                                        </div>
+                                    </div>
+                                    
                                     <div class="form-group">
                                         <label class="form-label">
                                             <i class="fas fa-clock mr-2 text-yellow-500"></i>
@@ -1945,13 +2372,22 @@
         function setupPageEventListeners(page) {
             switch(page) {
                 case 'orders':
-                    document.getElementById('order-filter')?.addEventListener('change', filterOrders);
+                    const orderFilter = document.getElementById('order-filter');
+                    if (orderFilter) {
+                        orderFilter.addEventListener('change', filterOrders);
+                    }
                     break;
                 case 'reviews':
-                    document.getElementById('review-filter')?.addEventListener('change', filterReviews);
+                    const reviewFilter = document.getElementById('review-filter');
+                    if (reviewFilter) {
+                        reviewFilter.addEventListener('change', filterReviews);
+                    }
                     break;
                 case 'settings':
-                    document.getElementById('settings-form')?.addEventListener('submit', handleSettingsSubmit);
+                    const settingsForm = document.getElementById('settings-form');
+                    if (settingsForm) {
+                        settingsForm.addEventListener('submit', handleSettingsSubmit);
+                    }
                     break;
             }
         }
@@ -1961,6 +2397,8 @@
             document.getElementById('product-modal-title').textContent = 'নতুন পণ্য যোগ করুন';
             document.getElementById('product-id').value = '';
             document.getElementById('product-form').reset();
+            document.getElementById('product-status').checked = true;
+            document.getElementById('product-status-text').textContent = 'সক্রিয়';
             document.getElementById('colors-container').innerHTML = '';
             addColorField();
             calculateDiscount();
@@ -1992,21 +2430,115 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="form-group">
-                        <label class="form-label">রং এর নাম</label>
+                        <label class="form-label">রং এর নাম *</label>
                         <input type="text" name="color-name" required class="form-input text-sm" placeholder="লাল ও সোনালী">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">রং কোড</label>
-                        <input type="text" name="color-code" required class="form-input text-sm" placeholder="#dc2626">
+                        <label class="form-label">রং কোড *</label>
+                        <input type="text" name="color-code" required class="form-input text-sm" placeholder="#dc2626" value="#dc2626">
                     </div>
                 </div>
+                
+                <!-- Color Image Upload -->
                 <div class="form-group">
-                    <label class="form-label">ইমেজ URL</label>
-                    <input type="text" name="color-image" class="form-input text-sm" placeholder="https://example.com/image.jpg">
+                    <label class="form-label">ইমেজ</label>
+                    <div class="tab-container">
+                        <button type="button" class="tab-btn active" data-tab="color-url-tab-${index}">URL লিংক</button>
+                        <button type="button" class="tab-btn" data-tab="color-upload-tab-${index}">ফাইল আপলোড</button>
+                    </div>
+                    
+                    <!-- URL Tab -->
+                    <div id="color-url-tab-${index}" class="tab-content active">
+                        <input type="text" name="color-image-url" class="form-input text-sm" placeholder="https://example.com/image.jpg">
+                        <div class="mt-2">
+                            <img name="color-url-preview" class="color-image-preview">
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Tab -->
+                    <div id="color-upload-tab-${index}" class="tab-content">
+                        <div class="color-image-upload" id="color-image-upload-${index}">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                <p class="font-medium text-sm">ছবি আপলোড করুন</p>
+                                <p class="text-gray-500 text-xs mt-1">PNG, JPG, JPEG, WEBP</p>
+                                <input type="file" name="color-image-file" accept="image/*" class="hidden">
+                            </div>
+                            <img name="color-upload-preview" class="color-image-preview">
+                        </div>
+                    </div>
                 </div>
             `;
             
             container.appendChild(colorField);
+            
+            // Setup color image tabs
+            const newColorField = container.lastElementChild;
+            newColorField.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    // Hide all tabs in this color field
+                    const parent = this.closest('.tab-container').parentElement;
+                    parent.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    parent.querySelectorAll('.tab-btn').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    // Show selected tab
+                    this.classList.add('active');
+                    parent.querySelector(`#${tabId}`).classList.add('active');
+                });
+            });
+            
+            // Setup color URL preview
+            const urlInput = newColorField.querySelector('[name="color-image-url"]');
+            if (urlInput) {
+                urlInput.addEventListener('input', function() {
+                    const preview = newColorField.querySelector('[name="color-url-preview"]');
+                    if (this.value) {
+                        preview.src = this.value;
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Setup color file upload
+            const uploadContainer = newColorField.querySelector(`#color-image-upload-${index}`);
+            if (uploadContainer) {
+                uploadContainer.addEventListener('click', () => {
+                    newColorField.querySelector('[name="color-image-file"]').click();
+                });
+                
+                newColorField.querySelector('[name="color-image-file"]').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
+                        return;
+                    }
+                    
+                    // Validate file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
+                        return;
+                    }
+                    
+                    // Preview image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = newColorField.querySelector('[name="color-upload-preview"]');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        uploadContainer.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
         }
         
         function calculateDiscount() {
@@ -2036,15 +2568,37 @@
             document.querySelectorAll('#colors-container > div').forEach(container => {
                 const name = container.querySelector('[name="color-name"]').value;
                 const code = container.querySelector('[name="color-code"]').value;
-                const image = container.querySelector('[name="color-image"]').value;
+                const imageUrl = container.querySelector('[name="color-image-url"]').value;
+                const imageFile = container.querySelector('[name="color-image-file"]').files[0];
                 
-                if (name && code) {
-                    colors.push({ 
-                        name, 
-                        code, 
-                        image: image || 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-                    });
+                if (!name || !code) {
+                    showNotification('রং এর নাম এবং কোড অবশ্যই দিতে হবে', 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
                 }
+                
+                // Prepare color data
+                const colorData = { 
+                    name, 
+                    code
+                };
+                
+                // Handle image - file has priority over URL
+                if (imageFile) {
+                    // Convert file to base64
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        colorData.imageFile = e.target.result; // Base64 string
+                    };
+                    reader.readAsDataURL(imageFile);
+                } else if (imageUrl) {
+                    colorData.image = imageUrl;
+                } else {
+                    colorData.image = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                }
+                
+                colors.push(colorData);
             });
             
             if (colors.length === 0) {
@@ -2062,7 +2616,7 @@
                 regularPrice: parseFloat(document.getElementById('regular-price').value),
                 offerPrice: parseFloat(document.getElementById('offer-price').value),
                 offerPercentage: parseFloat(document.getElementById('offer-percentage').value),
-                isActive: document.getElementById('product-status').value === 'true'
+                isActive: document.getElementById('product-status').checked
             };
             
             try {
@@ -2115,7 +2669,8 @@
                         document.getElementById('regular-price').value = product.regularPrice;
                         document.getElementById('offer-price').value = product.offerPrice;
                         document.getElementById('offer-percentage').value = product.offerPercentage;
-                        document.getElementById('product-status').value = product.isActive.toString();
+                        document.getElementById('product-status').checked = product.isActive;
+                        document.getElementById('product-status-text').textContent = product.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়';
                         
                         // Load colors
                         document.getElementById('colors-container').innerHTML = '';
@@ -2124,9 +2679,18 @@
                             const lastContainer = document.querySelector('#colors-container > div:last-child');
                             lastContainer.querySelector('[name="color-name"]').value = color.name;
                             lastContainer.querySelector('[name="color-code"]').value = color.code;
-                            lastContainer.querySelector('[name="color-image"]').value = color.image;
+                            
+                            // Set image URL
+                            const urlInput = lastContainer.querySelector('[name="color-image-url"]');
+                            if (urlInput && color.image) {
+                                urlInput.value = color.image;
+                                const preview = lastContainer.querySelector('[name="color-url-preview"]');
+                                preview.src = color.image;
+                                preview.style.display = 'block';
+                            }
                         });
                         
+                        calculateDiscount();
                         document.getElementById('product-modal').classList.add('active');
                     }
                 }
@@ -2162,16 +2726,25 @@
             document.getElementById('slider-modal-title').textContent = 'নতুন স্লাইডার যোগ করুন';
             document.getElementById('slider-id').value = '';
             document.getElementById('slider-form').reset();
+            document.getElementById('slider-status').checked = true;
+            document.getElementById('slider-status-text').textContent = 'সক্রিয়';
             document.getElementById('slider-image-upload').classList.remove('has-image');
-            document.getElementById('slider-image-preview').classList.remove('show');
+            document.getElementById('slider-upload-preview').classList.remove('show');
+            document.getElementById('slider-url-preview').classList.remove('show');
             document.getElementById('slider-modal').classList.add('active');
+            
+            // Activate URL tab by default
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector('.tab-btn[data-tab="url-tab"]').classList.add('active');
+            document.getElementById('url-tab').classList.add('active');
         }
         
         function hideSliderModal() {
             document.getElementById('slider-modal').classList.remove('active');
         }
         
-        async function handleImageUpload(e) {
+        async function handleSliderImageUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             
@@ -2190,22 +2763,10 @@
             // Convert to base64
             const reader = new FileReader();
             reader.onload = function(e) {
-                const preview = document.getElementById('slider-image-preview');
+                const preview = document.getElementById('slider-upload-preview');
                 preview.src = e.target.result;
                 preview.classList.add('show');
                 document.getElementById('slider-image-upload').classList.add('has-image');
-                
-                // Store base64 in hidden field
-                const base64Input = document.createElement('input');
-                base64Input.type = 'hidden';
-                base64Input.id = 'slider-image-base64';
-                base64Input.value = e.target.result;
-                
-                // Remove existing if any
-                const existing = document.getElementById('slider-image-base64');
-                if (existing) existing.remove();
-                
-                document.getElementById('slider-form').appendChild(base64Input);
             };
             reader.readAsDataURL(file);
         }
@@ -2219,23 +2780,52 @@
             submitBtn.disabled = true;
             
             const sliderId = document.getElementById('slider-id').value;
-            const base64Input = document.getElementById('slider-image-base64');
-            const imageBase64 = base64Input ? base64Input.value : '';
             
-            // For now, use placeholder if no image
-            const imageUrl = imageBase64 || 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+            // Get image from active tab
+            let imageData = {};
+            const activeTab = document.querySelector('.tab-content.active');
+            
+            if (activeTab.id === 'url-tab') {
+                const imageUrl = document.getElementById('slider-image-url').value;
+                if (!imageUrl) {
+                    showNotification('স্লাইডার ইমেজ URL দিন', 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                imageData.imageUrl = imageUrl;
+            } else if (activeTab.id === 'upload-tab') {
+                const fileInput = document.getElementById('slider-image-file');
+                if (!fileInput.files[0]) {
+                    showNotification('স্লাইডার ইমেজ ফাইল নির্বাচন করুন', 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                // Convert file to base64
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageData.imageFile = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                // Wait for file to be read
+                await new Promise(resolve => reader.onloadend = resolve);
+            }
             
             const sliderData = {
                 slideNumber: parseInt(document.getElementById('slider-number').value),
                 title: document.getElementById('slider-title').value,
                 subtitle: document.getElementById('slider-subtitle').value,
                 description: document.getElementById('slider-description').value,
-                imageUrl: imageUrl,
                 badgeText: document.getElementById('slider-badge-text').value,
                 badgeColor: document.getElementById('slider-badge-color').value,
                 price: parseFloat(document.getElementById('slider-price').value) || 0,
                 originalPrice: parseFloat(document.getElementById('slider-original-price').value) || 0,
-                isActive: document.getElementById('slider-status').value === 'true'
+                isActive: document.getElementById('slider-status').checked,
+                ...imageData
             };
             
             try {
@@ -2290,23 +2880,20 @@
                         document.getElementById('slider-badge-color').value = slider.badgeColor || 'red';
                         document.getElementById('slider-price').value = slider.price || '';
                         document.getElementById('slider-original-price').value = slider.originalPrice || '';
-                        document.getElementById('slider-status').value = slider.isActive.toString();
+                        document.getElementById('slider-status').checked = slider.isActive;
+                        document.getElementById('slider-status-text').textContent = slider.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়';
                         
-                        // Image preview
-                        document.getElementById('slider-image-upload').classList.add('has-image');
-                        document.getElementById('slider-image-preview').src = slider.imageUrl;
-                        document.getElementById('slider-image-preview').classList.add('show');
+                        // Set image URL
+                        document.getElementById('slider-image-url').value = slider.imageUrl;
+                        const urlPreview = document.getElementById('slider-url-preview');
+                        urlPreview.src = slider.imageUrl;
+                        urlPreview.classList.add('show');
                         
-                        // Store image URL
-                        const base64Input = document.createElement('input');
-                        base64Input.type = 'hidden';
-                        base64Input.id = 'slider-image-base64';
-                        base64Input.value = slider.imageUrl;
-                        
-                        const existing = document.getElementById('slider-image-base64');
-                        if (existing) existing.remove();
-                        
-                        document.getElementById('slider-form').appendChild(base64Input);
+                        // Activate URL tab
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                        document.querySelector('.tab-btn[data-tab="url-tab"]').classList.add('active');
+                        document.getElementById('url-tab').classList.add('active');
                         
                         document.getElementById('slider-modal').classList.add('active');
                     }
@@ -2505,6 +3092,8 @@
                 footerText: document.getElementById('footer-text').value,
                 deliveryChargeInsideDhaka: parseFloat(document.getElementById('delivery-inside').value),
                 deliveryChargeOutsideDhaka: parseFloat(document.getElementById('delivery-outside').value),
+                homePageTitle: document.getElementById('home-page-title').value,
+                orderFormTitle: document.getElementById('order-form-title').value,
                 serviceHours: document.getElementById('service-hours').value
             };
             
@@ -2701,6 +3290,259 @@
             document.querySelectorAll('.modal.active').forEach(modal => {
                 modal.classList.remove('active');
             });
+        }
+        
+        // Notification polling
+        function startNotificationPolling() {
+            if (notificationInterval) clearInterval(notificationInterval);
+            
+            // Check immediately
+            checkNotifications();
+            
+            // Then check every 30 seconds
+            notificationInterval = setInterval(checkNotifications, 30000);
+        }
+        
+        // Check for new notifications
+        async function checkNotifications() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/notifications`);
+                if (response.ok) {
+                    const data = await response.json();
+                    notifications = data;
+                    updateNotificationUI();
+                    
+                    // Show desktop notification for new items
+                    showDesktopNotifications(data);
+                }
+            } catch (error) {
+                console.error('Error checking notifications:', error);
+            }
+        }
+        
+        // Update notification UI
+        function updateNotificationUI() {
+            const totalUnread = notifications.unreadOrders.length + notifications.unreadReviews.length;
+            
+            // Update counts
+            const notificationCount = document.getElementById('notification-count');
+            const mobileNotificationCount = document.getElementById('mobile-notification-count');
+            
+            if (notificationCount) {
+                if (totalUnread > 0) {
+                    notificationCount.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                    notificationCount.classList.remove('hidden');
+                } else {
+                    notificationCount.classList.add('hidden');
+                }
+            }
+            
+            if (mobileNotificationCount) {
+                if (totalUnread > 0) {
+                    mobileNotificationCount.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                    mobileNotificationCount.classList.remove('hidden');
+                } else {
+                    mobileNotificationCount.classList.add('hidden');
+                }
+            }
+            
+            // Update notification list
+            updateNotificationList();
+        }
+        
+        // Update notification list
+        function updateNotificationList() {
+            const container = document.getElementById('notification-list');
+            if (!container) return;
+            
+            let html = '';
+            
+            if (notifications.unreadOrders.length === 0 && notifications.unreadReviews.length === 0) {
+                html = `
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-bell-slash text-2xl mb-2"></i>
+                        <p>কোনো নতুন নোটিফিকেশন নেই</p>
+                    </div>
+                `;
+            } else {
+                // Show orders first
+                notifications.unreadOrders.forEach(order => {
+                    const timeAgo = getTimeAgo(order.createdAt);
+                    html += `
+                        <div class="notification-item unread" data-type="order" data-id="${order._id}">
+                            <div class="flex items-start">
+                                <div class="text-green-600 mr-3 mt-1">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium">নতুন অর্ডার #${order.orderId}</p>
+                                    <p class="text-sm text-gray-600">গ্রাহক: ${order.customerName}</p>
+                                    <p class="text-sm text-gray-600">পণ্য: ${order.productName}</p>
+                                    <p class="text-sm text-gray-600">মূল্য: ${order.totalPrice} টাকা</p>
+                                    <p class="time">${timeAgo}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Then show reviews
+                notifications.unreadReviews.forEach(review => {
+                    const timeAgo = getTimeAgo(review.createdAt);
+                    html += `
+                        <div class="notification-item unread" data-type="review" data-id="${review._id}">
+                            <div class="flex items-start">
+                                <div class="text-yellow-600 mr-3 mt-1">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium">নতুন রিভিউ</p>
+                                    <p class="text-sm text-gray-600">${review.name} - ${review.rating} স্টার</p>
+                                    <p class="text-sm text-gray-600 truncate">${review.text.substring(0, 60)}${review.text.length > 60 ? '...' : ''}</p>
+                                    <p class="time">${timeAgo}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            container.innerHTML = html;
+            
+            // Add click handlers to notification items
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    const id = this.getAttribute('data-id');
+                    
+                    markAsRead(type, id);
+                    
+                    if (type === 'order') {
+                        viewOrder(id);
+                        hideNotifications();
+                    } else if (type === 'review') {
+                        switchPage('reviews');
+                        hideNotifications();
+                    }
+                });
+            });
+        }
+        
+        // Toggle notifications dropdown
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notification-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+        
+        function hideNotifications() {
+            const dropdown = document.getElementById('notification-dropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+        
+        // Mark notification as read
+        async function markAsRead(type, id) {
+            try {
+                await fetch(`${API_BASE_URL}/api/admin/notifications/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type, id })
+                });
+                
+                // Update local state
+                if (type === 'order') {
+                    notifications.unreadOrders = notifications.unreadOrders.filter(order => order._id !== id);
+                } else if (type === 'review') {
+                    notifications.unreadReviews = notifications.unreadReviews.filter(review => review._id !== id);
+                }
+                
+                updateNotificationUI();
+            } catch (error) {
+                console.error('Error marking as read:', error);
+            }
+        }
+        
+        // Mark all as read
+        async function markAllAsRead() {
+            try {
+                await fetch(`${API_BASE_URL}/api/admin/notifications/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type: 'all' })
+                });
+                
+                // Clear all notifications
+                notifications.unreadOrders = [];
+                notifications.unreadReviews = [];
+                
+                updateNotificationUI();
+                showNotification('সব নোটিফিকেশন পড়া হয়েছে', 'success');
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+            }
+        }
+        
+        // Show desktop notifications
+        function showDesktopNotifications(data) {
+            // Check if we have new items
+            const hasNewOrders = data.unreadOrders && data.unreadOrders.length > 0;
+            const hasNewReviews = data.unreadReviews && data.unreadReviews.length > 0;
+            
+            if (hasNewOrders) {
+                const latestOrder = data.unreadOrders[0];
+                if (Notification.permission === 'granted') {
+                    new Notification(`🆕 নতুন অর্ডার #${latestOrder.orderId}`, {
+                        body: `গ্রাহক: ${latestOrder.customerName}\nপণ্য: ${latestOrder.productName}`,
+                        icon: '/favicon.ico'
+                    });
+                }
+            }
+            
+            if (hasNewReviews) {
+                const latestReview = data.unreadReviews[0];
+                if (Notification.permission === 'granted') {
+                    new Notification(`⭐ নতুন রিভিউ ${latestReview.name}`, {
+                        body: `রেটিং: ${latestReview.rating}/5\n${latestReview.text.substring(0, 50)}...`,
+                        icon: '/favicon.ico'
+                    });
+                }
+            }
+        }
+        
+        // Request notification permission
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+        
+        // Helper function to get time ago
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) {
+                return 'এখনই';
+            } else if (diffMins < 60) {
+                return `${diffMins} মিনিট আগে`;
+            } else if (diffHours < 24) {
+                return `${diffHours} ঘণ্টা আগে`;
+            } else if (diffDays < 7) {
+                return `${diffDays} দিন আগে`;
+            } else {
+                return formatDate(dateString);
+            }
         }
         
         // Dashboard function (for backward compatibility)

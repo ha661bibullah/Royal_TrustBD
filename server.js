@@ -4,6 +4,7 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -42,7 +43,6 @@ mongoose.connect(MONGODB_URI, {
   console.error('❌ MongoDB Connection Error:', err);
   console.log('Trying with simpler connection string...');
   
-  // Alternative connection string
   const simpleURI = 'mongodb+srv://billaharif661_db_user:2GCmDhaEOQUteXow@iwonttotast0.mza6qgz.mongodb.net/ROYAL_TRUST_BD';
   mongoose.connect(simpleURI, {
     useNewUrlParser: true,
@@ -59,7 +59,7 @@ const productSchema = new mongoose.Schema({
   colors: [{
     name: String,
     code: String,
-    image: String, // Can be URL or base64
+    image: String,
     isBase64: { type: Boolean, default: false }
   }],
   size: { type: String, required: true },
@@ -87,6 +87,7 @@ const orderSchema = new mongoose.Schema({
     default: 'pending'
   },
   notes: { type: String },
+  isRead: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -96,6 +97,7 @@ const reviewSchema = new mongoose.Schema({
   text: { type: String, required: true },
   rating: { type: Number, required: true, min: 1, max: 5 },
   isApproved: { type: Boolean, default: false },
+  isRead: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -120,6 +122,8 @@ const websiteSettingsSchema = new mongoose.Schema({
   deliveryChargeInsideDhaka: { type: Number, default: 60 },
   deliveryChargeOutsideDhaka: { type: Number, default: 160 },
   serviceHours: { type: String, default: 'সকাল ৯টা - রাত ১০টা' },
+  homePageTitle: { type: String, default: 'আমাদের পাঞ্জাবি কালেকশন' },
+  orderFormTitle: { type: String, default: 'পাঞ্জাবি অর্ডার ফর্ম' },
   updatedAt: { type: Date, default: Date.now }
 });
 
@@ -144,21 +148,43 @@ function generateOrderId() {
   return `RT${timestamp}${random}`;
 }
 
+// Email configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER || 'billaharif661@gmail.com',
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Function to send email notification
+async function sendEmailNotification(subject, message) {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'billaharif661@gmail.com',
+      to: 'billaharif661@gmail.com',
+      subject: subject,
+      html: message
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email notification sent');
+  } catch (error) {
+    console.error('❌ Email sending failed:', error);
+  }
+}
+
 // Image handling utilities
 const saveBase64Image = (base64String, folder = 'products') => {
   try {
-    // Remove data:image/png;base64, prefix if present
     const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
     
-    // Generate unique filename
     const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
     const filepath = path.join(uploadsDir, filename);
     
-    // Save file
     fs.writeFileSync(filepath, buffer);
     
-    // Return relative URL
     return `/uploads/${filename}`;
   } catch (error) {
     console.error('Error saving base64 image:', error);
@@ -168,12 +194,10 @@ const saveBase64Image = (base64String, folder = 'products') => {
 
 const saveUploadedFile = (file, folder = 'products') => {
   try {
-    // Generate unique filename
     const ext = path.extname(file.name);
     const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${ext}`;
     const filepath = path.join(uploadsDir, filename);
     
-    // Move file to uploads directory
     file.mv(filepath, (err) => {
       if (err) {
         console.error('Error moving file:', err);
@@ -181,7 +205,6 @@ const saveUploadedFile = (file, folder = 'products') => {
       }
     });
     
-    // Return relative URL
     return `/uploads/${filename}`;
   } catch (error) {
     console.error('Error saving uploaded file:', error);
@@ -218,18 +241,15 @@ app.post('/api/upload', async (req, res) => {
     const file = req.files.file;
     const folder = req.body.folder || 'general';
     
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.mimetype)) {
       return res.status(400).json({ error: 'Invalid file type. Only images are allowed' });
     }
     
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       return res.status(400).json({ error: 'File too large. Max size is 5MB' });
     }
     
-    // Save file
     const fileUrl = saveUploadedFile(file, folder);
     
     if (!fileUrl) {
@@ -257,12 +277,10 @@ app.post('/api/upload/base64', async (req, res) => {
       return res.status(400).json({ error: 'No base64 data provided' });
     }
     
-    // Validate base64 string
     if (!base64.startsWith('data:image/')) {
       return res.status(400).json({ error: 'Invalid base64 image data' });
     }
     
-    // Save base64 image
     const fileUrl = saveBase64Image(base64, folder);
     
     if (!fileUrl) {
@@ -302,6 +320,26 @@ app.post('/api/frontend/order', async (req, res) => {
     const order = new Order(orderData);
     await order.save();
     
+    // Send email notification
+    const emailSubject = `🆕 New Order Received - ${order.orderId}`;
+    const emailMessage = `
+      <h2>New Order Received</h2>
+      <p><strong>Order ID:</strong> ${order.orderId}</p>
+      <p><strong>Customer Name:</strong> ${order.customerName}</p>
+      <p><strong>Phone:</strong> ${order.phone}</p>
+      <p><strong>Product:</strong> ${order.productName}</p>
+      <p><strong>Color:</strong> ${order.color}</p>
+      <p><strong>Size:</strong> ${order.size}</p>
+      <p><strong>Quantity:</strong> ${order.quantity}</p>
+      <p><strong>Total Price:</strong> ${order.totalPrice} টাকা</p>
+      <p><strong>Address:</strong> ${order.address}</p>
+      <p><strong>Order Time:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+      <br>
+      <p>Login to admin panel to manage this order.</p>
+    `;
+    
+    await sendEmailNotification(emailSubject, emailMessage);
+    
     res.json({ 
       success: true, 
       message: 'Order placed successfully',
@@ -316,6 +354,21 @@ app.post('/api/frontend/review', async (req, res) => {
   try {
     const review = new Review(req.body);
     await review.save();
+    
+    // Send email notification
+    const emailSubject = `⭐ New Review Submitted by ${review.name}`;
+    const emailMessage = `
+      <h2>New Review Submitted</h2>
+      <p><strong>Name:</strong> ${review.name}</p>
+      <p><strong>Location:</strong> ${review.location}</p>
+      <p><strong>Rating:</strong> ${review.rating}/5</p>
+      <p><strong>Review:</strong> ${review.text}</p>
+      <p><strong>Submitted At:</strong> ${new Date(review.createdAt).toLocaleString()}</p>
+      <br>
+      <p>Login to admin panel to approve this review.</p>
+    `;
+    
+    await sendEmailNotification(emailSubject, emailMessage);
     
     res.json({ 
       success: true, 
@@ -373,11 +426,9 @@ app.get('/api/frontend/settings', async (req, res) => {
 app.post('/api/admin/login', async (req, res) => {
   const { username, password } = req.body;
   
-  // For now, use simple hardcoded check
   if (username === (process.env.ADMIN_USERNAME || 'admin') && 
       password === (process.env.ADMIN_PASSWORD || 'admin123')) {
     
-    // Check if admin exists in DB
     let admin = await Admin.findOne({ username });
     if (!admin) {
       admin = new Admin({ username, password });
@@ -415,6 +466,10 @@ app.get('/api/admin/dashboard/stats', async (req, res) => {
       .limit(5)
       .lean();
     
+    // Get unread counts for notifications
+    const unreadOrders = await Order.countDocuments({ isRead: false });
+    const unreadReviews = await Review.countDocuments({ isRead: false });
+    
     res.json({
       totalOrders,
       pendingOrders,
@@ -423,8 +478,45 @@ app.get('/api/admin/dashboard/stats', async (req, res) => {
       totalProducts,
       totalReviews,
       pendingReviews,
-      recentOrders
+      recentOrders,
+      unreadOrders,
+      unreadReviews
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get unread notifications
+app.get('/api/admin/notifications', async (req, res) => {
+  try {
+    const unreadOrders = await Order.find({ isRead: false }).sort({ createdAt: -1 });
+    const unreadReviews = await Review.find({ isRead: false }).sort({ createdAt: -1 });
+    
+    res.json({
+      unreadOrders,
+      unreadReviews
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Mark notifications as read
+app.post('/api/admin/notifications/read', async (req, res) => {
+  try {
+    const { type, id } = req.body;
+    
+    if (type === 'order') {
+      await Order.findByIdAndUpdate(id, { isRead: true });
+    } else if (type === 'review') {
+      await Review.findByIdAndUpdate(id, { isRead: true });
+    } else if (type === 'all') {
+      await Order.updateMany({ isRead: false }, { isRead: true });
+      await Review.updateMany({ isRead: false }, { isRead: true });
+    }
+    
+    res.json({ success: true, message: 'Marked as read' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -447,13 +539,14 @@ app.post('/api/admin/products', async (req, res) => {
     // Handle color images
     if (productData.colors && Array.isArray(productData.colors)) {
       for (let color of productData.colors) {
-        // If image is base64, save it and update URL
-        if (color.image && color.image.startsWith('data:image/')) {
-          const imageUrl = saveBase64Image(color.image, 'products');
+        // Handle file upload
+        if (color.imageFile && color.imageFile.startsWith('data:image/')) {
+          const imageUrl = saveBase64Image(color.imageFile, 'products');
           if (imageUrl) {
             color.image = imageUrl;
             color.isBase64 = true;
           }
+          delete color.imageFile;
         }
       }
     }
@@ -473,13 +566,14 @@ app.put('/api/admin/products/:id', async (req, res) => {
     // Handle color images
     if (productData.colors && Array.isArray(productData.colors)) {
       for (let color of productData.colors) {
-        // If image is base64, save it and update URL
-        if (color.image && color.image.startsWith('data:image/')) {
-          const imageUrl = saveBase64Image(color.image, 'products');
+        // Handle file upload
+        if (color.imageFile && color.imageFile.startsWith('data:image/')) {
+          const imageUrl = saveBase64Image(color.imageFile, 'products');
           if (imageUrl) {
             color.image = imageUrl;
             color.isBase64 = true;
           }
+          delete color.imageFile;
         }
       }
     }
@@ -581,12 +675,13 @@ app.post('/api/admin/sliders', async (req, res) => {
     const sliderData = req.body;
     
     // Handle image if it's base64
-    if (sliderData.imageUrl && sliderData.imageUrl.startsWith('data:image/')) {
-      const imageUrl = saveBase64Image(sliderData.imageUrl, 'sliders');
+    if (sliderData.imageFile && sliderData.imageFile.startsWith('data:image/')) {
+      const imageUrl = saveBase64Image(sliderData.imageFile, 'sliders');
       if (imageUrl) {
         sliderData.imageUrl = imageUrl;
         sliderData.isBase64 = true;
       }
+      delete sliderData.imageFile;
     }
     
     const slider = new Slider(sliderData);
@@ -602,12 +697,13 @@ app.put('/api/admin/sliders/:id', async (req, res) => {
     const sliderData = req.body;
     
     // Handle image if it's base64
-    if (sliderData.imageUrl && sliderData.imageUrl.startsWith('data:image/')) {
-      const imageUrl = saveBase64Image(sliderData.imageUrl, 'sliders');
+    if (sliderData.imageFile && sliderData.imageFile.startsWith('data:image/')) {
+      const imageUrl = saveBase64Image(sliderData.imageFile, 'sliders');
       if (imageUrl) {
         sliderData.imageUrl = imageUrl;
         sliderData.isBase64 = true;
       }
+      delete sliderData.imageFile;
     }
     
     const slider = await Slider.findByIdAndUpdate(
@@ -704,7 +800,7 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔌 MongoDB URI: ${process.env.MONGODB_URI ? 'Set' : 'Not set'}`);
+  console.log(`📧 Email notifications: ${process.env.EMAIL_USER ? 'Enabled' : 'Disabled (set EMAIL_USER & EMAIL_PASS in .env)'}`);
   console.log(`📁 Uploads directory: ${uploadsDir}`);
   
   // Initialize database after connection
