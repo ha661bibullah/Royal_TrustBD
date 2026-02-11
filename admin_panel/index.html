@@ -460,8 +460,10 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 50;
+            z-index: 1000;
             padding: 12px 16px;
+            height: 70px;
+            box-sizing: border-box;
         }
         
         @media (max-width: 767px) {
@@ -472,7 +474,7 @@
             }
             
             .main-content {
-                padding-top: 60px;
+                padding-top: 70px;
             }
         }
         
@@ -510,13 +512,13 @@
         
         @media (max-width: 640px) {
             .notification-dropdown {
-                position: fixed;
-                top: 60px;
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-height: 70vh;
-                border-radius: 0 0 12px 12px;
+                position: fixed !important;
+                top: 70px !important;
+                left: 10px !important;
+                right: 10px !important;
+                width: calc(100% - 20px) !important;
+                max-height: 60vh;
+                border-radius: 12px;
                 box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             }
         }
@@ -818,6 +820,25 @@
                     <i class="fas fa-bell text-xl"></i>
                     <span id="mobile-notification-count" class="notification-badge hidden">0</span>
                 </button>
+                <!-- Mobile Notification Dropdown -->
+                <div class="notification-dropdown" id="mobile-notification-dropdown">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-gray-800">নোটিফিকেশন</h3>
+                            <button id="mobile-mark-all-read" class="text-sm text-blue-600 hover:text-blue-800">
+                                সব পড়া হয়েছে
+                            </button>
+                        </div>
+                    </div>
+                    <div id="mobile-notification-list">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                    <div class="p-4 text-center border-t border-gray-200">
+                        <a href="#" onclick="switchPage('orders')" class="text-sm text-blue-600 hover:text-blue-800">
+                            সব অর্ডার দেখুন
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -1244,7 +1265,7 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileNotificationBtn = document.getElementById('mobile-notification-btn'); // FIXED
+        const mobileNotificationBtn = document.getElementById('mobile-notification-btn');
         const contentArea = document.getElementById('content-area');
         
         // Initialize
@@ -1265,6 +1286,18 @@
             // Update time
             updateDateTime();
             setInterval(updateDateTime, 1000);
+            
+            // Close dropdowns on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    // ডেস্কটপ মোডে এলে নোটিফিকেশন ড্রপডাউন বন্ধ করুন
+                    hideAllNotifications();
+                    // মোবাইল মেনু বন্ধ করুন
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
         });
         
         // Setup event listeners
@@ -1359,23 +1392,48 @@
             document.getElementById('update-order-btn').addEventListener('click', updateOrderStatus);
             
             // FIXED: Notification events for both desktop and mobile
-            document.getElementById('notification-btn')?.addEventListener('click', toggleNotifications);
-            document.getElementById('mobile-notification-btn')?.addEventListener('click', function(e) {
-                e.stopPropagation();
-                toggleNotifications();
-            });
-            document.getElementById('mark-all-read')?.addEventListener('click', markAllAsRead);
+            const notificationBtn = document.getElementById('notification-btn');
+            const mobileNotificationBtn = document.getElementById('mobile-notification-btn');
             
-            // FIXED: Close notification dropdown when clicking outside - improved for mobile
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleDesktopNotifications();
+                });
+            }
+            
+            if (mobileNotificationBtn) {
+                mobileNotificationBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleMobileNotifications();
+                });
+            }
+            
+            // Mark all read buttons
+            document.getElementById('mark-all-read')?.addEventListener('click', markAllAsRead);
+            document.getElementById('mobile-mark-all-read')?.addEventListener('click', markAllAsRead);
+            
+            // FIXED: Close notification dropdown when clicking outside - improved
             document.addEventListener('click', function(e) {
-                const dropdown = document.getElementById('notification-dropdown');
-                const btn = document.getElementById('notification-btn');
-                const mobileBtn = document.getElementById('mobile-notification-btn');
+                const desktopDropdown = document.getElementById('notification-dropdown');
+                const mobileDropdown = document.getElementById('mobile-notification-dropdown');
+                const notificationBtn = document.getElementById('notification-btn');
+                const mobileNotificationBtn = document.getElementById('mobile-notification-btn');
                 
-                if (dropdown && dropdown.classList.contains('show') && 
-                    !dropdown.contains(e.target) && 
-                    !btn?.contains(e.target) && !mobileBtn?.contains(e.target)) {
-                    dropdown.classList.remove('show');
+                // চেক করুন যে ক্লিক কোথায় হয়েছে
+                const isNotificationBtn = notificationBtn?.contains(e.target);
+                const isMobileNotificationBtn = mobileNotificationBtn?.contains(e.target);
+                const isDesktopDropdown = desktopDropdown?.contains(e.target);
+                const isMobileDropdown = mobileDropdown?.contains(e.target);
+                
+                if (desktopDropdown && desktopDropdown.classList.contains('show') && 
+                    !isNotificationBtn && !isDesktopDropdown) {
+                    hideDesktopNotifications();
+                }
+                
+                if (mobileDropdown && mobileDropdown.classList.contains('show') && 
+                    !isMobileNotificationBtn && !isMobileDropdown) {
+                    hideMobileNotifications();
                 }
             });
             
@@ -1383,7 +1441,7 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     hideAllModals();
-                    hideNotifications();
+                    hideAllNotifications();
                 }
             });
         }
@@ -1394,7 +1452,16 @@
             sidebarOverlay.classList.toggle('active');
             
             // Close notification dropdown when opening mobile menu
-            hideNotifications();
+            hideAllNotifications();
+            
+            // Prevent body scroll when mobile menu is open
+            if (window.innerWidth < 768) {
+                if (sidebar.classList.contains('mobile-open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
         }
         
         // Update date and time
@@ -1520,7 +1587,7 @@
             }
             
             // Close notification dropdown
-            hideNotifications();
+            hideAllNotifications();
         }
         
         // Switch page
@@ -2537,43 +2604,37 @@
                 uploadContainer.addEventListener('click', () => {
                     newColorField.querySelector('[name="color-image-file"]').click();
                 });
-               
-                // Color image upload handler এ ডিবাগ লগ যোগ করুন
-newColorField.querySelector('[name="color-image-file"]').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  console.log('✅ ফাইল নির্বাচিত:', file.name, 'সাইজ:', file.size, 'টাইপ:', file.type);
-  
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
-    return;
-  }
-  
-  // Validate file size (5MB max)
-  if (file.size > 5 * 1024 * 1024) {
-    showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
-    return;
-  }
-  
-  // Preview image and save base64
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    console.log('✅ Base64 ডেটা তৈরি করা হয়েছে, দৈর্ঘ্য:', e.target.result.length);
-    
-    const preview = newColorField.querySelector('[name="color-upload-preview"]');
-    preview.src = e.target.result;
-    preview.style.display = 'block';
-    uploadContainer.classList.add('has-image');
-    
-    // Save base64 data to hidden input
-    const base64Input = newColorField.querySelector('[name="color-image-base64"]');
-    base64Input.value = e.target.result;
-    console.log('✅ Base64 ডেটা হিডেন ইনপুটে সেভ করা হয়েছে:', base64Input.value.length, 'বাইট');
-  };
-  reader.readAsDataURL(file);
-});
+                
+                newColorField.querySelector('[name="color-image-file"]').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
+                        return;
+                    }
+                    
+                    // Validate file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
+                        return;
+                    }
+                    
+                    // Convert to base64
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = newColorField.querySelector('[name="color-upload-preview"]');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        uploadContainer.classList.add('has-image');
+                        
+                        // Save base64 to hidden input
+                        const base64Input = newColorField.querySelector('[name="color-image-base64"]');
+                        base64Input.value = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
         }
         
@@ -3316,19 +3377,64 @@ newColorField.querySelector('[name="color-image-file"]').addEventListener('chang
             });
         }
         
-        // FIXED: Toggle notifications dropdown - improved for mobile
-        function toggleNotifications() {
+        // FIXED: Notification functions for desktop and mobile
+        function toggleDesktopNotifications() {
             const dropdown = document.getElementById('notification-dropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('show');
+            if (!dropdown) return;
+            
+            // Close mobile menu if open
+            if (window.innerWidth < 768 && sidebar.classList.contains('mobile-open')) {
+                toggleMobileMenu();
+            }
+            
+            // Toggle dropdown
+            dropdown.classList.toggle('show');
+        }
+        
+        function toggleMobileNotifications() {
+            const dropdown = document.getElementById('mobile-notification-dropdown');
+            if (!dropdown) return;
+            
+            // Close mobile menu if open
+            if (window.innerWidth < 768 && sidebar.classList.contains('mobile-open')) {
+                toggleMobileMenu();
+            }
+            
+            // Toggle dropdown
+            dropdown.classList.toggle('show');
+            
+            // Prevent body scroll when dropdown is open on mobile
+            if (window.innerWidth < 768) {
+                if (dropdown.classList.contains('show')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
             }
         }
         
-        function hideNotifications() {
+        function hideDesktopNotifications() {
             const dropdown = document.getElementById('notification-dropdown');
             if (dropdown) {
                 dropdown.classList.remove('show');
             }
+        }
+        
+        function hideMobileNotifications() {
+            const dropdown = document.getElementById('mobile-notification-dropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+                
+                // Restore body scroll on mobile
+                if (window.innerWidth < 768) {
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+        
+        function hideAllNotifications() {
+            hideDesktopNotifications();
+            hideMobileNotifications();
         }
         
         // Notification polling
@@ -3363,35 +3469,34 @@ newColorField.querySelector('[name="color-image-file"]').addEventListener('chang
         function updateNotificationUI() {
             const totalUnread = notifications.unreadOrders.length + notifications.unreadReviews.length;
             
-            // Update counts
+            // Update counts for both desktop and mobile
             const notificationCount = document.getElementById('notification-count');
             const mobileNotificationCount = document.getElementById('mobile-notification-count');
             
-            if (notificationCount) {
-                if (totalUnread > 0) {
-                    notificationCount.textContent = totalUnread > 99 ? '99+' : totalUnread;
-                    notificationCount.classList.remove('hidden');
-                } else {
-                    notificationCount.classList.add('hidden');
+            [notificationCount, mobileNotificationCount].forEach(badge => {
+                if (badge) {
+                    if (totalUnread > 0) {
+                        badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
                 }
-            }
+            });
             
-            if (mobileNotificationCount) {
-                if (totalUnread > 0) {
-                    mobileNotificationCount.textContent = totalUnread > 99 ? '99+' : totalUnread;
-                    mobileNotificationCount.classList.remove('hidden');
-                } else {
-                    mobileNotificationCount.classList.add('hidden');
-                }
-            }
-            
-            // Update notification list
-            updateNotificationList();
+            // Update notification lists
+            updateNotificationLists();
         }
         
-        // Update notification list
-        function updateNotificationList() {
-            const container = document.getElementById('notification-list');
+        // Update notification lists for both desktop and mobile
+        function updateNotificationLists() {
+            updateNotificationList('notification-list');
+            updateNotificationList('mobile-notification-list');
+        }
+        
+        // Update a specific notification list
+        function updateNotificationList(containerId) {
+            const container = document.getElementById(containerId);
             if (!container) return;
             
             let html = '';
@@ -3449,7 +3554,7 @@ newColorField.querySelector('[name="color-image-file"]').addEventListener('chang
             container.innerHTML = html;
             
             // Add click handlers to notification items
-            document.querySelectorAll('.notification-item').forEach(item => {
+            container.querySelectorAll('.notification-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const type = this.getAttribute('data-type');
                     const id = this.getAttribute('data-id');
@@ -3458,10 +3563,10 @@ newColorField.querySelector('[name="color-image-file"]').addEventListener('chang
                     
                     if (type === 'order') {
                         viewOrder(id);
-                        hideNotifications();
+                        hideAllNotifications();
                     } else if (type === 'review') {
                         switchPage('reviews');
-                        hideNotifications();
+                        hideAllNotifications();
                     }
                 });
             });
@@ -3508,6 +3613,7 @@ newColorField.querySelector('[name="color-image-file"]').addEventListener('chang
                 
                 updateNotificationUI();
                 showNotification('সব নোটিফিকেশন পড়া হয়েছে', 'success');
+                hideAllNotifications();
             } catch (error) {
                 console.error('Error marking all as read:', error);
             }
