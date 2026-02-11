@@ -113,28 +113,56 @@
             border-radius: 2px;
         }
         /* হ্যামবার্গার মেনু */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            padding: 10px;
-        }
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: #333;
-            margin: 3px 0;
-            transition: 0.3s;
-        }
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(-45deg) translate(-5px, 6px);
-        }
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(45deg) translate(-5px, -6px);
-        }
+        /* হ্যামবার্গার কন্টেইনার - মোবাইলে দেখাবে */
+.hamburger {
+    display: none;
+    width: 45px;
+    height: 45px;
+    position: relative;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+}
+
+/* তিনটি লাইনের কমন স্টাইল */
+.hamburger span {
+    display: block;
+    width: 30px;
+    height: 3px;
+    background: #333;
+    border-radius: 3px;
+    position: absolute;
+    left: 7.5px;  /* (45px - 30px)/2 = 7.5px → সম্পূর্ণ সেন্টার */
+    transition: all 0.3s ease;
+}
+
+/* লাইনগুলোর শুরুর অবস্থান (স্ট্যাকড) */
+.hamburger span:nth-child(1) {
+    top: 12px;
+}
+.hamburger span:nth-child(2) {
+    top: 21px;
+}
+.hamburger span:nth-child(3) {
+    top: 30px;
+}
+
+/* অ্যাকটিভ অবস্থায় ক্রস */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 21px;   /* একদম মাঝ বরাবর */
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 21px;   /* একদম মাঝ বরাবর */
+}
         /* মোবাইল মেনু */
         .mobile-menu {
             display: none;
