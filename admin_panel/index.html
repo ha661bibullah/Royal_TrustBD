@@ -2537,36 +2537,43 @@
                 uploadContainer.addEventListener('click', () => {
                     newColorField.querySelector('[name="color-image-file"]').click();
                 });
-                
-                newColorField.querySelector('[name="color-image-file"]').addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    
-                    // Validate file type
-                    if (!file.type.startsWith('image/')) {
-                        showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
-                        return;
-                    }
-                    
-                    // Validate file size (5MB max)
-                    if (file.size > 5 * 1024 * 1024) {
-                        showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
-                        return;
-                    }
-                    
-                    // Preview image and save base64
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const preview = newColorField.querySelector('[name="color-upload-preview"]');
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                        uploadContainer.classList.add('has-image');
-                        
-                        // Save base64 data to hidden input
-                        newColorField.querySelector('[name="color-image-base64"]').value = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                });
+               
+                // Color image upload handler এ ডিবাগ লগ যোগ করুন
+newColorField.querySelector('[name="color-image-file"]').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  console.log('✅ ফাইল নির্বাচিত:', file.name, 'সাইজ:', file.size, 'টাইপ:', file.type);
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showNotification('শুধুমাত্র ইমেজ ফাইল নির্বাচন করুন', 'error');
+    return;
+  }
+  
+  // Validate file size (5MB max)
+  if (file.size > 5 * 1024 * 1024) {
+    showNotification('ফাইল সাইজ 5MB এর কম হতে হবে', 'error');
+    return;
+  }
+  
+  // Preview image and save base64
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    console.log('✅ Base64 ডেটা তৈরি করা হয়েছে, দৈর্ঘ্য:', e.target.result.length);
+    
+    const preview = newColorField.querySelector('[name="color-upload-preview"]');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    uploadContainer.classList.add('has-image');
+    
+    // Save base64 data to hidden input
+    const base64Input = newColorField.querySelector('[name="color-image-base64"]');
+    base64Input.value = e.target.result;
+    console.log('✅ Base64 ডেটা হিডেন ইনপুটে সেভ করা হয়েছে:', base64Input.value.length, 'বাইট');
+  };
+  reader.readAsDataURL(file);
+});
             }
         }
         

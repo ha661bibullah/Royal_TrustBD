@@ -5,9 +5,18 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
 
 const app = express();
+
+// ✅ Cloudinary কনফিগারেশন (সবচেয়ে গুরুত্বপূর্ণ স্টেপ)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'ddtfpqimk',
+  api_key: process.env.CLOUDINARY_API_KEY || '282223626248792',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'aNctuQ6beENYHi8qSEASLpgVnVs',
+  secure: true
+});
 
 // Middleware
 app.use(cors({
@@ -41,15 +50,6 @@ mongoose.connect(MONGODB_URI, {
 .then(() => console.log('✅ MongoDB Connected Successfully!'))
 .catch(err => {
   console.error('❌ MongoDB Connection Error:', err);
-  console.log('Trying with simpler connection string...');
-  
-  const simpleURI = 'mongodb+srv://billaharif661_db_user:2GCmDhaEOQUteXow@iwonttotast0.mza6qgz.mongodb.net/ROYAL_TRUST_BD';
-  mongoose.connect(simpleURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log('✅ Connected with simple URI'))
-  .catch(err2 => console.error('❌ Second connection attempt failed:', err2));
 });
 
 // Database Schemas
@@ -167,7 +167,6 @@ async function sendEmailNotification(subject, message) {
       html: message
     };
 
-    // Send email in background, don't wait for response
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('❌ Email sending failed:', error);
@@ -180,42 +179,72 @@ async function sendEmailNotification(subject, message) {
   }
 }
 
-// Image handling utilities
-const saveBase64Image = (base64String, folder = 'products') => {
+// ✅ নতুন: Cloudinary তে Base64 ইমেজ আপলোড ফাংশন
+const uploadBase64ToCloudinary = async (base64String, folder = 'products') => {
   try {
-    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
+    console.log(`📤 Cloudinary এ ${folder} ফোল্ডারে ইমেজ আপলোড শুরু...`);
     
-    const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
-    const filepath = path.join(uploadsDir, filename);
+    // Cloudinary তে আপলোড করুন
+    const result = await cloudinary.uploader.upload(base64String, {
+      folder: `royal_trust/${folder}`,
+      resource_type: 'auto',
+      timeout: 60000,
+      transformation: [
+        { width: 1200, height: 800, crop: "limit" }, // সাইজ অপটিমাইজেশন
+        { quality: "auto:good" } // কোয়ালিটি অপটিমাইজেশন
+      ]
+    });
     
-    fs.writeFileSync(filepath, buffer);
+    console.log(`✅ Cloudinary এ আপলোড সফল: ${result.secure_url}`);
+    return result.secure_url;
     
-    return `/uploads/${filename}`;
   } catch (error) {
-    console.error('Error saving base64 image:', error);
-    return null;
+    console.error('❌ Cloudinary আপলোড ত্রুটি:', error.message);
+    
+    // Fallback: যদি Cloudinary কাজ না করে, তাহলে local তে সেভ করার চেষ্টা করুন
+    try {
+      console.log('🔄 Cloudinary ব্যর্থ, local ফাইল সিস্টেমে সেভ করার চেষ্টা করছি...');
+      const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
+      const filepath = path.join(uploadsDir, filename);
+      
+      fs.writeFileSync(filepath, buffer);
+      
+      return `/uploads/${filename}`;
+    } catch (fallbackError) {
+      console.error('❌ Fallback ত্রুটি:', fallbackError.message);
+      
+      // শেষ বিকল্প: Unsplash ডিফল্ট ইমেজ
+      if (folder === 'products') {
+        return 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+      } else if (folder === 'sliders') {
+        return 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+      } else {
+        return 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+      }
+    }
   }
 };
 
-const saveUploadedFile = (file, folder = 'products') => {
+// ✅ নতুন: আপলোডেড ফাইল Cloudinary তে আপলোড ফাংশন
+const saveUploadedFile = async (file, folder = 'products') => {
   try {
-    const ext = path.extname(file.name);
-    const filename = `${folder}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${ext}`;
-    const filepath = path.join(uploadsDir, filename);
+    // ফাইলকে base64 এ রূপান্তর করুন
+    const base64String = `data:${file.mimetype};base64,${file.data.toString('base64')}`;
     
-    file.mv(filepath, (err) => {
-      if (err) {
-        console.error('Error moving file:', err);
-        return null;
-      }
-    });
-    
-    return `/uploads/${filename}`;
+    // Cloudinary তে আপলোড করুন
+    return await uploadBase64ToCloudinary(base64String, folder);
   } catch (error) {
     console.error('Error saving uploaded file:', error);
     return null;
   }
+};
+
+// ✅ নতুন: Base64 ইমেজ সেভ ফাংশন (Cloudinary তে)
+const saveBase64Image = async (base64String, folder = 'products') => {
+  return await uploadBase64ToCloudinary(base64String, folder);
 };
 
 // Basic routes for testing
@@ -233,7 +262,8 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK',
     database: dbStatus,
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    cloudinary: process.env.CLOUDINARY_CLOUD_NAME ? 'configured' : 'not configured'
   });
 });
 
@@ -256,7 +286,7 @@ app.post('/api/upload', async (req, res) => {
       return res.status(400).json({ error: 'File too large. Max size is 5MB' });
     }
     
-    const fileUrl = saveUploadedFile(file, folder);
+    const fileUrl = await saveUploadedFile(file, folder);
     
     if (!fileUrl) {
       return res.status(500).json({ error: 'Failed to save file' });
@@ -287,7 +317,7 @@ app.post('/api/upload/base64', async (req, res) => {
       return res.status(400).json({ error: 'Invalid base64 image data' });
     }
     
-    const fileUrl = saveBase64Image(base64, folder);
+    const fileUrl = await saveBase64Image(base64, folder);
     
     if (!fileUrl) {
       return res.status(500).json({ error: 'Failed to save image' });
@@ -305,6 +335,32 @@ app.post('/api/upload/base64', async (req, res) => {
   }
 });
 
+// Cloudinary টেস্ট এন্ডপয়েন্ট
+app.get('/api/test-cloudinary', async (req, res) => {
+  try {
+    // একটি ছোট টেস্ট ইমেজ
+    const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+    
+    const result = await cloudinary.uploader.upload(testImage, {
+      folder: 'test'
+    });
+    
+    res.json({
+      success: true,
+      message: '✅ Cloudinary কাজ করছে!',
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      url: result.secure_url
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: '❌ Cloudinary ত্রুটি',
+      message: error.message,
+      cloudinary_configured: !!process.env.CLOUDINARY_CLOUD_NAME
+    });
+  }
+});
+
 // Simple test endpoint
 app.get('/api/test', (req, res) => {
   res.json({ 
@@ -317,7 +373,7 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Public API Routes - IMPORTANT: Fixed response delay issues
+// Public API Routes
 app.post('/api/frontend/order', async (req, res) => {
   try {
     const orderData = req.body;
@@ -344,12 +400,10 @@ app.post('/api/frontend/order', async (req, res) => {
       <p>Login to admin panel to manage this order.</p>
     `;
     
-    // Send email without waiting
     sendEmailNotification(emailSubject, emailMessage).catch(err => {
       console.error('Email sending error (non-blocking):', err);
     });
     
-    // Immediate response
     res.json({ 
       success: true, 
       message: 'Order placed successfully',
@@ -366,7 +420,6 @@ app.post('/api/frontend/review', async (req, res) => {
     const review = new Review(req.body);
     await review.save();
     
-    // Send email notification IN BACKGROUND (don't wait)
     const emailSubject = `⭐ New Review Submitted by ${review.name}`;
     const emailMessage = `
       <h2>New Review Submitted</h2>
@@ -379,12 +432,10 @@ app.post('/api/frontend/review', async (req, res) => {
       <p>Login to admin panel to approve this review.</p>
     `;
     
-    // Send email without waiting
     sendEmailNotification(emailSubject, emailMessage).catch(err => {
       console.error('Email sending error (non-blocking):', err);
     });
     
-    // Immediate response
     res.json({ 
       success: true, 
       message: 'Review submitted successfully',
@@ -482,7 +533,6 @@ app.get('/api/admin/dashboard/stats', async (req, res) => {
       .limit(5)
       .lean();
     
-    // Get unread counts for notifications
     const unreadOrders = await Order.countDocuments({ isRead: false });
     const unreadReviews = await Review.countDocuments({ isRead: false });
     
@@ -538,7 +588,7 @@ app.post('/api/admin/notifications/read', async (req, res) => {
   }
 });
 
-// Admin Products API
+// ✅ আপডেট: Admin Products API - Cloudinary তে ইমেজ আপলোড
 app.get('/api/admin/products', async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
@@ -551,60 +601,109 @@ app.get('/api/admin/products', async (req, res) => {
 app.post('/api/admin/products', async (req, res) => {
   try {
     const productData = req.body;
+    console.log('🔄 নতুন পণ্য তৈরি শুরু...');
     
     // Handle color images
     if (productData.colors && Array.isArray(productData.colors)) {
-      for (let color of productData.colors) {
-        // Handle file upload
+      console.log(`🎨 ${productData.colors.length} টি রং প্রসেসিং...`);
+      
+      for (let i = 0; i < productData.colors.length; i++) {
+        let color = productData.colors[i];
+        console.log(`🖼️ রং ${i+1} (${color.name}) এর ইমেজ প্রসেসিং...`);
+        
+        // Handle base64 image upload to Cloudinary
         if (color.imageFile && color.imageFile.startsWith('data:image/')) {
-          const imageUrl = saveBase64Image(color.imageFile, 'products');
+          console.log(`☁️ Cloudinary তে রং ${i+1} এর ইমেজ আপলোড...`);
+          
+          const imageUrl = await uploadBase64ToCloudinary(color.imageFile, 'products/colors');
+          
           if (imageUrl) {
             color.image = imageUrl;
-            color.isBase64 = true;
+            color.isBase64 = false;
+            console.log(`✅ রং ${i+1} ইমেজ URL: ${imageUrl.substring(0, 100)}...`);
+          } else {
+            color.image = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            console.log(`⚠️ রং ${i+1} ডিফল্ট ইমেজ ব্যবহার করা হলো`);
           }
+          
           delete color.imageFile;
+        } else if (!color.image) {
+          color.image = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+          console.log(`ℹ️ রং ${i+1} এর জন্য কোন ইমেজ নেই, ডিফল্ট ব্যবহার করা হলো`);
         }
       }
     }
     
     const product = new Product(productData);
     await product.save();
-    res.json({ success: true, message: 'Product added successfully', product });
+    
+    console.log('✅ পণ্য সফলভাবে তৈরি হয়েছে');
+    
+    res.json({ 
+      success: true, 
+      message: 'পণ্য সফলভাবে যোগ করা হয়েছে',
+      product 
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ পণ্য তৈরি ত্রুটি:', error);
+    res.status(500).json({ 
+      error: 'পণ্য তৈরি করতে সমস্যা হয়েছে',
+      details: error.message 
+    });
   }
 });
 
 app.put('/api/admin/products/:id', async (req, res) => {
   try {
     const productData = req.body;
+    console.log(`🔄 পণ্য ${req.params.id} আপডেট শুরু...`);
     
     // Handle color images
     if (productData.colors && Array.isArray(productData.colors)) {
-      for (let color of productData.colors) {
-        // Handle file upload
+      console.log(`🎨 ${productData.colors.length} টি রং আপডেট...`);
+      
+      for (let i = 0; i < productData.colors.length; i++) {
+        let color = productData.colors[i];
+        
+        // Handle base64 image upload to Cloudinary
         if (color.imageFile && color.imageFile.startsWith('data:image/')) {
-          const imageUrl = saveBase64Image(color.imageFile, 'products');
+          console.log(`☁️ Cloudinary তে রং ${i+1} এর নতুন ইমেজ আপলোড...`);
+          
+          const imageUrl = await uploadBase64ToCloudinary(color.imageFile, 'products/colors');
+          
           if (imageUrl) {
             color.image = imageUrl;
-            color.isBase64 = true;
+            color.isBase64 = false;
           }
+          
           delete color.imageFile;
         }
       }
     }
     
     const product = await Product.findByIdAndUpdate(req.params.id, productData, { new: true });
-    res.json({ success: true, message: 'Product updated successfully', product });
+    
+    console.log('✅ পণ্য সফলভাবে আপডেট হয়েছে');
+    
+    res.json({ 
+      success: true, 
+      message: 'পণ্য সফলভাবে আপডেট হয়েছে', 
+      product 
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ পণ্য আপডেট ত্রুটি:', error);
+    res.status(500).json({ 
+      error: 'পণ্য আপডেট করতে সমস্যা হয়েছে',
+      details: error.message 
+    });
   }
 });
 
 app.delete('/api/admin/products/:id', async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'Product deleted successfully' });
+    res.json({ success: true, message: 'পণ্য সফলভাবে ডিলিট হয়েছে' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -676,7 +775,7 @@ app.delete('/api/admin/reviews/:id', async (req, res) => {
   }
 });
 
-// Admin Sliders API
+// ✅ আপডেট: Admin Sliders API - Cloudinary তে ইমেজ আপলোড
 app.get('/api/admin/sliders', async (req, res) => {
   try {
     const sliders = await Slider.find().sort({ slideNumber: 1 });
@@ -689,36 +788,65 @@ app.get('/api/admin/sliders', async (req, res) => {
 app.post('/api/admin/sliders', async (req, res) => {
   try {
     const sliderData = req.body;
+    console.log('🔄 নতুন স্লাইডার তৈরি শুরু...');
     
-    // Handle image if it's base64
+    // Handle image upload to Cloudinary
     if (sliderData.imageFile && sliderData.imageFile.startsWith('data:image/')) {
-      const imageUrl = saveBase64Image(sliderData.imageFile, 'sliders');
+      console.log('☁️ স্লাইডার ইমেজ Cloudinary তে আপলোড...');
+      
+      const imageUrl = await uploadBase64ToCloudinary(sliderData.imageFile, 'sliders');
+      
       if (imageUrl) {
         sliderData.imageUrl = imageUrl;
-        sliderData.isBase64 = true;
+        sliderData.isBase64 = false;
+        console.log(`✅ স্লাইডার ইমেজ URL: ${imageUrl.substring(0, 100)}...`);
+      } else {
+        sliderData.imageUrl = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+        console.log('⚠️ স্লাইডার ডিফল্ট ইমেজ ব্যবহার করা হলো');
       }
+      
       delete sliderData.imageFile;
+    } else if (!sliderData.imageUrl) {
+      sliderData.imageUrl = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+      console.log('ℹ️ স্লাইডার এর জন্য কোন ইমেজ নেই, ডিফল্ট ব্যবহার করা হলো');
     }
     
     const slider = new Slider(sliderData);
     await slider.save();
-    res.json({ success: true, message: 'Slider added successfully', slider });
+    
+    console.log('✅ স্লাইডার সফলভাবে তৈরি হয়েছে');
+    
+    res.json({ 
+      success: true, 
+      message: 'স্লাইডার সফলভাবে যোগ করা হয়েছে',
+      slider 
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ স্লাইডার তৈরি ত্রুটি:', error);
+    res.status(500).json({ 
+      error: 'স্লাইডার তৈরি করতে সমস্যা হয়েছে',
+      details: error.message 
+    });
   }
 });
 
 app.put('/api/admin/sliders/:id', async (req, res) => {
   try {
     const sliderData = req.body;
+    console.log(`🔄 স্লাইডার ${req.params.id} আপডেট শুরু...`);
     
-    // Handle image if it's base64
+    // Handle image upload to Cloudinary
     if (sliderData.imageFile && sliderData.imageFile.startsWith('data:image/')) {
-      const imageUrl = saveBase64Image(sliderData.imageFile, 'sliders');
+      console.log('☁️ স্লাইডার ইমেজ Cloudinary তে আপলোড...');
+      
+      const imageUrl = await uploadBase64ToCloudinary(sliderData.imageFile, 'sliders');
+      
       if (imageUrl) {
         sliderData.imageUrl = imageUrl;
-        sliderData.isBase64 = true;
+        sliderData.isBase64 = false;
       }
+      
       delete sliderData.imageFile;
     }
     
@@ -727,9 +855,20 @@ app.put('/api/admin/sliders/:id', async (req, res) => {
       sliderData,
       { new: true }
     );
-    res.json({ success: true, message: 'Slider updated', slider });
+    
+    console.log('✅ স্লাইডার সফলভাবে আপডেট হয়েছে');
+    
+    res.json({ 
+      success: true, 
+      message: 'স্লাইডার আপডেট হয়েছে', 
+      slider 
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ স্লাইডার আপডেট ত্রুটি:', error);
+    res.status(500).json({ 
+      error: 'স্লাইডার আপডেট করতে সমস্যা হয়েছে',
+      details: error.message 
+    });
   }
 });
 
@@ -766,7 +905,7 @@ app.put('/api/admin/settings', async (req, res) => {
 // Initialize database with sample data
 async function initializeDatabase() {
   try {
-    console.log('🔄 Initializing database...');
+    console.log('🔄 ডাটাবেস ইনিশিয়ালাইজ করা হচ্ছে...');
     
     // Check and create default data
     const productCount = await Product.countDocuments();
@@ -785,7 +924,7 @@ async function initializeDatabase() {
         offerPercentage: 22,
         isActive: true
       });
-      console.log('✅ Sample product created');
+      console.log('✅ স্যাম্পল পণ্য তৈরি করা হয়েছে');
     }
     
     const sliderCount = await Slider.countDocuments();
@@ -802,22 +941,35 @@ async function initializeDatabase() {
         originalPrice: 3200,
         isActive: true
       });
-      console.log('✅ Sample slider created');
+      console.log('✅ স্যাম্পল স্লাইডার তৈরি করা হয়েছে');
     }
     
-    console.log('✅ Database initialization complete');
+    console.log('✅ ডাটাবেস ইনিশিয়ালাইজেশন সম্পূর্ণ');
   } catch (error) {
-    console.error('❌ Database initialization error:', error.message);
+    console.error('❌ ডাটাবেস ইনিশিয়ালাইজেশন ত্রুটি:', error.message);
   }
 }
 
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, async () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/health`);
-  console.log(`📧 Email notifications: ${process.env.EMAIL_USER ? 'Enabled' : 'Disabled (set EMAIL_USER & EMAIL_PASS in .env)'}`);
-  console.log(`📁 Uploads directory: ${uploadsDir}`);
+  console.log(`🚀 সার্ভার পোর্ট ${PORT} এ চলছে`);
+  console.log(`📡 হেলথ চেক: http://localhost:${PORT}/health`);
+  console.log(`☁️ Cloudinary কনফিগার্ড: ${process.env.CLOUDINARY_CLOUD_NAME ? 'হ্যাঁ' : 'না'}`);
+  console.log(`📧 ইমেইল নোটিফিকেশন: ${process.env.EMAIL_USER ? 'এনাবলড' : 'ডিসএবলড (.env ফাইলে EMAIL_USER ও EMAIL_PASS সেট করুন)'}`);
+  console.log(`📁 আপলোড ডিরেক্টরি: ${uploadsDir}`);
+  
+  // Cloudinary টেস্ট
+  if (process.env.CLOUDINARY_CLOUD_NAME) {
+    console.log('🔍 Cloudinary কানেকশন টেস্ট করা হচ্ছে...');
+    try {
+      const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+      await cloudinary.uploader.upload(testImage, { folder: 'test' });
+      console.log('✅ Cloudinary কানেকশন সফল!');
+    } catch (error) {
+      console.error('❌ Cloudinary কানেকশন ব্যর্থ:', error.message);
+    }
+  }
   
   // Initialize database after connection
   setTimeout(initializeDatabase, 2000);
