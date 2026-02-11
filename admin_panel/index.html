@@ -1106,6 +1106,7 @@
                                 <p class="font-medium">ছবি আপলোড করুন</p>
                                 <p class="text-gray-500 text-sm mt-1">ফাইল নির্বাচন করতে ক্লিক করুন (PNG, JPG, JPEG, WEBP)</p>
                                 <input type="file" id="slider-image-file" accept="image/*" class="hidden">
+                                <input type="hidden" id="slider-image-base64">
                             </div>
                             <img id="slider-upload-preview" class="image-preview">
                         </div>
@@ -2474,6 +2475,7 @@
                     <!-- URL Tab -->
                     <div id="color-url-tab-${index}" class="tab-content active">
                         <input type="text" name="color-image-url" class="form-input text-sm" placeholder="https://example.com/image.jpg">
+                        <input type="hidden" name="color-image-base64" value="">
                         <div class="mt-2">
                             <img name="color-url-preview" class="color-image-preview">
                         </div>
@@ -2552,13 +2554,16 @@
                         return;
                     }
                     
-                    // Preview image
+                    // Preview image and save base64
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const preview = newColorField.querySelector('[name="color-upload-preview"]');
                         preview.src = e.target.result;
                         preview.style.display = 'block';
                         uploadContainer.classList.add('has-image');
+                        
+                        // Save base64 data to hidden input
+                        newColorField.querySelector('[name="color-image-base64"]').value = e.target.result;
                     };
                     reader.readAsDataURL(file);
                 });
@@ -2593,7 +2598,7 @@
                 const name = container.querySelector('[name="color-name"]').value;
                 const code = container.querySelector('[name="color-code"]').value;
                 const imageUrl = container.querySelector('[name="color-image-url"]').value;
-                const imageFile = container.querySelector('[name="color-image-file"]').files[0];
+                const imageBase64 = container.querySelector('[name="color-image-base64"]').value;
                 
                 if (!name || !code) {
                     showNotification('রং এর নাম এবং কোড অবশ্যই দিতে হবে', 'error');
@@ -2608,14 +2613,9 @@
                     code
                 };
                 
-                // Handle image - file has priority over URL
-                if (imageFile) {
-                    // Convert file to base64
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        colorData.imageFile = e.target.result; // Base64 string
-                    };
-                    reader.readAsDataURL(imageFile);
+                // Handle image - base64 has priority over URL
+                if (imageBase64) {
+                    colorData.imageFile = imageBase64; // Base64 string
                 } else if (imageUrl) {
                     colorData.image = imageUrl;
                 } else {
@@ -2791,6 +2791,9 @@
                 preview.src = e.target.result;
                 preview.classList.add('show');
                 document.getElementById('slider-image-upload').classList.add('has-image');
+                
+                // Save base64 to hidden input
+                document.getElementById('slider-image-base64').value = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -2819,24 +2822,14 @@
                 }
                 imageData.imageUrl = imageUrl;
             } else if (activeTab.id === 'upload-tab') {
-                const fileInput = document.getElementById('slider-image-file');
-                if (!fileInput.files[0]) {
+                const base64Data = document.getElementById('slider-image-base64').value;
+                if (!base64Data) {
                     showNotification('স্লাইডার ইমেজ ফাইল নির্বাচন করুন', 'error');
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                     return;
                 }
-                
-                // Convert file to base64
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imageData.imageFile = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                // Wait for file to be read
-                await new Promise(resolve => reader.onloadend = resolve);
+                imageData.imageFile = base64Data;
             }
             
             const sliderData = {
