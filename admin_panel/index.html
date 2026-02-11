@@ -41,31 +41,19 @@
         }
         
         /* Sidebar */
-       /* Sidebar scroll issue fix */
-.sidebar {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar > nav {
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: 80px; /* Footer এর জন্য স্পেস রাখুন */
-}
-
-/* Sidebar footer - লগআউট বাটন থাকার জায়গা */
-.sidebar-footer {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #2d3748;
-    border-top: 1px solid #4a5568;
-    padding: 16px;
-    margin-top: auto;
-    z-index: 10;
-}
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 40;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
         
         .sidebar.collapsed {
             transform: translateX(-280px);
@@ -754,77 +742,7 @@
             background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fecaca;
-        };
-        /* লগআউট বাটন স্টাইল */
-#logout-btn {
-    background: #dc2626;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    margin-top: 16px;
-}
-
-#logout-btn:hover {
-    background: #b91c1c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-}
-
-#logout-btn i {
-    width: 24px;
-    text-align: center;
-    margin-right: 12px;
-    font-size: 18px;
-}
-
-/* মোবাইলে সাইডবার ফুটার ফিক্স */
-@media (max-width: 767px) {
-    .sidebar-footer {
-        padding: 12px;
-    }
-    
-    #logout-btn {
-        padding: 10px 16px;
-        font-size: 15px;
-    }
-}
-
-/* সাইডবার স্ক্রল ফিক্স */
-.sidebar::-webkit-scrollbar {
-    width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-    background: #2d3748;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-    background: #4a5568;
-    border-radius: 3px;
-}
-
-/* নেভিগেশন স্ক্রল ফিক্স */
-.sidebar > nav::-webkit-scrollbar {
-    width: 4px;
-}
-
-.sidebar > nav::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.sidebar > nav::-webkit-scrollbar-thumb {
-    background: #4a5568;
-    border-radius: 2px;
-}
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -928,72 +846,69 @@
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         
         <!-- Sidebar -->
-        <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-    <div class="p-6 border-b border-gray-700">
-        <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                <i class="fas fa-crown"></i>
+        <div class="sidebar" id="sidebar">
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">ROYAL TRUST BD</h2>
+                        <p class="text-gray-400 text-sm">এডমিন প্যানেল</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h2 class="text-xl font-bold">ROYAL TRUST BD</h2>
-                <p class="text-gray-400 text-sm">এডমিন প্যানেল</p>
+            
+            <nav class="p-4">
+                <div class="mb-6">
+                    <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-3 px-4">মূল মেনু</h3>
+                    <div class="space-y-1">
+                        <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            ড্যাশবোর্ড
+                        </a>
+                        <a href="#products" class="nav-item" data-page="products">
+                            <i class="fas fa-tshirt"></i>
+                            পণ্য ব্যবস্থাপনা
+                        </a>
+                        <a href="#orders" class="nav-item" data-page="orders">
+                            <i class="fas fa-shopping-cart"></i>
+                            অর্ডার ব্যবস্থাপনা
+                        </a>
+                        <a href="#reviews" class="nav-item" data-page="reviews">
+                            <i class="fas fa-star"></i>
+                            রিভিউ ব্যবস্থাপনা
+                        </a>
+                        <a href="#sliders" class="nav-item" data-page="sliders">
+                            <i class="fas fa-images"></i>
+                            স্লাইডার ব্যবস্থাপনা
+                        </a>
+                        <a href="#settings" class="nav-item" data-page="settings">
+                            <i class="fas fa-cog"></i>
+                            ওয়েবসাইট সেটিংস
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-3 px-4">অন্যান্য</h3>
+                    <div class="space-y-1">
+                        <button id="logout-btn" class="nav-item w-full text-left">
+                            <i class="fas fa-sign-out-alt"></i>
+                            লগআউট
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700 bg-gray-800">
+                <div class="text-center">
+                    <p class="text-gray-400 text-sm mb-1">লগইন করেছেন:</p>
+                    <p id="logged-in-user" class="font-bold text-white">-</p>
+                    <p class="text-gray-400 text-xs mt-2" id="current-time">-</p>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <nav class="p-4">
-        <div class="mb-6">
-            <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-3 px-4">মূল মেনু</h3>
-            <div class="space-y-1">
-                <a href="#dashboard" class="nav-item active" data-page="dashboard">
-                    <i class="fas fa-tachometer-alt"></i>
-                    ড্যাশবোর্ড
-                </a>
-                <a href="#products" class="nav-item" data-page="products">
-                    <i class="fas fa-tshirt"></i>
-                    পণ্য ব্যবস্থাপনা
-                </a>
-                <a href="#orders" class="nav-item" data-page="orders">
-                    <i class="fas fa-shopping-cart"></i>
-                    অর্ডার ব্যবস্থাপনা
-                </a>
-                <a href="#reviews" class="nav-item" data-page="reviews">
-                    <i class="fas fa-star"></i>
-                    রিভিউ ব্যবস্থাপনা
-                </a>
-                <a href="#sliders" class="nav-item" data-page="sliders">
-                    <i class="fas fa-images"></i>
-                    স্লাইডার ব্যবস্থাপনা
-                </a>
-                <a href="#settings" class="nav-item" data-page="settings">
-                    <i class="fas fa-cog"></i>
-                    ওয়েবসাইট সেটিংস
-                </a>
-            </div>
-        </div>
-        
-        <div class="mt-8">
-            <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-3 px-4">অন্যান্য</h3>
-            <div class="space-y-1">
-                <!-- লগআউট বাটন এখানে থাকবে -->
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Sidebar Footer - লগআউট বাটন এখানে সরানো হলো -->
-    <div class="sidebar-footer">
-        <div class="text-center">
-            <p class="text-gray-400 text-sm mb-1">লগইন করেছেন:</p>
-            <p id="logged-in-user" class="font-bold text-white">-</p>
-            <p class="text-gray-400 text-xs mt-2" id="current-time">-</p>
-        </div>
-        <button id="logout-btn" class="nav-item w-full text-left mt-4 bg-red-600 hover:bg-red-700">
-            <i class="fas fa-sign-out-alt"></i>
-            লগআউট
-        </button>
-    </div>
-</div>
         
         <!-- Main Content -->
         <div class="main-content" id="main-content">
